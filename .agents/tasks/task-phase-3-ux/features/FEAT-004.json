@@ -1,0 +1,29 @@
+{
+  "id": "FEAT-004",
+  "type": "chore",
+  "description": "Final build and test verification pass (B-7) and progress.md update to Phase 3 complete (B-8). Depends on FEAT-001, FEAT-002, FEAT-003 all being committed. This FEAT is a convergence check: run the full build and test suite, fix any remaining issues introduced by seams between FEATs, then update progress.md.",
+  "status": "completed",
+  "steps": [
+    "Step 1 — Run npm run build from c:/Git/minecraft/minecraft-addon-creator/app/. If errors exist, fix them. Common cross-FEAT seam issues: (a) EditorPage imports a new component but that component file does not exist yet (should be resolved if FEATs ran in order); (b) TypeScript type errors due to new i18n keys not matching the declared type in types/i18next.d.ts (ja.json must have the correct nested structure); (c) noUnusedLocals errors from imports added but not used; (d) exactOptionalPropertyTypes violations from optional prop patterns. Fix each error and re-run build until it exits 0.",
+    "Step 2 — Run npm test from c:/Git/minecraft/minecraft-addon-creator/app/. All tests must pass. Expected: 19 tests (17 original + 2 new from FEAT-001). If any tests fail, diagnose and fix. The only test file is app/src/components/wizard/wizard.spec.ts — it tests isValidId and toId which were modified in FEAT-001.",
+    "Step 3 — Update c:/Git/minecraft/minecraft-addon-creator/.agents/tasks/progress.md: (a) Change '現在のフェーズ' to 'Phase 4 — 高度エディタ（待機中）'; (b) Move all Phase 3 TODO items to 完了済み, with checked [x] and note 'Phase 3 完了 (feature/phase-3-ux)'; (c) Add new 次にやること section for Phase 4 items (レシピエディタ、ルートテーブルエディタ、スポーンルールエディタ、etc. from porting-plan.md Phase 4). (d) Add Phase 3 commit list at the bottom.",
+    "Step 4 — Commit the progress.md update: git add .agents/tasks/progress.md && git commit -m 'docs: mark Phase 3 complete'. Do NOT push to remote."
+  ],
+  "acceptance_criteria": [
+    "npm run build exits 0 with 0 TypeScript errors and successful vite bundle output",
+    "npm test exits 0 with all tests passing (expected 19)",
+    "progress.md current phase is Phase 4",
+    "progress.md Phase 3 items are all marked [x] complete",
+    "No push to remote (local commits only on feature/phase-3-ux)"
+  ],
+  "verification": [
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm run build",
+    "Output must include: 'built in' with no errors",
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm test",
+    "Output must show all tests passed",
+    "grep '現在のフェーズ' c:/Git/minecraft/minecraft-addon-creator/.agents/tasks/progress.md",
+    "Output must contain 'Phase 4'"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

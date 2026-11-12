@@ -1,7 +1,7 @@
 # 実装進捗
 
 ## 現在のフェーズ
-Phase 3 — 追加エディタ・全体 i18n 対応（待機中）
+Phase 4 — 高度エディタ（待機中）
 
 ## 完了済み
 - [x] Phase 1: プロジェクト基盤構築 完了 (feature/phase-1-foundation → master)
@@ -25,25 +25,29 @@ Phase 3 — 追加エディタ・全体 i18n 対応（待機中）
   - i18n キー追加: home.* / wizard.step1-2.* / wizard.confirm.* / editor.* / entity.trait（5種追加）
   - AppShell noPadding プロップ追加（フルブリードレイアウト対応）
 
-## 次にやること（Phase 3）
+- [x] Phase 3: 追加エディタ・全体 i18n 対応 完了 (feature/phase-3-ux) — Phase 3 完了 (feature/phase-3-ux)
+  - [x] Phase 2 非ブロッキング指摘 3件対応（`isValidId`/`toId` アンダースコアガード、テスト名修正、タブ ARIA 属性連結）
+  - [x] エンティティエディタ — 詳細モード切り替えレイアウト（ComponentPanel・JsonPreviewPanel）
+  - [x] エンティティエディタ — StateGraph タブ実装（状態グラフ SVG 表示）
+  - [x] エンティティエディタ — AppearancePanel（テクスチャプリセット選択）
+  - [x] 全 UI テキストの翻訳キー適用（ハードコード文字列の除去）
+  - [x] ja-kids ロケール全画面対応（ホーム・ウィザード・エディタ）
+  - [x] ウィザードテスト 17 → 19 件（isValidId/toId 修正対応）
+  - [x] ビルド 0 エラー・テスト 19/19 合格
+
+## 次にやること（Phase 4）
 
 ### 優先
 - [ ] レシピエディタ（Shaped / Shapeless / かまど）
 - [ ] ルートテーブルエディタ（基本版）
-- [ ] エンティティエディタ — ステータスタブ実装（HP・攻撃力・速度・サイズ）
-- [ ] エンティティエディタ — 外観タブ実装（テクスチャプリセット）
-- [ ] 詳細モード対応（ComponentPanel・JsonPreviewPanel の表示切り替え）
-- [ ] 全 UI テキストの翻訳キー適用（ハードコード文字列の除去）
+- [ ] スポーンルールエディタ
+- [ ] エンティティエディタ — ステータスタブ詳細実装（HP・攻撃力・速度・サイズ 数値入力）
+- [ ] アニメーションコントローラーエディタ
+- [ ] サウンド定義エディタ
 
 ### テスト
-- [ ] ウィザード E2E テスト（wizard.spec.ts）
 - [ ] ユニットテストカバレッジ > 80%
-
-## 未解決の非ブロッキング指摘
-
-1. `'_'` のみのID入力ガード漏れ（`isValidId` / `toId` のアンダースコア除去で空文字になるケース）
-2. `wizard.spec.ts` のテスト名に誤記あり（内容は phase2-review.md を参照）
-3. タブコンポーネントの ARIA 属性が未連結（`aria-controls` / `aria-labelledby` 未設定）
+- [ ] 各エディタコンポーネントのユニットテスト追加
 
 ## 参照ドキュメント
 - porting-plan.md: フェーズ定義・完了条件
@@ -56,3 +60,8 @@ Phase 3 — 追加エディタ・全体 i18n 対応（待機中）
 - `e33e341` feat(wizard): implement 3-step addon creation wizard
 - `a8cfd9c` feat(editor): implement simple mode editor with trait card grid
 - `598463c` fix: address phase2-review findings (all 5 issues resolved; verdict APPROVED)
+
+## コミット履歴（Phase 3）
+- `d9963b3` fix(wizard,editor): address 3 non-blocking Phase 2 findings
+- `c415575` feat(editor): detail mode layout, StateGraph, AppearancePanel, JsonPreviewPanel (B-2 B-3 B-4)
+- `de94ab6` feat(home,i18n): ja-kids home variant, full locale coverage (B-5 B-6)
