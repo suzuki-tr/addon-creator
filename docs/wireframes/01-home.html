@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<!--
+  画面名: ホーム画面
+  対象ユーザー: 全ユーザー（通常モード）
+  主要な操作: 言語選択、モード選択、新規作成、既存プロジェクトを開く
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ホーム画面 — ワイヤーフレーム #01</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'Noto Sans JP', sans-serif;
+      background: #F9FAFB;
+      color: #111827;
+      min-height: 100vh;
+    }
+
+    /* ===== メタバナー ===== */
+    .meta-banner {
+      background: #FFD700;
+      padding: 10px 24px;
+      border-bottom: 2px solid #C8960C;
+    }
+    .meta-banner-inner { max-width: 1200px; margin: 0 auto; }
+    .meta-banner-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #78580A;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .meta-banner-title { font-size: 1rem; font-weight: 700; color: #1a1a1a; }
+    .meta-banner-desc { font-size: 0.8rem; color: #554400; margin-top: 2px; }
+
+    /* ===== ヘッダー ===== */
+    .header {
+      background: #fff;
+      border-bottom: 1px solid #E5E7EB;
+      padding: 10px 24px;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .logo-box {
+      width: 140px;
+      height: 36px;
+      background: #D1D5DB;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      color: #6B7280;
+      flex-shrink: 0;
+    }
+    .header-spacer { flex: 1; }
+    .lang-select {
+      padding: 5px 10px;
+      border: 1px solid #D1D5DB;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      background: #fff;
+      color: #374151;
+      cursor: pointer;
+    }
+    .mode-toggle {
+      display: flex;
+      border: 1px solid #D1D5DB;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .mode-toggle button {
+      padding: 5px 14px;
+      border: none;
+      background: #F3F4F6;
+      font-family: inherit;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: #6B7280;
+    }
+    .mode-toggle button.active {
+      background: #5D9C3B;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* ===== メインコンテンツ ===== */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    /* ===== ヒーローセクション ===== */
+    .hero {
+      text-align: center;
+      padding: 48px 32px;
+      background: #fff;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      margin-bottom: 36px;
+    }
+    .hero-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 10px;
+    }
+    .hero-subtitle {
+      font-size: 1rem;
+      color: #6B7280;
+      margin-bottom: 36px;
+      line-height: 1.6;
+    }
+    .cta-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: #5D9C3B;
+      color: #fff;
+      border: none;
+      padding: 14px 36px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      min-width: 260px;
+    }
+    .btn-secondary {
+      background: #fff;
+      color: #374151;
+      border: 1.5px solid #D1D5DB;
+      padding: 14px 36px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      min-width: 260px;
+    }
+
+    /* ===== セクションヘッダー ===== */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #111827;
+    }
+    .section-link {
+      font-size: 0.875rem;
+      color: #5D9C3B;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* ===== プロジェクトカード ===== */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .project-card {
+      background: #fff;
+      border: 1px solid #E5E7EB;
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .card-thumb {
+      width: 100%;
+      height: 88px;
+      background: #D1D5DB;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #6B7280;
+      margin-bottom: 12px;
+    }
+    .card-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      color: #111827;
+    }
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .badge-mob    { background: #D1FAE5; color: #065F46; }
+    .badge-block  { background: #DBEAFE; color: #1E40AF; }
+    .badge-item   { background: #FEE2E2; color: #991B1B; }
+    .card-date {
+      font-size: 0.75rem;
+      color: #9CA3AF;
+    }
+    .btn-card {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      background: #F3F4F6;
+      border: 1px solid #E5E7EB;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      cursor: pointer;
+      text-align: center;
+      color: #374151;
+    }
+
+    /* ===== フッター ===== */
+    footer {
+      background: #fff;
+      border-top: 1px solid #E5E7EB;
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #9CA3AF;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- メタバナー -->
+  <div class="meta-banner">
+    <div class="meta-banner-inner">
+      <div class="meta-banner-label">ワイヤーフレーム #01</div>
+      <div class="meta-banner-title">ホーム画面</div>
+      <div class="meta-banner-desc">言語選択・モード選択・新規作成・既存プロジェクトを開く</div>
+    </div>
+  </div>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-box">アプリロゴ（プレースホルダー）</div>
+      <div class="header-spacer"></div>
+      <select class="lang-select">
+        <option>日本語</option>
+        <option>English</option>
+        <option>かんたん日本語</option>
+      </select>
+      <div class="mode-toggle">
+        <button class="active">かんたん</button>
+        <button>くわしい</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="main">
+
+    <!-- ヒーローセクション -->
+    <section class="hero">
+      <h1 class="hero-title">マインクラフト アドオン クリエイター</h1>
+      <p class="hero-subtitle">
+        自分だけのモブ・ブロック・アイテムを作って、マインクラフトの世界を広げよう！
+      </p>
+      <div class="cta-group">
+        <button class="btn-primary">＋ 新しいアドオンを作る</button>
+        <button class="btn-secondary">📂 既存のプロジェクトを開く</button>
+      </div>
+    </section>
+
+    <!-- 最近のプロジェクト -->
+    <div class="section-header">
+      <h2 class="section-title">最近のプロジェクト</h2>
+      <span class="section-link">すべて見る →</span>
+    </div>
+    <div class="project-grid">
+
+      <div class="project-card">
+        <div class="card-thumb">🐾 サムネイル（プレースホルダー）</div>
+        <div class="card-name">かっこいいモブ</div>
+        <div class="card-meta">
+          <span class="badge badge-mob">モブ</span>
+          <span class="card-date">2日前</span>
+        </div>
+        <button class="btn-card">編集する →</button>
+      </div>
+
+      <div class="project-card">
+        <div class="card-thumb">🧱 サムネイル（プレースホルダー）</div>
+        <div class="card-name">光るブロック</div>
+        <div class="card-meta">
+          <span class="badge badge-block">ブロック</span>
+          <span class="card-date">5日前</span>
+        </div>
+        <button class="btn-card">編集する →</button>
+      </div>
+
+      <div class="project-card">
+        <div class="card-thumb">⚔️ サムネイル（プレースホルダー）</div>
+        <div class="card-name">まほうの剣</div>
+        <div class="card-meta">
+          <span class="badge badge-item">アイテム</span>
+          <span class="card-date">1週間前</span>
+        </div>
+        <button class="btn-card">編集する →</button>
+      </div>
+
+    </div>
+    <!-- /最近のプロジェクト -->
+
+  </main>
+
+  <!-- フッター -->
+  <footer>
+    マインクラフト アドオン クリエイター v0.1.0 — ワイヤーフレーム（開発中）
+  </footer>
+
+</body>
+</html>

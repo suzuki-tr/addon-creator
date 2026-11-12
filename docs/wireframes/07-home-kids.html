@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<!--
+  画面名: ホーム画面（ja-kids バリアント）
+  対象ユーザー: 小学生低学年（6〜8歳）
+  主要な操作: 言語確認、新しくつくる、まえにつくったものをひらく
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ホーム画面 かんたん日本語 — ワイヤーフレーム #07</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'Noto Sans JP', sans-serif;
+      background: #FFFBEB;
+      color: #111827;
+      min-height: 100vh;
+      font-size: 1.25rem;
+      line-height: 1.8;
+    }
+
+    /* ===== メタバナー ===== */
+    .meta-banner {
+      background: #FFD700;
+      padding: 10px 24px;
+      border-bottom: 2px solid #C8960C;
+    }
+    .meta-banner-label {
+      font-size: 0.75rem; font-weight: 700; color: #78580A;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .meta-banner-title { font-size: 1rem; font-weight: 700; color: #1a1a1a; }
+    .meta-banner-desc  { font-size: 0.85rem; color: #554400; margin-top: 2px; }
+
+    /* ===== ヘッダー ===== */
+    .header {
+      background: #fff;
+      border-bottom: 2px solid #E5E7EB;
+      padding: 12px 24px;
+    }
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo-box {
+      width: 160px;
+      height: 44px;
+      background: #D1D5DB;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: #6B7280;
+      flex-shrink: 0;
+    }
+    .header-spacer { flex: 1; }
+    /* ja-kids: 言語セレクタを大きめに */
+    .lang-select {
+      padding: 8px 14px;
+      border: 2px solid #5D9C3B;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      background: #fff;
+      color: #374151;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    /* モードトグルは ja-kids では非表示 */
+
+    /* ===== メインコンテンツ ===== */
+    .main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 36px 24px;
+    }
+
+    /* ===== ヒーローセクション ===== */
+    .hero {
+      text-align: center;
+      padding: 48px 32px;
+      background: #fff;
+      border: 2px solid #E5E7EB;
+      border-radius: 20px;
+      margin-bottom: 36px;
+    }
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+    .hero-subtitle {
+      font-size: 1.3rem;
+      color: #374151;
+      margin-bottom: 36px;
+      line-height: 1.8;
+    }
+
+    /* 大きなCTAボタン（全幅、高さ60px以上） */
+    .cta-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .btn-primary-kids {
+      background: #5D9C3B;
+      color: #fff;
+      border: none;
+      padding: 18px 32px;
+      font-family: inherit;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-radius: 16px;
+      cursor: pointer;
+      min-height: 64px;
+      width: 100%;
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+    }
+    .btn-secondary-kids {
+      background: #fff;
+      color: #374151;
+      border: 2.5px solid #D1D5DB;
+      padding: 18px 32px;
+      font-family: inherit;
+      font-size: 1.3rem;
+      font-weight: 600;
+      border-radius: 16px;
+      cursor: pointer;
+      min-height: 64px;
+      width: 100%;
+      letter-spacing: 0.03em;
+      line-height: 1.4;
+    }
+
+    /* ===== 最近のプロジェクト ===== */
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 16px;
+    }
+    .project-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .project-card {
+      background: #fff;
+      border: 2px solid #E5E7EB;
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .card-emoji {
+      font-size: 2.8rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .card-body { flex: 1; }
+    .card-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 4px;
+    }
+    .card-date {
+      font-size: 1rem;
+      color: #6B7280;
+    }
+    .btn-continue {
+      background: #5D9C3B;
+      color: #fff;
+      border: none;
+      padding: 12px 22px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      min-height: 48px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- メタバナー -->
+  <div class="meta-banner">
+    <div class="meta-banner-label">ワイヤーフレーム #07</div>
+    <div class="meta-banner-title">ホーム画面 — かんたん日本語バリアント（ja-kids）</div>
+    <div class="meta-banner-desc">
+      対象: 小学生低学年（6〜8歳）。大きな文字・大きなボタン・平易なひらがな。モードトグルなし。
+    </div>
+  </div>
+
+  <!-- ヘッダー（モードトグルなし） -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-box">アプリロゴ（プレースホルダー）</div>
+      <div class="header-spacer"></div>
+      <!-- 言語セレクタ: かんたん日本語 選択中 -->
+      <select class="lang-select">
+        <option selected>かんたん日本語</option>
+        <option>日本語</option>
+        <option>English</option>
+      </select>
+      <!-- ※ モードトグルは ja-kids では表示しない -->
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="main">
+
+    <!-- ヒーローセクション -->
+    <section class="hero">
+      <h1 class="hero-title">マインクラフト アドオン クリエイター</h1>
+      <p class="hero-subtitle">じぶんだけのアドオンを つくってみよう！ 🎮</p>
+
+      <div class="cta-group">
+        <button class="btn-primary-kids">✨ あたらしくつくる</button>
+        <button class="btn-secondary-kids">📂 まえにつくったものをひらく</button>
+      </div>
+    </section>
+
+    <!-- 最近のプロジェクト -->
+    <h2 class="section-title">このまえつくったもの</h2>
+    <div class="project-list">
+
+      <div class="project-card">
+        <div class="card-emoji">🐾</div>
+        <div class="card-body">
+          <div class="card-name">かっこいいモブ</div>
+          <div class="card-date">2日まえ</div>
+        </div>
+        <button class="btn-continue">つづきをつくる →</button>
+      </div>
+
+      <div class="project-card">
+        <div class="card-emoji">🧱</div>
+        <div class="card-body">
+          <div class="card-name">ひかるブロック</div>
+          <div class="card-date">5日まえ</div>
+        </div>
+        <button class="btn-continue">つづきをつくる →</button>
+      </div>
+
+      <div class="project-card">
+        <div class="card-emoji">⚔️</div>
+        <div class="card-body">
+          <div class="card-name">まほうのつるぎ</div>
+          <div class="card-date">1しゅうかんまえ</div>
+        </div>
+        <button class="btn-continue">つづきをつくる →</button>
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>
