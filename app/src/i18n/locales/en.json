@@ -25,26 +25,53 @@
       "toggleToSimple": "Switch to Simple Mode"
     }
   },
+  "home": {
+    "hero": {
+      "subtitle": "Create your own mobs, blocks, and items to expand the Minecraft world!"
+    },
+    "newAddon": "+ Create New Addon",
+    "openProject": "📂 Open Existing Project",
+    "recentProjects": "Recent Projects",
+    "viewAll": "View All →",
+    "project": {
+      "edit": "Edit →",
+      "noProjects": "No projects yet"
+    }
+  },
   "wizard": {
     "title": "Create New Content",
     "progress": "{{current}} / {{total}} Steps",
     "step1": {
       "title": "What do you want to create?",
+      "subtitle": "Choose the type of content you want to create. You can change this later.",
       "mob": "Mob (Creature)",
       "mobDesc": "Create enemies, friendlies, and bosses",
       "block": "Block",
       "blockDesc": "Create original blocks to place in the world",
       "item": "Item",
-      "itemDesc": "Create food, weapons, and tools"
+      "itemDesc": "Create food, weapons, and tools",
+      "selectedBadge": "✓ Selected"
     },
     "step2": {
-      "title": "Choose a base",
+      "title": "Enter Basic Info",
+      "subtitle": "Set a name for your addon and choose a base to start from.",
       "fromScratch": "Start from scratch",
       "fromVanilla": "Customize from vanilla",
-      "searchPlaceholder": "Search by name..."
+      "searchPlaceholder": "Search by name...",
+      "nameLabel": "Addon Name (ID)",
+      "namePlaceholder": "e.g. my_cool_mob",
+      "nameHint": "Only letters, numbers, and underscores are allowed (e.g. my_cool_mob). Auto-suggested from display name.",
+      "displayNameLabel": "Display Name",
+      "displayNamePlaceholder": "e.g. Cool Mob",
+      "displayNameHint": "The name shown in-game (e.g. Cool Mob).",
+      "baseLabel": "Choose a Base",
+      "fromScratchDesc": "Start completely from scratch and customize everything yourself",
+      "fromVanillaDesc": "Start from an existing vanilla mob, block, or item and modify it",
+      "vanillaSearchLabel": "Search for a vanilla base",
+      "recommendedBadge": "Recommended"
     },
     "step3": {
-      "title": "Choose traits",
+      "title": "Choose Traits",
       "subtitle": "You can select multiple"
     },
     "step4": {
@@ -58,6 +85,39 @@
       "title": "Done!",
       "preview": "Preview",
       "export": "Download Addon"
+    },
+    "confirm": {
+      "title": "Review and Download",
+      "subtitle": "Check your settings below. When everything looks good, click Download.",
+      "summaryTitle": "Settings Summary",
+      "previewTitle": "Preview",
+      "typeLabel": "Type",
+      "nameLabel": "Addon Name (ID)",
+      "displayNameLabel": "Display Name",
+      "baseLabel": "Base",
+      "outputFileLabel": "Output File",
+      "validationOk": "All settings are valid. Ready to download.",
+      "download": "Download Addon",
+      "previewPlaceholder": "3D Preview (coming later)"
+    }
+  },
+  "editor": {
+    "tabs": {
+      "traits": "Traits",
+      "status": "Status",
+      "appearance": "Appearance"
+    },
+    "traits": {
+      "heading": "Choose Traits (multiple allowed)",
+      "subheading": "Select traits to define the mob's behavior. Check a card to add that trait."
+    },
+    "sidebar": {
+      "project": "Project",
+      "files": "Files",
+      "projectNavPlaceholder": "Project Navigation (placeholder)"
+    },
+    "breadcrumb": {
+      "myProject": "My Project"
     }
   },
   "entity": {
@@ -71,7 +131,17 @@
       "tameable": "Tameable",
       "tameableDesc": "Can be tamed with an item",
       "rideable": "Rideable",
-      "rideableDesc": "Can be ridden"
+      "rideableDesc": "Can be ridden",
+      "undead": "Undead",
+      "undeadDesc": "Burns in daylight (zombie-type)",
+      "aquatic": "Aquatic",
+      "aquaticDesc": "Lives underwater",
+      "boss": "Boss",
+      "bossDesc": "Shows a boss health bar at the top of the screen",
+      "breedable": "Breedable",
+      "breedableDesc": "Can breed using items",
+      "slime": "Slime",
+      "slimeDesc": "Splits into smaller entities when killed"
     },
     "status": {
       "health": "Health (HP)",

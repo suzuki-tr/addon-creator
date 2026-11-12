@@ -25,23 +25,50 @@
       "toggleToSimple": "かんたんモードにきりかえる"
     }
   },
+  "home": {
+    "hero": {
+      "subtitle": "じぶんだけのモブ・ブロック・アイテムをつくって、マインクラフトをもっとたのしもう！"
+    },
+    "newAddon": "＋ あたらしいアドオンをつくる",
+    "openProject": "📂 さくひんをひらく",
+    "recentProjects": "さいきんのさくひん",
+    "viewAll": "ぜんぶみる →",
+    "project": {
+      "edit": "へんしゅうする →",
+      "noProjects": "まださくひんがありません"
+    }
+  },
   "wizard": {
     "title": "あたらしいものをつくります",
     "progress": "{{current}} / {{total}} ステップ",
     "step1": {
       "title": "なにをつくりますか？",
+      "subtitle": "つくりたいものをひとつえらんでください。あとでかえることもできます。",
       "mob": "Mob（モブ）",
       "mobDesc": "てきや なかまの いきものをつくれます",
       "block": "Block（ブロック）",
       "blockDesc": "せかいにおける オリジナルブロックをつくれます",
       "item": "Item（アイテム）",
-      "itemDesc": "たべもの・ぶき・どうぐなどをつくれます"
+      "itemDesc": "たべもの・ぶき・どうぐなどをつくれます",
+      "selectedBadge": "✓ えらんでいます"
     },
     "step2": {
-      "title": "ベースをえらんでください",
+      "title": "きほんのことをいれてください",
+      "subtitle": "アドオンのなまえと、ベースにするものをきめましょう。",
       "fromScratch": "ゼロからつくる",
       "fromVanilla": "Vanilla（バニラ）からアレンジする",
-      "searchPlaceholder": "なまえでさがす..."
+      "searchPlaceholder": "なまえでさがす...",
+      "nameLabel": "アドオンのなまえ（ID）",
+      "namePlaceholder": "れい: my_cool_mob",
+      "nameHint": "えいすう字と _ だけつかえます（れい: my_cool_mob）。みせるなまえからじどうでていあんします。",
+      "displayNameLabel": "みせる なまえ",
+      "displayNamePlaceholder": "れい: かっこいいモブ",
+      "displayNameHint": "ゲームのなかでみえる なまえです（れい: かっこいいモブ）。",
+      "baseLabel": "ベースをえらぶ",
+      "fromScratchDesc": "なにもないところから じぶんでカスタマイズします",
+      "fromVanillaDesc": "マインクラフトにもともといる モブやブロックをもとにしてアレンジします",
+      "vanillaSearchLabel": "もとにする Vanilla（バニラ）をさがしてください",
+      "recommendedBadge": "おすすめ"
     },
     "step3": {
       "title": "とくせいをえらんでください",
@@ -58,6 +85,63 @@
       "title": "できあがりました！",
       "preview": "みてみる",
       "export": "アドオンをダウンロード"
+    },
+    "confirm": {
+      "title": "たしかめてダウンロードしよう",
+      "subtitle": "いれたないようをたしかめてください。よければダウンロードボタンをおしてください。",
+      "summaryTitle": "せっていのたしかめ",
+      "previewTitle": "みてみる",
+      "typeLabel": "しゅるい",
+      "nameLabel": "アドオンのなまえ（ID）",
+      "displayNameLabel": "みせる なまえ",
+      "baseLabel": "ベース",
+      "outputFileLabel": "つくられるファイル",
+      "validationOk": "すべてただしくいれられています。ダウンロードできます。",
+      "download": "アドオンをダウンロード",
+      "previewPlaceholder": "3D（あとでつくります）"
+    }
+  },
+  "editor": {
+    "tabs": {
+      "traits": "とくせい（Trait）",
+      "status": "ステータス",
+      "appearance": "みため"
+    },
+    "traits": {
+      "heading": "とくせいをえらんでください（いくつでもOK）",
+      "subheading": "モブのうごきや せいかくをえらびましょう。チェックをいれると とくせいがつきます。"
+    },
+    "sidebar": {
+      "project": "さくひん",
+      "files": "ファイル",
+      "projectNavPlaceholder": "さくひんのナビゲーション（プレースホルダー）"
+    },
+    "breadcrumb": {
+      "myProject": "マイプロジェクト"
+    }
+  },
+  "entity": {
+    "trait": {
+      "hostile": "てきたいてき",
+      "hostileDesc": "プレイヤーをこうげきします",
+      "passive": "なかよし",
+      "passiveDesc": "プレイヤーをこうげきしません",
+      "flying": "そらをとぶ",
+      "flyingDesc": "そらをとびます",
+      "tameable": "なつかせられる",
+      "tameableDesc": "アイテムをあげてなつかせられます",
+      "rideable": "のれる",
+      "rideableDesc": "のることができます",
+      "undead": "アンデッド",
+      "undeadDesc": "ひるまにもえます（Zombie（ゾンビ）のなかま）",
+      "aquatic": "みずのなか",
+      "aquaticDesc": "みずのなかでせいかつします",
+      "boss": "ボス",
+      "bossDesc": "がめんのうえにたいりょくバーがでます",
+      "breedable": "なかまをふやせる",
+      "breedableDesc": "アイテムをあげるとなかまがふえます",
+      "slime": "Slime（スライム）",
+      "slimeDesc": "たおすとちいさいこたいがでてきます"
     }
   },
   "error": {

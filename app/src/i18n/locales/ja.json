@@ -25,23 +25,50 @@
       "toggleToSimple": "かんたんモードに切り替える"
     }
   },
+  "home": {
+    "hero": {
+      "subtitle": "自分だけのモブ・ブロック・アイテムを作って、マインクラフトの世界を広げよう！"
+    },
+    "newAddon": "＋ 新しいアドオンを作る",
+    "openProject": "📂 既存のプロジェクトを開く",
+    "recentProjects": "最近のプロジェクト",
+    "viewAll": "すべて見る →",
+    "project": {
+      "edit": "編集する →",
+      "noProjects": "まだプロジェクトがありません"
+    }
+  },
   "wizard": {
     "title": "新しいコンテンツを作る",
     "progress": "{{current}} / {{total}} ステップ",
     "step1": {
       "title": "何を作りますか？",
+      "subtitle": "作りたいものの種類をひとつ選んでください。あとで変えることもできます。",
       "mob": "モブ（生き物）",
       "mobDesc": "敵・友好・ボスなどの生き物を作れます",
       "block": "ブロック",
       "blockDesc": "世界に置けるオリジナルブロックを作れます",
       "item": "アイテム",
-      "itemDesc": "食べ物・武器・ツールなどを作れます"
+      "itemDesc": "食べ物・武器・ツールなどを作れます",
+      "selectedBadge": "✓ 選択中"
     },
     "step2": {
-      "title": "ベースを選んでください",
+      "title": "基本情報を入力してください",
+      "subtitle": "作るアドオンの名前と、ベースにするものを決めましょう。",
       "fromScratch": "ゼロから作る",
       "fromVanilla": "バニラからカスタマイズ",
-      "searchPlaceholder": "名前で検索..."
+      "searchPlaceholder": "名前で検索...",
+      "nameLabel": "アドオン名（ID）",
+      "namePlaceholder": "例: my_cool_mob",
+      "nameHint": "英数字とアンダースコアのみ使えます（例: my_cool_mob）。表示名から自動で提案されます。",
+      "displayNameLabel": "表示名",
+      "displayNamePlaceholder": "例: かっこいいモブ",
+      "displayNameHint": "ゲーム内で表示される名前です（例: かっこいいモブ）。",
+      "baseLabel": "ベースを選ぶ",
+      "fromScratchDesc": "なにもないところから自分でカスタマイズします",
+      "fromVanillaDesc": "マインクラフト標準のモブ・ブロック・アイテムを元にして改造します",
+      "vanillaSearchLabel": "元にするバニラを検索してください",
+      "recommendedBadge": "おすすめ"
     },
     "step3": {
       "title": "特性を選んでください",
@@ -58,6 +85,39 @@
       "title": "完成！",
       "preview": "プレビュー",
       "export": "アドオンをダウンロード"
+    },
+    "confirm": {
+      "title": "確認してダウンロードしよう",
+      "subtitle": "入力した内容を確認してください。問題がなければダウンロードボタンを押してください。",
+      "summaryTitle": "設定の確認",
+      "previewTitle": "プレビュー",
+      "typeLabel": "種類",
+      "nameLabel": "アドオン名（ID）",
+      "displayNameLabel": "表示名",
+      "baseLabel": "ベース",
+      "outputFileLabel": "出力ファイル",
+      "validationOk": "すべての項目が正しく入力されています。ダウンロードできます。",
+      "download": "アドオンをダウンロード",
+      "previewPlaceholder": "3Dプレビュー（後で実装）"
+    }
+  },
+  "editor": {
+    "tabs": {
+      "traits": "特性（トレイト）",
+      "status": "ステータス",
+      "appearance": "外観"
+    },
+    "traits": {
+      "heading": "特性を選んでください（複数選択可）",
+      "subheading": "モブの動き方・性格を選びましょう。チェックを入れると特性が追加されます。"
+    },
+    "sidebar": {
+      "project": "プロジェクト",
+      "files": "ファイル",
+      "projectNavPlaceholder": "プロジェクトナビゲーション（プレースホルダー）"
+    },
+    "breadcrumb": {
+      "myProject": "マイプロジェクト"
     }
   },
   "entity": {
@@ -71,7 +131,17 @@
       "tameable": "テイム可能",
       "tameableDesc": "アイテムを使ってなつかせることができます",
       "rideable": "騎乗可能",
-      "rideableDesc": "乗ることができます"
+      "rideableDesc": "乗ることができます",
+      "undead": "アンデッド",
+      "undeadDesc": "昼間に燃えます（ゾンビ系）",
+      "aquatic": "水中生活",
+      "aquaticDesc": "水中で生活します",
+      "boss": "ボス",
+      "bossDesc": "体力バーが画面上部に表示されます",
+      "breedable": "繁殖可能",
+      "breedableDesc": "アイテムで繁殖できます",
+      "slime": "スライム",
+      "slimeDesc": "倒すと小さい個体が出現します"
     },
     "status": {
       "health": "体力 (HP)",
