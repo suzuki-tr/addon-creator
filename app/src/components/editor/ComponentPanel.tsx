@@ -94,8 +94,8 @@ export const ComponentPanel = (): JSX.Element => {
             {/* Expanded body — only shown for health */}
             {isExpanded && comp.id === 'health' && (
               <div className="px-3 py-2 bg-white border-t border-gray-100">
-                <SliderRow label="体力 (max)" value={20} min={1} max={100} />
-                <SliderRow label="初期値" value={20} min={1} max={100} />
+                <SliderRow label={t('editor.components.health.maxLabel')} value={20} min={1} max={100} />
+                <SliderRow label={t('editor.components.health.defaultLabel')} value={20} min={1} max={100} />
               </div>
             )}
           </div>

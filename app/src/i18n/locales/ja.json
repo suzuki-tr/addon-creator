@@ -193,7 +193,11 @@
     },
     "components": {
       "addButton": "＋ コンポーネントを追加",
-      "placeholder": "コンポーネントを選択してください"
+      "placeholder": "コンポーネントを選択してください",
+      "health": {
+        "maxLabel": "体力 (max)",
+        "defaultLabel": "初期値"
+      }
     }
   },
   "entity": {

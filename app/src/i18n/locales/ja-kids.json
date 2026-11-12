@@ -153,7 +153,11 @@
     },
     "components": {
       "addButton": "＋ コンポーネントをついか",
-      "placeholder": "コンポーネントをえらんでください"
+      "placeholder": "コンポーネントをえらんでください",
+      "health": {
+        "maxLabel": "たいりょく (さいだい)",
+        "defaultLabel": "はじめのち"
+      }
     }
   },
   "entity": {

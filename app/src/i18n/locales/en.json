@@ -193,7 +193,11 @@
     },
     "components": {
       "addButton": "+ Add Component",
-      "placeholder": "Select a component"
+      "placeholder": "Select a component",
+      "health": {
+        "maxLabel": "Health (max)",
+        "defaultLabel": "Default"
+      }
     }
   },
   "entity": {
