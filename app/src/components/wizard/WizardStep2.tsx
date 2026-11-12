@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { BaseType, WizardFormData } from '@/pages/WizardPage'
 
 /** Convert display name to a valid ID: lowercase, spaces → underscores, strip invalid chars */
-function toId(displayName: string): string {
+export function toId(displayName: string): string {
   return displayName
     .toLowerCase()
     .replace(/\s+/g, '_')
@@ -127,100 +127,123 @@ export const WizardStep2 = ({
           {t('wizard.step2.baseLabel')}
         </div>
 
-        {/* From scratch option */}
-        <button
-          type="button"
-          onClick={() => handleBaseTypeChange('scratch')}
-          className={[
-            'w-full flex items-start gap-2.5 px-4 py-3.5 border rounded-lg mb-2.5 cursor-pointer transition-colors text-left',
-            data.baseType === 'scratch'
-              ? 'border-[#5D9C3B] bg-[#F0F8EA]'
-              : 'border-[#E5E7EB] bg-white hover:border-[#5D9C3B]',
-          ].join(' ')}
-          aria-pressed={data.baseType === 'scratch'}
-        >
-          {/* Radio dot */}
+        {/*
+         * HTML5 forbids interactive content (input, button, etc.) inside <button>.
+         * Both options use div+role="radio" so the vanilla search <input> is valid.
+         */}
+        <div role="radiogroup" aria-label={t('wizard.step2.baseLabel')}>
+          {/* From scratch option */}
           <div
+            role="radio"
+            aria-checked={data.baseType === 'scratch'}
+            tabIndex={0}
+            onClick={() => handleBaseTypeChange('scratch')}
+            onKeyDown={(e) => {
+              if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault()
+                handleBaseTypeChange('scratch')
+              }
+            }}
             className={[
-              'w-4.5 h-4.5 rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center',
+              'w-full flex items-start gap-2.5 px-4 py-3.5 border rounded-lg mb-2.5 cursor-pointer transition-colors',
               data.baseType === 'scratch'
-                ? 'border-[#5D9C3B] bg-[#5D9C3B]'
-                : 'border-gray-300 bg-white',
+                ? 'border-[#5D9C3B] bg-[#F0F8EA]'
+                : 'border-[#E5E7EB] bg-white hover:border-[#5D9C3B]',
             ].join(' ')}
-            style={{ width: 18, height: 18 }}
           >
-            {data.baseType === 'scratch' && (
-              <div className="w-2 h-2 rounded-full bg-white" />
-            )}
-          </div>
-          <div>
-            <div className="font-semibold text-sm text-gray-900">
-              {t('wizard.step2.fromScratch')}
+            {/* Radio dot */}
+            <div
+              className={[
+                'rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center',
+                data.baseType === 'scratch'
+                  ? 'border-[#5D9C3B] bg-[#5D9C3B]'
+                  : 'border-gray-300 bg-white',
+              ].join(' ')}
+              style={{ width: 18, height: 18 }}
+            >
+              {data.baseType === 'scratch' && (
+                <div className="w-2 h-2 rounded-full bg-white" />
+              )}
             </div>
-            <div className="text-xs text-gray-500 mt-0.5">
-              {t('wizard.step2.fromScratchDesc')}
-            </div>
-          </div>
-        </button>
-
-        {/* From vanilla option */}
-        <button
-          type="button"
-          onClick={() => handleBaseTypeChange('vanilla')}
-          className={[
-            'w-full flex items-start gap-2.5 px-4 py-3.5 border rounded-lg cursor-pointer transition-colors text-left',
-            data.baseType === 'vanilla'
-              ? 'border-[#5D9C3B] bg-[#F0F8EA]'
-              : 'border-[#E5E7EB] bg-white hover:border-[#5D9C3B]',
-          ].join(' ')}
-          aria-pressed={data.baseType === 'vanilla'}
-        >
-          <div
-            className={[
-              'rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center',
-              data.baseType === 'vanilla'
-                ? 'border-[#5D9C3B] bg-[#5D9C3B]'
-                : 'border-gray-300 bg-white',
-            ].join(' ')}
-            style={{ width: 18, height: 18 }}
-          >
-            {data.baseType === 'vanilla' && (
-              <div className="w-2 h-2 rounded-full bg-white" />
-            )}
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm text-gray-900">
-                {t('wizard.step2.fromVanilla')}
-              </span>
-              <span className="text-xs bg-[#5D9C3B] text-white px-2 py-0.5 rounded-full font-semibold">
-                {t('wizard.step2.recommendedBadge')}
-              </span>
-            </div>
-            <div className="text-xs text-gray-500 mt-0.5">
-              {t('wizard.step2.fromVanillaDesc')}
-            </div>
-
-            {/* Expanded search when vanilla is selected */}
-            {data.baseType === 'vanilla' && (
-              <div
-                className="mt-3 p-3.5 bg-gray-50 border border-[#E5E7EB] rounded-md"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="text-xs text-gray-500 mb-2">
-                  {t('wizard.step2.vanillaSearchLabel')}
-                </div>
-                <input
-                  type="text"
-                  value={data.vanillaSearch}
-                  onChange={handleVanillaSearch}
-                  placeholder={t('wizard.step2.searchPlaceholder')}
-                  className="w-full px-3 py-2.5 border border-[#D1D5DB] rounded-md text-sm bg-white focus:border-[#5D9C3B] outline-none"
-                />
+            <div>
+              <div className="font-semibold text-sm text-gray-900">
+                {t('wizard.step2.fromScratch')}
               </div>
-            )}
+              <div className="text-xs text-gray-500 mt-0.5">
+                {t('wizard.step2.fromScratchDesc')}
+              </div>
+            </div>
           </div>
-        </button>
+
+          {/* From vanilla option */}
+          <div
+            role="radio"
+            aria-checked={data.baseType === 'vanilla'}
+            tabIndex={0}
+            onClick={() => handleBaseTypeChange('vanilla')}
+            onKeyDown={(e) => {
+              if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault()
+                handleBaseTypeChange('vanilla')
+              }
+            }}
+            className={[
+              'w-full flex items-start gap-2.5 px-4 py-3.5 border rounded-lg cursor-pointer transition-colors',
+              data.baseType === 'vanilla'
+                ? 'border-[#5D9C3B] bg-[#F0F8EA]'
+                : 'border-[#E5E7EB] bg-white hover:border-[#5D9C3B]',
+            ].join(' ')}
+          >
+            <div
+              className={[
+                'rounded-full border-2 flex-shrink-0 mt-0.5 flex items-center justify-center',
+                data.baseType === 'vanilla'
+                  ? 'border-[#5D9C3B] bg-[#5D9C3B]'
+                  : 'border-gray-300 bg-white',
+              ].join(' ')}
+              style={{ width: 18, height: 18 }}
+            >
+              {data.baseType === 'vanilla' && (
+                <div className="w-2 h-2 rounded-full bg-white" />
+              )}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-sm text-gray-900">
+                  {t('wizard.step2.fromVanilla')}
+                </span>
+                <span className="text-xs bg-[#5D9C3B] text-white px-2 py-0.5 rounded-full font-semibold">
+                  {t('wizard.step2.recommendedBadge')}
+                </span>
+              </div>
+              <div className="text-xs text-gray-500 mt-0.5">
+                {t('wizard.step2.fromVanillaDesc')}
+              </div>
+
+              {/* Expanded search when vanilla is selected.
+                  stopPropagation prevents clicks inside the search area from
+                  re-triggering handleBaseTypeChange and clearing vanillaSearch. */}
+              {data.baseType === 'vanilla' && (
+                <div
+                  className="mt-3 p-3.5 bg-gray-50 border border-[#E5E7EB] rounded-md"
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                >
+                  <div className="text-xs text-gray-500 mb-2">
+                    {t('wizard.step2.vanillaSearchLabel')}
+                  </div>
+                  <input
+                    type="text"
+                    value={data.vanillaSearch}
+                    onChange={handleVanillaSearch}
+                    placeholder={t('wizard.step2.searchPlaceholder')}
+                    className="w-full px-3 py-2.5 border border-[#D1D5DB] rounded-md text-sm bg-white focus:border-[#5D9C3B] outline-none"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )

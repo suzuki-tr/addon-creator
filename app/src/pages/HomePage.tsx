@@ -9,10 +9,16 @@ interface RecentProject {
   id: string
   name: string
   type: ContentBadge
-  typeLabel: string
   daysAgo: string
   icon: string
 }
+
+/** Map content type to the existing wizard step1 i18n key */
+const TYPE_LABEL_KEYS = {
+  mob: 'wizard.step1.mob',
+  block: 'wizard.step1.block',
+  item: 'wizard.step1.item',
+} as const
 
 const BADGE_CLASSES: Record<ContentBadge, string> = {
   mob: 'bg-emerald-100 text-emerald-800',
@@ -25,7 +31,6 @@ const PLACEHOLDER_PROJECTS: RecentProject[] = [
     id: 'mob-1',
     name: 'かっこいいモブ',
     type: 'mob',
-    typeLabel: 'モブ',
     daysAgo: '2日前',
     icon: '🐾',
   },
@@ -33,7 +38,6 @@ const PLACEHOLDER_PROJECTS: RecentProject[] = [
     id: 'block-1',
     name: '光るブロック',
     type: 'block',
-    typeLabel: 'ブロック',
     daysAgo: '5日前',
     icon: '🧱',
   },
@@ -41,7 +45,6 @@ const PLACEHOLDER_PROJECTS: RecentProject[] = [
     id: 'item-1',
     name: 'まほうの剣',
     type: 'item',
-    typeLabel: 'アイテム',
     daysAgo: '1週間前',
     icon: '⚔️',
   },
@@ -98,7 +101,9 @@ export const HomePage = (): JSX.Element => {
         </h2>
         <button
           type="button"
-          className="text-sm text-[#5D9C3B] cursor-pointer underline bg-transparent border-none"
+          disabled
+          aria-disabled="true"
+          className="text-sm text-[#5D9C3B] cursor-not-allowed opacity-50 underline bg-transparent border-none"
         >
           {t('home.viewAll')}
         </button>
@@ -123,7 +128,7 @@ export const HomePage = (): JSX.Element => {
               <span
                 className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${BADGE_CLASSES[project.type]}`}
               >
-                {project.typeLabel}
+                {t(TYPE_LABEL_KEYS[project.type])}
               </span>
               <span className="text-xs text-gray-400">{project.daysAgo}</span>
             </div>

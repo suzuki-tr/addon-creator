@@ -92,8 +92,7 @@ export const EditorPage = (): JSX.Element => {
   }
 
   const handleSave = (): void => {
-    // Phase 3: persist via projectStore
-    alert(t('export.success', { name: entityName }))
+    // Phase 3: persist via projectStore — no alert here since nothing is saved yet
   }
 
   const handleExport = (): void => {
