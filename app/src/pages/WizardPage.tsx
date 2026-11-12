@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { WizardProgress } from '@/components/wizard/WizardProgress'
 import { WizardStep1 } from '@/components/wizard/WizardStep1'
-import { WizardStep2 } from '@/components/wizard/WizardStep2'
-import { isValidId } from '@/components/wizard/WizardStep2'
+import { WizardStep2, isValidId } from '@/components/wizard/WizardStep2'
 import { WizardStep3 } from '@/components/wizard/WizardStep3'
 
 export type ContentType = 'mob' | 'block' | 'item'
@@ -19,8 +18,6 @@ export interface WizardFormData {
 }
 
 type WizardStep = 1 | 2 | 3
-
-const TOTAL_STEPS = 3
 
 export const WizardPage = (): JSX.Element => {
   const { t } = useTranslation()
@@ -100,7 +97,7 @@ export const WizardPage = (): JSX.Element => {
 
   return (
     <div className="max-w-[900px] mx-auto py-8 px-6">
-      <WizardProgress currentStep={step} totalSteps={TOTAL_STEPS} />
+      <WizardProgress currentStep={step} />
 
       {step === 1 && (
         <WizardStep1

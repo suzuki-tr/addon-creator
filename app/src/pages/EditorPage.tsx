@@ -13,11 +13,10 @@ const TABS: { id: EditorTab; labelKey: 'editor.tabs.traits' | 'editor.tabs.statu
   { id: 'appearance', labelKey: 'editor.tabs.appearance' },
 ]
 
-/** Placeholder mob entity for the editor demo */
-const PLACEHOLDER_ENTITY_NAME = 'かっこいいモブ'
-
 export const EditorPage = (): JSX.Element => {
   const { t } = useTranslation()
+  /** Placeholder entity name shown in the sidebar — localised via i18n */
+  const entityName = t('editor.files.placeholderEntityName')
   const [activeTab, setActiveTab] = useState<EditorTab>('traits')
   const [selectedTraits, setSelectedTraits] = useState<Set<string>>(
     new Set(['hostile']),
@@ -94,7 +93,7 @@ export const EditorPage = (): JSX.Element => {
 
   const handleSave = (): void => {
     // Phase 3: persist via projectStore
-    alert(t('export.success', { name: PLACEHOLDER_ENTITY_NAME }))
+    alert(t('export.success', { name: entityName }))
   }
 
   const handleExport = (): void => {
@@ -121,10 +120,10 @@ export const EditorPage = (): JSX.Element => {
           <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2.5">
             {t('editor.sidebar.files')}
           </div>
-          <FileTreeItem icon="🐾" label={`${PLACEHOLDER_ENTITY_NAME}.json`} active />
-          <FileTreeItem icon="📁" label={t('entity.status.scale')} />
-          <FileTreeItem icon="📄" label="スポーン設定" />
-          <FileTreeItem icon="📄" label="ドロップテーブル" />
+          <FileTreeItem icon="🐾" label={`${entityName}.json`} active />
+          <FileTreeItem icon="📁" label={t('editor.files.scaleConfig')} />
+          <FileTreeItem icon="📄" label={t('editor.files.spawnSettings')} />
+          <FileTreeItem icon="📄" label={t('editor.files.lootTable')} />
         </div>
       </aside>
 

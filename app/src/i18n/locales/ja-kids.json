@@ -116,6 +116,12 @@
       "files": "ファイル",
       "projectNavPlaceholder": "さくひんのナビゲーション（プレースホルダー）"
     },
+    "files": {
+      "placeholderEntityName": "かっこいいモブ",
+      "scaleConfig": "おおきさのせってい",
+      "spawnSettings": "Spawn（スポーン）のせってい",
+      "lootTable": "Loot（ドロップ）のひょう"
+    },
     "breadcrumb": {
       "myProject": "マイプロジェクト"
     }
@@ -142,6 +148,12 @@
       "breedableDesc": "アイテムをあげるとなかまがふえます",
       "slime": "Slime（スライム）",
       "slimeDesc": "たおすとちいさいこたいがでてきます"
+    },
+    "status": {
+      "health": "たいりょく (HP)",
+      "attackDamage": "こうげきりょく",
+      "movementSpeed": "うごくはやさ",
+      "scale": "おおきさ"
     }
   },
   "error": {

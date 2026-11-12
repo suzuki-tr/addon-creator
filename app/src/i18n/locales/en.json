@@ -116,6 +116,12 @@
       "files": "Files",
       "projectNavPlaceholder": "Project Navigation (placeholder)"
     },
+    "files": {
+      "placeholderEntityName": "my_cool_mob",
+      "scaleConfig": "Scale Config",
+      "spawnSettings": "Spawn Settings",
+      "lootTable": "Loot Table"
+    },
     "breadcrumb": {
       "myProject": "My Project"
     }

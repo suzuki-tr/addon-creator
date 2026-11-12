@@ -34,9 +34,10 @@ export const WizardStep2 = ({
     e: React.ChangeEvent<HTMLInputElement>,
   ): void => {
     const displayName = e.target.value
-    // Auto-suggest ID from display name when ID hasn't been manually edited
+    // Auto-suggest ID from display name, but skip when toId() strips all
+    // characters (e.g. Japanese-only input) to avoid overwriting with "".
     const suggestedId = toId(displayName)
-    onChange({ displayName, id: suggestedId })
+    onChange({ displayName, ...(suggestedId ? { id: suggestedId } : {}) })
   }
 
   const handleIdChange = (e: React.ChangeEvent<HTMLInputElement>): void => {

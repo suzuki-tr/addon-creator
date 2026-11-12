@@ -9,12 +9,10 @@ interface StepMeta {
 
 interface WizardProgressProps {
   currentStep: WizardStepNumber
-  totalSteps: number
 }
 
 export const WizardProgress = ({
   currentStep,
-  totalSteps,
 }: WizardProgressProps): JSX.Element => {
   const { t } = useTranslation()
 
@@ -27,7 +25,7 @@ export const WizardProgress = ({
   return (
     <div className="bg-white border border-[#E5E7EB] rounded-lg p-5 mb-6">
       <div className="text-xs text-gray-500 mb-3">
-        {t('wizard.progress', { current: currentStep, total: totalSteps })}
+        {t('wizard.progress', { current: currentStep, total: steps.length })}
       </div>
 
       <div className="flex items-center">

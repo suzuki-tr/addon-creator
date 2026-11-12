@@ -116,6 +116,12 @@
       "files": "ファイル",
       "projectNavPlaceholder": "プロジェクトナビゲーション（プレースホルダー）"
     },
+    "files": {
+      "placeholderEntityName": "かっこいいモブ",
+      "scaleConfig": "サイズ設定",
+      "spawnSettings": "スポーン設定",
+      "lootTable": "ドロップテーブル"
+    },
     "breadcrumb": {
       "myProject": "マイプロジェクト"
     }
