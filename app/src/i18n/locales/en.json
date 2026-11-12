@@ -1,0 +1,136 @@
+{
+  "common": {
+    "button": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "save": "Save",
+      "export": "Export",
+      "next": "Next",
+      "back": "Back",
+      "close": "Close"
+    },
+    "label": {
+      "loading": "Loading...",
+      "error": "Error",
+      "warning": "Warning",
+      "required": "Required"
+    }
+  },
+  "app": {
+    "name": "Minecraft Addon Creator",
+    "mode": {
+      "simple": "Simple Mode",
+      "advanced": "Advanced Mode",
+      "toggleToAdvanced": "Switch to Advanced Mode",
+      "toggleToSimple": "Switch to Simple Mode"
+    }
+  },
+  "wizard": {
+    "title": "Create New Content",
+    "progress": "{{current}} / {{total}} Steps",
+    "step1": {
+      "title": "What do you want to create?",
+      "mob": "Mob (Creature)",
+      "mobDesc": "Create enemies, friendlies, and bosses",
+      "block": "Block",
+      "blockDesc": "Create original blocks to place in the world",
+      "item": "Item",
+      "itemDesc": "Create food, weapons, and tools"
+    },
+    "step2": {
+      "title": "Choose a base",
+      "fromScratch": "Start from scratch",
+      "fromVanilla": "Customize from vanilla",
+      "searchPlaceholder": "Search by name..."
+    },
+    "step3": {
+      "title": "Choose traits",
+      "subtitle": "You can select multiple"
+    },
+    "step4": {
+      "title": "Customize",
+      "name": "Name",
+      "namePlaceholder": "e.g. my_cool_mob",
+      "displayName": "Display Name",
+      "displayNamePlaceholder": "e.g. Cool Mob"
+    },
+    "step5": {
+      "title": "Done!",
+      "preview": "Preview",
+      "export": "Download Addon"
+    }
+  },
+  "entity": {
+    "trait": {
+      "hostile": "Hostile",
+      "hostileDesc": "Attacks players",
+      "passive": "Passive",
+      "passiveDesc": "Does not attack players",
+      "flying": "Flying",
+      "flyingDesc": "Flies through the air",
+      "tameable": "Tameable",
+      "tameableDesc": "Can be tamed with an item",
+      "rideable": "Rideable",
+      "rideableDesc": "Can be ridden"
+    },
+    "status": {
+      "health": "Health (HP)",
+      "attackDamage": "Attack Damage",
+      "movementSpeed": "Movement Speed",
+      "scale": "Scale"
+    }
+  },
+  "block": {
+    "trait": {
+      "lightSource": "Light Source",
+      "lightSourceDesc": "Emits light",
+      "craftingStation": "Crafting Station",
+      "craftingStationDesc": "Can be used for crafting",
+      "door": "Door",
+      "doorDesc": "Opens and closes",
+      "slab": "Slab",
+      "slabDesc": "Half-block shape"
+    },
+    "status": {
+      "hardness": "Hardness (Destroy Time)",
+      "blastResistance": "Blast Resistance",
+      "lightEmission": "Light Emission Level"
+    }
+  },
+  "item": {
+    "trait": {
+      "food": "Food",
+      "foodDesc": "Restores hunger when eaten",
+      "weapon": "Weapon",
+      "weaponDesc": "Can attack enemies",
+      "armor": "Armor",
+      "armorDesc": "Reduces damage",
+      "tool": "Tool",
+      "toolDesc": "Breaks blocks efficiently"
+    },
+    "status": {
+      "stackSize": "Stack Size",
+      "attackDamage": "Attack Damage",
+      "durability": "Durability",
+      "nutrition": "Nutrition",
+      "saturationModifier": "Saturation Modifier"
+    }
+  },
+  "error": {
+    "validation": {
+      "nameEmpty": "Please enter a name",
+      "nameInvalidChars": "Name can only contain letters, numbers, and underscores (e.g. my_mob)",
+      "namespaceMissing": "A namespace is required (e.g. myaddon:my_mob)",
+      "exportFailed": "Export failed: {{message}}"
+    },
+    "storage": {
+      "loadFailed": "Failed to load project",
+      "saveFailed": "Failed to save project"
+    }
+  },
+  "export": {
+    "success": "Downloaded \"{{name}}.mcaddon\"",
+    "validating": "Validating...",
+    "generating": "Generating files..."
+  }
+}

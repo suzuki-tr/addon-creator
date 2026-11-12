@@ -1,0 +1,80 @@
+{
+  "common": {
+    "button": {
+      "cancel": "やめる",
+      "confirm": "きめる",
+      "save": "セーブする",
+      "export": "ダウンロード",
+      "next": "つぎへ",
+      "back": "もどる",
+      "close": "とじる"
+    },
+    "label": {
+      "loading": "よみこんでいます...",
+      "error": "うまくいきませんでした",
+      "warning": "きをつけてください",
+      "required": "かならずいれてください"
+    }
+  },
+  "app": {
+    "name": "マインクラフト アドオン クリエイター",
+    "mode": {
+      "simple": "かんたんモード",
+      "advanced": "くわしいモード",
+      "toggleToAdvanced": "くわしいモードにきりかえる",
+      "toggleToSimple": "かんたんモードにきりかえる"
+    }
+  },
+  "wizard": {
+    "title": "あたらしいものをつくります",
+    "progress": "{{current}} / {{total}} ステップ",
+    "step1": {
+      "title": "なにをつくりますか？",
+      "mob": "モブ（いきもの）",
+      "mobDesc": "てきや なかまの いきものをつくれます",
+      "block": "ブロック",
+      "blockDesc": "せかいにおける オリジナルブロックをつくれます",
+      "item": "アイテム",
+      "itemDesc": "たべもの・ぶき・どうぐなどをつくれます"
+    },
+    "step2": {
+      "title": "ベースをえらんでください",
+      "fromScratch": "ゼロからつくる",
+      "fromVanilla": "バニラからアレンジする",
+      "searchPlaceholder": "なまえでさがす..."
+    },
+    "step3": {
+      "title": "とくせいをえらんでください",
+      "subtitle": "いくつでもえらべます"
+    },
+    "step4": {
+      "title": "カスタマイズしてください",
+      "name": "なまえ（えいご）",
+      "namePlaceholder": "れい: my_cool_mob",
+      "displayName": "みせる なまえ",
+      "displayNamePlaceholder": "れい: かっこいいモブ"
+    },
+    "step5": {
+      "title": "できあがりました！",
+      "preview": "みてみる",
+      "export": "アドオンをダウンロード"
+    }
+  },
+  "error": {
+    "validation": {
+      "nameEmpty": "なまえをいれてください",
+      "nameInvalidChars": "なまえにつかえるのは えいすう字と _ だけです（れい: my_mob）",
+      "namespaceMissing": "グループのなまえがひつようです（れい: myaddon:my_mob）",
+      "exportFailed": "ダウンロードがうまくいきませんでした: {{message}}"
+    },
+    "storage": {
+      "loadFailed": "さくひんをよみこめませんでした",
+      "saveFailed": "さくひんをセーブできませんでした"
+    }
+  },
+  "export": {
+    "success": "「{{name}}.mcaddon」をダウンロードしました",
+    "validating": "チェックしています...",
+    "generating": "ファイルをつくっています..."
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "common": {
+    "button": {
+      "cancel": "キャンセル",
+      "confirm": "確認",
+      "save": "保存",
+      "export": "エクスポート",
+      "next": "次へ",
+      "back": "戻る",
+      "close": "閉じる"
+    },
+    "label": {
+      "loading": "読み込み中...",
+      "error": "エラー",
+      "warning": "警告",
+      "required": "必須"
+    }
+  },
+  "app": {
+    "name": "マインクラフト アドオン クリエイター",
+    "mode": {
+      "simple": "かんたんモード",
+      "advanced": "くわしいモード",
+      "toggleToAdvanced": "くわしいモードに切り替える",
+      "toggleToSimple": "かんたんモードに切り替える"
+    }
+  },
+  "wizard": {
+    "title": "新しいコンテンツを作る",
+    "progress": "{{current}} / {{total}} ステップ",
+    "step1": {
+      "title": "何を作りますか？",
+      "mob": "モブ（生き物）",
+      "mobDesc": "敵・友好・ボスなどの生き物を作れます",
+      "block": "ブロック",
+      "blockDesc": "世界に置けるオリジナルブロックを作れます",
+      "item": "アイテム",
+      "itemDesc": "食べ物・武器・ツールなどを作れます"
+    },
+    "step2": {
+      "title": "ベースを選んでください",
+      "fromScratch": "ゼロから作る",
+      "fromVanilla": "バニラからカスタマイズ",
+      "searchPlaceholder": "名前で検索..."
+    },
+    "step3": {
+      "title": "特性を選んでください",
+      "subtitle": "複数選べます"
+    },
+    "step4": {
+      "title": "カスタマイズ",
+      "name": "名前",
+      "namePlaceholder": "例: my_cool_mob",
+      "displayName": "表示名",
+      "displayNamePlaceholder": "例: かっこいいモブ"
+    },
+    "step5": {
+      "title": "完成！",
+      "preview": "プレビュー",
+      "export": "アドオンをダウンロード"
+    }
+  },
+  "entity": {
+    "trait": {
+      "hostile": "敵対的",
+      "hostileDesc": "プレイヤーを攻撃します",
+      "passive": "友好的",
+      "passiveDesc": "プレイヤーを攻撃しません",
+      "flying": "飛行",
+      "flyingDesc": "空を飛びます",
+      "tameable": "テイム可能",
+      "tameableDesc": "アイテムを使ってなつかせることができます",
+      "rideable": "騎乗可能",
+      "rideableDesc": "乗ることができます"
+    },
+    "status": {
+      "health": "体力 (HP)",
+      "attackDamage": "攻撃力",
+      "movementSpeed": "移動速度",
+      "scale": "サイズ"
+    }
+  },
+  "block": {
+    "trait": {
+      "lightSource": "光る",
+      "lightSourceDesc": "光を放出します",
+      "craftingStation": "作業台",
+      "craftingStationDesc": "クラフトに使えます",
+      "door": "ドア",
+      "doorDesc": "開閉できます",
+      "slab": "スラブ",
+      "slabDesc": "半ブロックの形状になります"
+    },
+    "status": {
+      "hardness": "硬さ（破壊時間）",
+      "blastResistance": "爆発耐性",
+      "lightEmission": "発光レベル"
+    }
+  },
+  "item": {
+    "trait": {
+      "food": "食べ物",
+      "foodDesc": "食べると腹が膨れます",
+      "weapon": "武器",
+      "weaponDesc": "敵を攻撃できます",
+      "armor": "防具",
+      "armorDesc": "ダメージを軽減します",
+      "tool": "ツール",
+      "toolDesc": "ブロックを効率よく壊せます"
+    },
+    "status": {
+      "stackSize": "スタック数",
+      "attackDamage": "攻撃力",
+      "durability": "耐久値",
+      "nutrition": "栄養",
+      "saturationModifier": "満腹度"
+    }
+  },
+  "error": {
+    "validation": {
+      "nameEmpty": "名前を入力してください",
+      "nameInvalidChars": "名前に使えるのは英数字・アンダースコアのみです（例: my_mob）",
+      "namespaceMissing": "名前空間が必要です（例: myaddon:my_mob）",
+      "exportFailed": "エクスポートに失敗しました: {{message}}"
+    },
+    "storage": {
+      "loadFailed": "プロジェクトの読み込みに失敗しました",
+      "saveFailed": "プロジェクトの保存に失敗しました"
+    }
+  },
+  "export": {
+    "success": "「{{name}}.mcaddon」をダウンロードしました",
+    "validating": "確認中...",
+    "generating": "ファイルを生成中..."
+  }
+}
