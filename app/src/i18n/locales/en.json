@@ -105,7 +105,9 @@
     "tabs": {
       "traits": "Traits",
       "status": "Status",
-      "appearance": "Appearance"
+      "appearance": "Appearance",
+      "components": "Components",
+      "stateGraph": "State Graph"
     },
     "traits": {
       "heading": "Choose Traits (multiple allowed)",
@@ -124,6 +126,71 @@
     },
     "breadcrumb": {
       "myProject": "My Project"
+    },
+    "jsonPreview": {
+      "title": "JSON Preview",
+      "copyButton": "Copy"
+    },
+    "validation": {
+      "title": "Validation Results",
+      "ok": "✓ OK",
+      "okMessage": "No errors. Ready to export."
+    },
+    "preview3d": {
+      "title": "3D Preview",
+      "placeholder": "(Coming later)",
+      "cameraReset": "⟳ Reset Rotation",
+      "front": "Front",
+      "side": "Side",
+      "top": "Top"
+    },
+    "stateGraph": {
+      "stateListTitle": "States",
+      "addState": "+ Add State",
+      "canvasHint": "Drag nodes to reposition (coming soon)",
+      "selectedState": "Selected State",
+      "stateName": "State Name",
+      "animation": "Animation",
+      "transitions": "Transitions",
+      "addTransition": "+ Add Transition",
+      "zoom": "Zoom",
+      "reset": "↺ Reset"
+    },
+    "appearance": {
+      "tabs": {
+        "geometry": "Geometry",
+        "texture": "Texture",
+        "material": "Material"
+      },
+      "geometry": {
+        "fileLabel": "File Path",
+        "idLabel": "Geometry ID",
+        "browseButton": "Browse",
+        "bonesTitle": "Bone List",
+        "attachmentTitle": "Attachment Points"
+      },
+      "texture": {
+        "slotsTitle": "Texture Slots",
+        "uvTitle": "UV Mapping",
+        "addSlot": "+ Add Slot",
+        "change": "Change",
+        "mappingType": "Mapping Type",
+        "textureSize": "Texture Size"
+      },
+      "material": {
+        "simpleNotice": "Material settings are available in Advanced Mode.",
+        "title": "Material Settings",
+        "materialName": "Material Name",
+        "renderController": "Render Controller",
+        "shaderSettings": "Shader Settings",
+        "culling": "Culling Mode",
+        "blend": "Blend Mode",
+        "emissive": "Emissive Factor"
+      }
+    },
+    "components": {
+      "addButton": "+ Add Component",
+      "placeholder": "Select a component"
     }
   },
   "entity": {

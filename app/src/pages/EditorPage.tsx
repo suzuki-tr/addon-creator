@@ -1,26 +1,63 @@
 import type { JSX } from 'react'
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useUiStore } from '@/stores/uiStore'
 import { TraitCard } from '@/components/editor/TraitCard'
 import type { TraitCardData } from '@/components/editor/TraitCard'
+import { JsonPreviewPanel } from '@/components/editor/JsonPreviewPanel'
+import { ComponentPanel } from '@/components/editor/ComponentPanel'
+import { StateGraph } from '@/components/editor/StateGraph'
+import { AppearancePanel } from '@/components/editor/AppearancePanel'
 
-type EditorTab = 'traits' | 'status' | 'appearance'
+type EditorTab = 'traits' | 'status' | 'appearance' | 'components' | 'stateGraph'
 
-/** Tabs shown in both simple and advanced mode */
-const TABS: { id: EditorTab; labelKey: 'editor.tabs.traits' | 'editor.tabs.status' | 'editor.tabs.appearance' }[] = [
-  { id: 'traits', labelKey: 'editor.tabs.traits' },
-  { id: 'status', labelKey: 'editor.tabs.status' },
-  { id: 'appearance', labelKey: 'editor.tabs.appearance' },
-]
+type EditorTabLabelKey =
+  | 'editor.tabs.traits'
+  | 'editor.tabs.status'
+  | 'editor.tabs.appearance'
+  | 'editor.tabs.components'
+  | 'editor.tabs.stateGraph'
+
+interface TabDef {
+  id: EditorTab
+  labelKey: EditorTabLabelKey
+}
 
 export const EditorPage = (): JSX.Element => {
   const { t } = useTranslation()
+  const { mode } = useUiStore()
   /** Placeholder entity name shown in the sidebar — localised via i18n */
   const entityName = t('editor.files.placeholderEntityName')
   const [activeTab, setActiveTab] = useState<EditorTab>('traits')
   const [selectedTraits, setSelectedTraits] = useState<Set<string>>(
     new Set(['hostile']),
   )
+
+  /** Reset activeTab to 'traits' when switching to simple mode if on a advanced-only tab */
+  useEffect(() => {
+    if (
+      mode === 'simple' &&
+      (activeTab === 'components' || activeTab === 'stateGraph')
+    ) {
+      setActiveTab('traits')
+    }
+  }, [mode, activeTab])
+
+  const TABS: TabDef[] = useMemo(() => {
+    const simpleTabs: TabDef[] = [
+      { id: 'traits', labelKey: 'editor.tabs.traits' },
+      { id: 'status', labelKey: 'editor.tabs.status' },
+      { id: 'appearance', labelKey: 'editor.tabs.appearance' },
+    ]
+    const advancedTabs: TabDef[] = [
+      { id: 'traits', labelKey: 'editor.tabs.traits' },
+      { id: 'status', labelKey: 'editor.tabs.status' },
+      { id: 'components', labelKey: 'editor.tabs.components' },
+      { id: 'stateGraph', labelKey: 'editor.tabs.stateGraph' },
+      { id: 'appearance', labelKey: 'editor.tabs.appearance' },
+    ]
+    return mode === 'advanced' ? advancedTabs : simpleTabs
+  }, [mode])
 
   const traits: TraitCardData[] = [
     {
@@ -190,10 +227,17 @@ export const EditorPage = (): JSX.Element => {
             </div>
           )}
 
+          {activeTab === 'components' && <ComponentPanel />}
+
+          {activeTab === 'stateGraph' && (
+            <div className="h-full -m-6 overflow-hidden">
+              <StateGraph />
+            </div>
+          )}
+
           {activeTab === 'appearance' && (
-            <div className="text-gray-500 text-sm">
-              {/* Phase 3: appearance panel */}
-              <p>{t('common.label.loading')}</p>
+            <div className="h-full -m-6 overflow-hidden">
+              <AppearancePanel />
             </div>
           )}
         </div>
@@ -216,6 +260,13 @@ export const EditorPage = (): JSX.Element => {
           </button>
         </div>
       </main>
+
+      {/* Right panel: JSON preview (advanced mode only) */}
+      {mode === 'advanced' && (
+        <aside className="w-[30%] min-w-[220px] max-w-[360px] bg-white border-l border-[#E5E7EB] flex flex-col overflow-y-auto flex-shrink-0">
+          <JsonPreviewPanel entityName={entityName} />
+        </aside>
+      )}
     </div>
   )
 }

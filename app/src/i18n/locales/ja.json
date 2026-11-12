@@ -105,7 +105,9 @@
     "tabs": {
       "traits": "特性（トレイト）",
       "status": "ステータス",
-      "appearance": "外観"
+      "appearance": "外観",
+      "components": "コンポーネント",
+      "stateGraph": "状態グラフ"
     },
     "traits": {
       "heading": "特性を選んでください（複数選択可）",
@@ -124,6 +126,71 @@
     },
     "breadcrumb": {
       "myProject": "マイプロジェクト"
+    },
+    "jsonPreview": {
+      "title": "JSON プレビュー",
+      "copyButton": "コピー"
+    },
+    "validation": {
+      "title": "バリデーション結果",
+      "ok": "✓ OK",
+      "okMessage": "エラーなし。エクスポートできます。"
+    },
+    "preview3d": {
+      "title": "3D プレビュー",
+      "placeholder": "（後で実装）",
+      "cameraReset": "⟳ 回転リセット",
+      "front": "前面",
+      "side": "側面",
+      "top": "上面"
+    },
+    "stateGraph": {
+      "stateListTitle": "状態一覧",
+      "addState": "＋ 状態を追加",
+      "canvasHint": "ノードをドラッグして配置できます（実装予定）",
+      "selectedState": "選択中の状態",
+      "stateName": "状態名",
+      "animation": "アニメーション",
+      "transitions": "遷移条件",
+      "addTransition": "＋ 遷移を追加",
+      "zoom": "ズーム",
+      "reset": "↺ リセット"
+    },
+    "appearance": {
+      "tabs": {
+        "geometry": "ジオメトリ",
+        "texture": "テクスチャ",
+        "material": "マテリアル"
+      },
+      "geometry": {
+        "fileLabel": "ファイルパス",
+        "idLabel": "ジオメトリ識別子",
+        "browseButton": "参照",
+        "bonesTitle": "ボーン一覧",
+        "attachmentTitle": "アタッチメントポイント"
+      },
+      "texture": {
+        "slotsTitle": "テクスチャスロット",
+        "uvTitle": "UV マッピング",
+        "addSlot": "＋ スロットを追加",
+        "change": "変更",
+        "mappingType": "マッピングタイプ",
+        "textureSize": "テクスチャサイズ"
+      },
+      "material": {
+        "simpleNotice": "マテリアル設定は詳細モードで確認できます。",
+        "title": "マテリアル設定",
+        "materialName": "マテリアル名",
+        "renderController": "レンダーコントローラー",
+        "shaderSettings": "シェーダー設定",
+        "culling": "カリングモード",
+        "blend": "ブレンドモード",
+        "emissive": "エミッシブ係数"
+      }
+    },
+    "components": {
+      "addButton": "＋ コンポーネントを追加",
+      "placeholder": "コンポーネントを選択してください"
     }
   },
   "entity": {

@@ -105,7 +105,8 @@
     "tabs": {
       "traits": "とくせい（Trait）",
       "status": "ステータス",
-      "appearance": "みため"
+      "appearance": "みため",
+      "stateGraph": "じょうたいグラフ"
     },
     "traits": {
       "heading": "とくせいをえらんでください（いくつでもOK）",
@@ -124,6 +125,32 @@
     },
     "breadcrumb": {
       "myProject": "マイプロジェクト"
+    },
+    "stateGraph": {
+      "stateListTitle": "じょうたいのリスト",
+      "addState": "＋ じょうたいをついか",
+      "selectedState": "えらんでいるじょうたい",
+      "stateName": "じょうたいのなまえ",
+      "transitions": "つながりのじょうけん",
+      "addTransition": "＋ つながりをついか"
+    },
+    "appearance": {
+      "geometry": {
+        "browseButton": "さがす",
+        "bonesTitle": "ボーンのリスト",
+        "attachmentTitle": "アタッチメントポイント"
+      },
+      "texture": {
+        "addSlot": "＋ スロットをついか"
+      },
+      "material": {
+        "simpleNotice": "マテリアルのせっていはくわしいモードでみられます。",
+        "title": "マテリアルのせってい"
+      }
+    },
+    "components": {
+      "addButton": "＋ コンポーネントをついか",
+      "placeholder": "コンポーネントをえらんでください"
     }
   },
   "entity": {
