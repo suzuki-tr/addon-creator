@@ -35,7 +35,10 @@
     "viewAll": "View All →",
     "project": {
       "edit": "Edit →",
-      "noProjects": "No projects yet"
+      "noProjects": "No projects yet",
+      "daysAgo2": "2 days ago",
+      "daysAgo5": "5 days ago",
+      "weeksAgo1": "1 week ago"
     }
   },
   "wizard": {

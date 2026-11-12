@@ -39,43 +39,45 @@ export const Header = (): JSX.Element => {
 
         <div className="flex-1" />
 
-        {/* Mode toggle */}
-        <div
-          className="flex border border-[#D1D5DB] rounded-md overflow-hidden"
-          role="group"
-          aria-label={
-            mode === 'simple'
-              ? t('app.mode.toggleToAdvanced')
-              : t('app.mode.toggleToSimple')
-          }
-        >
-          <button
-            type="button"
-            onClick={() => handleModeClick('simple')}
-            className={
-              `px-3.5 py-1.5 text-xs font-medium border-none cursor-pointer transition-colors` +
-              (mode === 'simple'
-                ? ' bg-[#5D9C3B] text-white font-semibold'
-                : ' bg-gray-100 text-gray-500 hover:bg-gray-200')
+        {/* Mode toggle — hidden when locale is ja-kids (wireframe #07) */}
+        {locale !== 'ja-kids' && (
+          <div
+            className="flex border border-[#D1D5DB] rounded-md overflow-hidden"
+            role="group"
+            aria-label={
+              mode === 'simple'
+                ? t('app.mode.toggleToAdvanced')
+                : t('app.mode.toggleToSimple')
             }
-            aria-pressed={mode === 'simple'}
           >
-            {t('app.mode.simple')}
-          </button>
-          <button
-            type="button"
-            onClick={() => handleModeClick('advanced')}
-            className={
-              `px-3.5 py-1.5 text-xs font-medium border-none cursor-pointer transition-colors` +
-              (mode === 'advanced'
-                ? ' bg-[#5D9C3B] text-white font-semibold'
-                : ' bg-gray-100 text-gray-500 hover:bg-gray-200')
-            }
-            aria-pressed={mode === 'advanced'}
-          >
-            {t('app.mode.advanced')}
-          </button>
-        </div>
+            <button
+              type="button"
+              onClick={() => handleModeClick('simple')}
+              className={
+                `px-3.5 py-1.5 text-xs font-medium border-none cursor-pointer transition-colors` +
+                (mode === 'simple'
+                  ? ' bg-[#5D9C3B] text-white font-semibold'
+                  : ' bg-gray-100 text-gray-500 hover:bg-gray-200')
+              }
+              aria-pressed={mode === 'simple'}
+            >
+              {t('app.mode.simple')}
+            </button>
+            <button
+              type="button"
+              onClick={() => handleModeClick('advanced')}
+              className={
+                `px-3.5 py-1.5 text-xs font-medium border-none cursor-pointer transition-colors` +
+                (mode === 'advanced'
+                  ? ' bg-[#5D9C3B] text-white font-semibold'
+                  : ' bg-gray-100 text-gray-500 hover:bg-gray-200')
+              }
+              aria-pressed={mode === 'advanced'}
+            >
+              {t('app.mode.advanced')}
+            </button>
+          </div>
+        )}
 
         {/* Language selector */}
         <select

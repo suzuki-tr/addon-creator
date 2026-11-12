@@ -27,15 +27,18 @@
   },
   "home": {
     "hero": {
-      "subtitle": "じぶんだけのモブ・ブロック・アイテムをつくって、マインクラフトをもっとたのしもう！"
+      "subtitle": "じぶんだけのアドオンをつくってみましょう！ 🎮"
     },
-    "newAddon": "＋ あたらしいアドオンをつくる",
-    "openProject": "📂 さくひんをひらく",
-    "recentProjects": "さいきんのさくひん",
+    "newAddon": "✨ あたらしくつくる",
+    "openProject": "📂 まえにつくったものをひらく",
+    "recentProjects": "このまえつくったもの",
     "viewAll": "ぜんぶみる →",
     "project": {
-      "edit": "へんしゅうする →",
-      "noProjects": "まださくひんがありません"
+      "edit": "つづきをつくる →",
+      "noProjects": "まださくひんがありません",
+      "daysAgo2": "2日まえ",
+      "daysAgo5": "5日まえ",
+      "weeksAgo1": "1しゅうかんまえ"
     }
   },
   "wizard": {

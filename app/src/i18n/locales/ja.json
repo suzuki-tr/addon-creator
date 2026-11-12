@@ -35,7 +35,10 @@
     "viewAll": "すべて見る →",
     "project": {
       "edit": "編集する →",
-      "noProjects": "まだプロジェクトがありません"
+      "noProjects": "まだプロジェクトがありません",
+      "daysAgo2": "2日前",
+      "daysAgo5": "5日前",
+      "weeksAgo1": "1週間前"
     }
   },
   "wizard": {

@@ -1,15 +1,22 @@
 import type { JSX } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useUiStore } from '@/stores/uiStore'
 
 /** Badge variant for content type coloring */
 type ContentBadge = 'mob' | 'block' | 'item'
+
+/** Translation key for a project's relative time string */
+type DaysAgoKey =
+  | 'home.project.daysAgo2'
+  | 'home.project.daysAgo5'
+  | 'home.project.weeksAgo1'
 
 interface RecentProject {
   id: string
   name: string
   type: ContentBadge
-  daysAgo: string
+  daysAgoKey: DaysAgoKey
   icon: string
 }
 
@@ -31,40 +38,125 @@ const PLACEHOLDER_PROJECTS: RecentProject[] = [
     id: 'mob-1',
     name: 'かっこいいモブ',
     type: 'mob',
-    daysAgo: '2日前',
+    daysAgoKey: 'home.project.daysAgo2',
     icon: '🐾',
   },
   {
     id: 'block-1',
     name: '光るブロック',
     type: 'block',
-    daysAgo: '5日前',
+    daysAgoKey: 'home.project.daysAgo5',
     icon: '🧱',
   },
   {
     id: 'item-1',
     name: 'まほうの剣',
     type: 'item',
-    daysAgo: '1週間前',
+    daysAgoKey: 'home.project.weeksAgo1',
     icon: '⚔️',
   },
 ]
 
-export const HomePage = (): JSX.Element => {
+// ---------------------------------------------------------------------------
+// Kids home layout (locale === 'ja-kids')
+// Follows wireframe #07: bg-[#FFFBEB], large buttons, vertical project list
+// ---------------------------------------------------------------------------
+
+interface KidsHomeLayoutProps {
+  onNewAddon: () => void
+  onOpenProject: () => void
+  onEditProject: () => void
+}
+
+const KidsHomeLayout = ({
+  onNewAddon,
+  onOpenProject,
+  onEditProject,
+}: KidsHomeLayoutProps): JSX.Element => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
 
-  const handleNewAddon = (): void => {
-    void navigate('/wizard')
-  }
+  return (
+    <div className="max-w-[900px] mx-auto px-6 py-9">
+      {/* Hero section */}
+      <section className="text-center py-12 px-8 bg-white border-2 border-[#E5E7EB] rounded-2xl mb-9">
+        <h1 className="text-[2.2rem] font-bold text-gray-900 mb-3.5 leading-snug">
+          {t('app.name')}
+        </h1>
+        <p className="text-[1.3rem] text-gray-700 mb-9 leading-relaxed">
+          {t('home.hero.subtitle')}
+        </p>
 
-  const handleOpenProject = (): void => {
-    // Phase 3: open file picker / project browser
-  }
+        {/* Full-width stacked CTA buttons */}
+        <div className="flex flex-col gap-4 max-w-[560px] mx-auto">
+          <button
+            type="button"
+            onClick={onNewAddon}
+            className="bg-[#5D9C3B] text-white border-none min-h-[64px] text-[1.3rem] font-bold rounded-2xl w-full cursor-pointer hover:bg-[#4f8832] transition-colors px-8"
+          >
+            {t('home.newAddon')}
+          </button>
+          <button
+            type="button"
+            onClick={onOpenProject}
+            className="bg-white text-gray-700 border-[2.5px] border-[#D1D5DB] min-h-[64px] text-[1.3rem] font-semibold rounded-2xl w-full cursor-pointer hover:bg-gray-50 transition-colors px-8"
+          >
+            {t('home.openProject')}
+          </button>
+        </div>
+      </section>
 
-  const handleEditProject = (): void => {
-    void navigate('/editor')
-  }
+      {/* Recent projects — vertical list */}
+      <h2 className="text-[1.5rem] font-bold text-gray-900 mb-4">
+        {t('home.recentProjects')}
+      </h2>
+
+      <div className="flex flex-col gap-3.5">
+        {PLACEHOLDER_PROJECTS.map((project) => (
+          <div
+            key={project.id}
+            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 flex items-center gap-5"
+          >
+            <span className="text-[2.8rem] leading-none flex-shrink-0">
+              {project.icon}
+            </span>
+            <div className="flex-1">
+              <div className="text-[1.3rem] font-bold text-gray-900 mb-1">
+                {project.name}
+              </div>
+              <div className="text-base text-gray-500">
+                {t(project.daysAgoKey)}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={onEditProject}
+              className="bg-[#5D9C3B] text-white border-none min-h-[48px] rounded-xl px-5 font-bold cursor-pointer hover:bg-[#4f8832] transition-colors flex-shrink-0 whitespace-nowrap"
+            >
+              {t('home.project.edit')}
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Standard home layout (locale === 'ja' or 'en')
+// ---------------------------------------------------------------------------
+
+interface StandardHomeLayoutProps {
+  onNewAddon: () => void
+  onOpenProject: () => void
+  onEditProject: () => void
+}
+
+const StandardHomeLayout = ({
+  onNewAddon,
+  onOpenProject,
+  onEditProject,
+}: StandardHomeLayoutProps): JSX.Element => {
+  const { t } = useTranslation()
 
   return (
     <>
@@ -79,14 +171,14 @@ export const HomePage = (): JSX.Element => {
         <div className="flex gap-4 justify-center flex-wrap">
           <button
             type="button"
-            onClick={handleNewAddon}
+            onClick={onNewAddon}
             className="bg-[#5D9C3B] text-white border-none px-9 py-3.5 font-semibold text-base rounded-lg cursor-pointer min-w-[260px] hover:bg-[#4f8832] transition-colors"
           >
             {t('home.newAddon')}
           </button>
           <button
             type="button"
-            onClick={handleOpenProject}
+            onClick={onOpenProject}
             className="bg-white text-gray-700 border border-[#D1D5DB] px-9 py-3.5 font-medium text-base rounded-lg cursor-pointer min-w-[260px] hover:bg-gray-50 transition-colors"
           >
             {t('home.openProject')}
@@ -130,12 +222,14 @@ export const HomePage = (): JSX.Element => {
               >
                 {t(TYPE_LABEL_KEYS[project.type])}
               </span>
-              <span className="text-xs text-gray-400">{project.daysAgo}</span>
+              <span className="text-xs text-gray-400">
+                {t(project.daysAgoKey)}
+              </span>
             </div>
 
             <button
               type="button"
-              onClick={handleEditProject}
+              onClick={onEditProject}
               className="block w-full py-2 bg-gray-100 border border-[#E5E7EB] rounded text-xs cursor-pointer text-center text-gray-700 hover:bg-gray-200 transition-colors"
             >
               {t('home.project.edit')}
@@ -144,5 +238,44 @@ export const HomePage = (): JSX.Element => {
         ))}
       </div>
     </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Page component — gates on locale
+// ---------------------------------------------------------------------------
+
+export const HomePage = (): JSX.Element => {
+  const navigate = useNavigate()
+  const { locale } = useUiStore()
+
+  const handleNewAddon = (): void => {
+    void navigate('/wizard')
+  }
+
+  const handleOpenProject = (): void => {
+    // Phase 3: open file picker / project browser
+  }
+
+  const handleEditProject = (): void => {
+    void navigate('/editor')
+  }
+
+  if (locale === 'ja-kids') {
+    return (
+      <KidsHomeLayout
+        onNewAddon={handleNewAddon}
+        onOpenProject={handleOpenProject}
+        onEditProject={handleEditProject}
+      />
+    )
+  }
+
+  return (
+    <StandardHomeLayout
+      onNewAddon={handleNewAddon}
+      onOpenProject={handleOpenProject}
+      onEditProject={handleEditProject}
+    />
   )
 }
