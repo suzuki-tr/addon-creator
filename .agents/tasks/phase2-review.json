@@ -1,6 +1,9 @@
 {
   "verdict": "APPROVED",
-  "findings": [],
-  "resolvedAt": "phase2-review-round2",
-  "notes": "All 5 findings resolved: (1) WizardStep2 button→div+role=radio; (2) EditorPage handleSave alert removed; (3) HomePage typeLabel uses i18n via TYPE_LABEL_KEYS as const; (4) viewAll button disabled+aria-disabled; (5) wizard.spec.ts added with 17 passing tests."
+  "findings": [
+    "'_' ID passes validation — toId('かっこいい モブ') returns '_', which is truthy and passes isValidId(), allowing the user to reach Step3 with an addon named _.mcaddon. Fix: guard check `suggestedId && suggestedId !== '_'` or add minimum-length check to isValidId.",
+    "Misleading test description — wizard.spec.ts test 'returns empty string for mixed Japanese + spaces' asserts toBe('_'), not ''. Rename to 'returns single underscore for Japanese text with spaces'.",
+    "Tab ARIA linkage missing — role=\"tab\" buttons lack id attributes and role=\"tabpanel\" uses aria-label instead of aria-labelledby. Add id=\"tab-{id}\" to each tab and aria-labelledby=\"tab-{activeTab}\" to the panel when implementing Status/Appearance tabs in Phase 3."
+  ],
+  "reviewDoc": "c:/Git/minecraft/minecraft-addon-creator/.agents/tasks/phase2-review.md"
 }
