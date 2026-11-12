@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<!--
+  画面名: 外観エディタ
+  対象ユーザー: アドオン開発者（初心者〜上級者）
+  主要な操作: ジオメトリファイルの選択、テクスチャの割り当て、マテリアル設定、3Dプレビュー確認
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>外観エディタ — ワイヤーフレーム #09</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'Noto Sans JP', sans-serif;
+      background: #F9FAFB;
+      color: #111827;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== メタバナー ===== */
+    .meta-banner {
+      background: #FFD700;
+      padding: 10px 24px;
+      border-bottom: 2px solid #C8960C;
+      flex-shrink: 0;
+    }
+    .meta-banner-label {
+      font-size: 0.7rem; font-weight: 700; color: #78580A;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .meta-banner-title { font-size: 1rem; font-weight: 700; color: #1a1a1a; }
+    .meta-banner-desc { font-size: 0.8rem; color: #554400; margin-top: 2px; }
+
+    /* ===== ヘッダー ===== */
+    .header {
+      background: #fff; border-bottom: 1px solid #E5E7EB;
+      padding: 10px 24px; flex-shrink: 0;
+    }
+    .header-inner { display: flex; align-items: center; gap: 16px; }
+    .logo-box {
+      width: 140px; height: 36px; background: #D1D5DB; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; color: #6B7280; flex-shrink: 0;
+    }
+    .breadcrumb { font-size: 0.85rem; color: #6B7280; }
+    .breadcrumb span { color: #111827; font-weight: 500; }
+    .header-spacer { flex: 1; }
+    .lang-select {
+      padding: 5px 10px; border: 1px solid #D1D5DB; border-radius: 4px;
+      font-family: inherit; font-size: 0.85rem; background: #fff; color: #374151;
+    }
+    .mode-toggle { display: flex; border: 1px solid #D1D5DB; border-radius: 6px; overflow: hidden; }
+    .mode-toggle button {
+      padding: 5px 14px; border: none; background: #F3F4F6;
+      font-family: inherit; font-size: 0.8rem; cursor: pointer; color: #6B7280;
+    }
+    .btn-simple.active { background: #5D9C3B; color: #fff; font-weight: 600; }
+    .btn-detail.active { background: #374151; color: #fff; font-weight: 600; }
+
+    /* ===== エディタ 2ペインレイアウト ===== */
+    .editor-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ===== 左ペイン（3D プレビュー）===== */
+    .preview-pane {
+      width: 50%;
+      min-width: 280px;
+      background: #E5E7EB;
+      border-right: 1px solid #D1D5DB;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .preview-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      background: #C9CDD4;
+      color: #6B7280;
+      position: relative;
+      /* Babylon.js による 3D レンダリングをここに実装予定
+         参考: https://www.babylonjs.com/
+         canvas 要素を重ねてインタラクティブな 3D ビューを提供する */
+    }
+    .preview-icon { font-size: 3.5rem; opacity: 0.5; }
+    .preview-label { font-size: 1rem; font-weight: 600; color: #374151; }
+    .preview-note { font-size: 0.78rem; color: #9CA3AF; }
+
+    /* カメラコントロール */
+    .camera-controls {
+      display: flex; gap: 6px; padding: 10px 14px;
+      background: #fff; border-top: 1px solid #E5E7EB;
+      flex-shrink: 0; flex-wrap: wrap;
+    }
+    .cam-btn {
+      flex: 1; min-width: 60px; padding: 7px 10px;
+      border: 1px solid #D1D5DB; border-radius: 4px;
+      font-family: inherit; font-size: 0.78rem; color: #374151;
+      background: #F9FAFB; cursor: pointer; white-space: nowrap;
+    }
+    .cam-btn:hover { background: #F3F4F6; }
+
+    /* ===== 右ペイン（プロパティパネル）===== */
+    .property-pane {
+      flex: 1;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* タブバー */
+    .prop-tab-bar {
+      display: flex;
+      border-bottom: 1px solid #E5E7EB;
+      flex-shrink: 0;
+      background: #fff;
+      padding: 0 16px;
+      gap: 2px;
+    }
+    .tab-btn {
+      padding: 11px 18px;
+      border: none; background: none;
+      font-family: inherit; font-size: 0.85rem; color: #6B7280;
+      cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -1px; white-space: nowrap;
+    }
+    .tab-btn.active { color: #5D9C3B; border-bottom-color: #5D9C3B; font-weight: 600; }
+    .tab-btn:hover:not(.active) { color: #374151; background: #F9FAFB; }
+
+    /* タブコンテンツ */
+    .tab-pane { display: none; flex: 1; overflow-y: auto; padding: 20px; }
+    .tab-pane.tab-active { display: block; }
+
+    /* ===== 共通フォームパーツ ===== */
+    .section-heading {
+      font-size: 0.7rem; font-weight: 700; color: #6B7280;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 10px; margin-top: 20px;
+      padding-bottom: 6px; border-bottom: 1px solid #F3F4F6;
+    }
+    .section-heading:first-child { margin-top: 0; }
+    .field-group { margin-bottom: 14px; }
+    .field-label {
+      display: block; font-size: 0.78rem; font-weight: 500;
+      color: #374151; margin-bottom: 4px;
+    }
+    .field-row {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .field-input {
+      flex: 1; padding: 7px 10px;
+      border: 1px solid #D1D5DB; border-radius: 4px;
+      font-family: 'Cascadia Code', 'Source Code Pro', monospace, sans-serif;
+      font-size: 0.82rem; color: #111827; background: #fff;
+    }
+    .field-input:focus {
+      outline: none; border-color: #5D9C3B;
+      box-shadow: 0 0 0 2px rgba(93,156,59,0.15);
+    }
+    .field-select {
+      flex: 1; padding: 7px 10px;
+      border: 1px solid #D1D5DB; border-radius: 4px;
+      font-family: inherit; font-size: 0.82rem; color: #111827; background: #fff;
+    }
+    .btn-browse {
+      padding: 7px 14px; border: 1px solid #D1D5DB; border-radius: 4px;
+      font-family: inherit; font-size: 0.8rem; color: #374151;
+      background: #F9FAFB; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-browse:hover { background: #F3F4F6; }
+    .btn-change {
+      padding: 5px 12px; border: 1px solid #D1D5DB; border-radius: 4px;
+      font-family: inherit; font-size: 0.78rem; color: #374151;
+      background: #F9FAFB; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-change:hover { background: #F3F4F6; }
+
+    /* ===== ボーンツリー ===== */
+    .bone-tree {
+      border: 1px solid #E5E7EB; border-radius: 6px; overflow: hidden;
+      margin-bottom: 4px;
+    }
+    .bone-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 10px; border-bottom: 1px solid #F3F4F6;
+      font-size: 0.82rem; color: #374151; cursor: pointer;
+    }
+    .bone-item:last-child { border-bottom: none; }
+    .bone-item:hover { background: #F9FAFB; }
+    .bone-indent { display: inline-block; width: 16px; flex-shrink: 0; }
+    .bone-toggle { font-size: 0.65rem; color: #9CA3AF; flex-shrink: 0; }
+    .bone-icon { font-size: 0.85rem; flex-shrink: 0; }
+    .bone-name { flex: 1; }
+    .bone-tag {
+      font-size: 0.68rem; padding: 1px 6px;
+      background: #F3F4F6; color: #6B7280; border-radius: 3px;
+    }
+
+    /* ===== アタッチメントポイント ===== */
+    .attachment-list {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .attachment-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 10px; background: #F9FAFB;
+      border: 1px solid #E5E7EB; border-radius: 4px;
+      font-size: 0.8rem; color: #374151;
+    }
+    .attachment-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #9CA3AF; flex-shrink: 0;
+    }
+
+    /* ===== テクスチャスロット ===== */
+    .texture-slot {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px; border: 1px solid #E5E7EB; border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .texture-thumb {
+      width: 56px; height: 56px; background: #D1D5DB; border-radius: 4px;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; color: #9CA3AF; text-align: center;
+    }
+    .texture-info { flex: 1; min-width: 0; }
+    .texture-slot-name {
+      font-size: 0.8rem; font-weight: 600; color: #111827; margin-bottom: 3px;
+    }
+    .texture-path {
+      font-size: 0.72rem;
+      font-family: 'Cascadia Code', monospace; color: #6B7280;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ===== UV マッピング（詳細モードのみ）===== */
+    .uv-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+    }
+    .uv-label {
+      font-size: 0.78rem; color: #374151; min-width: 100px; flex-shrink: 0;
+    }
+    .uv-input {
+      width: 60px; padding: 5px 8px;
+      border: 1px solid #D1D5DB; border-radius: 4px;
+      font-family: inherit; font-size: 0.82rem; color: #111827;
+      text-align: center;
+    }
+
+    /* ===== マテリアル（詳細モードのみ）===== */
+    .simple-only-msg {
+      text-align: center; padding: 32px 16px;
+      color: #9CA3AF; font-size: 0.85rem; line-height: 1.6;
+    }
+    .simple-only-msg strong { display: block; font-size: 1rem; margin-bottom: 8px; color: #6B7280; }
+
+    /* ===== フッターアクションバー ===== */
+    .action-bar {
+      background: #fff; border-top: 1px solid #E5E7EB;
+      padding: 10px 24px;
+      display: flex; justify-content: flex-end;
+      align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .btn-save {
+      background: none; border: 1px solid #D1D5DB; border-radius: 6px;
+      padding: 8px 18px; font-family: inherit; font-size: 0.85rem; color: #374151; cursor: pointer;
+    }
+    .btn-export {
+      background: #5D9C3B; border: none; border-radius: 6px;
+      padding: 8px 18px; font-family: inherit; font-size: 0.85rem;
+      font-weight: 600; color: #fff; cursor: pointer;
+    }
+
+    /* ===== シンプル / 詳細モード切り替え ===== */
+    body.detail-mode .simple-only { display: none; }
+    body.simple-mode  .detail-only { display: none; }
+  </style>
+</head>
+<body class="simple-mode">
+
+  <!-- メタバナー -->
+  <div class="meta-banner">
+    <div class="meta-banner-label">ワイヤーフレーム #09</div>
+    <div class="meta-banner-title">外観エディタ</div>
+    <div class="meta-banner-desc">エンティティの見た目（ジオメトリ・テクスチャ・マテリアル）を編集する画面</div>
+  </div>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-box">アプリロゴ（プレースホルダー）</div>
+      <div class="breadcrumb">マイプロジェクト &gt; <span>かっこいいモブ</span> &gt; 外観</div>
+      <div class="header-spacer"></div>
+      <select class="lang-select">
+        <option>日本語</option>
+        <option>English</option>
+        <option>かんたん日本語</option>
+      </select>
+      <div class="mode-toggle">
+        <button class="btn-simple active" onclick="setMode('simple')">かんたん</button>
+        <button class="btn-detail" onclick="setMode('detail')">くわしい</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- エディタ本体（2ペイン）-->
+  <div class="editor-layout">
+
+    <!-- 左ペイン：3D プレビュー -->
+    <div class="preview-pane">
+      <div class="preview-box">
+        <!--
+          Babylon.js による 3D レンダリングをここに実装予定
+          参考: https://www.babylonjs.com/
+          <canvas> 要素を絶対配置して重ねる構成を想定
+        -->
+        <div class="preview-icon" aria-hidden="true">🐾</div>
+        <div class="preview-label">3D プレビュー</div>
+        <div class="preview-note">（Babylon.js で実装予定）</div>
+      </div>
+
+      <!-- カメラコントロールボタン -->
+      <div class="camera-controls">
+        <button class="cam-btn">⟳ 回転リセット</button>
+        <button class="cam-btn">前面</button>
+        <button class="cam-btn">側面</button>
+        <button class="cam-btn">上面</button>
+      </div>
+    </div>
+
+    <!-- 右ペイン：プロパティパネル -->
+    <div class="property-pane">
+
+      <!-- タブバー -->
+      <div class="prop-tab-bar" role="tablist">
+        <button class="tab-btn active" data-tab="tab-geo"
+                onclick="switchTab('tab-geo')" role="tab"
+                aria-controls="tab-geo" aria-selected="true">ジオメトリ</button>
+        <button class="tab-btn" data-tab="tab-tex"
+                onclick="switchTab('tab-tex')" role="tab"
+                aria-controls="tab-tex" aria-selected="false">テクスチャ</button>
+        <!-- マテリアルタブは詳細モードのみ表示 -->
+        <button class="tab-btn detail-only" data-tab="tab-material"
+                onclick="switchTab('tab-material')" role="tab"
+                aria-controls="tab-material" aria-selected="false">マテリアル</button>
+      </div>
+
+      <!-- ===== ジオメトリタブ ===== -->
+      <div id="tab-geo" class="tab-pane tab-active" role="tabpanel">
+
+        <!-- ファイル選択 -->
+        <div class="section-heading">ジオメトリファイル</div>
+        <div class="field-group">
+          <label class="field-label">ファイルパス</label>
+          <div class="field-row">
+            <input type="text" class="field-input"
+                   value="geometry/my_cool_mob.geo.json"
+                   placeholder="例: geometry/my_mob.geo.json"/>
+            <button class="btn-browse">参照</button>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">ジオメトリ識別子</label>
+          <input type="text" class="field-input"
+                 value="geometry.my_cool_mob"
+                 placeholder="例: geometry.my_mob"/>
+        </div>
+
+        <!-- ボーン一覧 -->
+        <div class="section-heading">ボーン一覧</div>
+        <div class="bone-tree" role="tree" aria-label="ボーンツリー">
+
+          <div class="bone-item" role="treeitem" aria-expanded="true">
+            <span class="bone-toggle">▼</span>
+            <span class="bone-icon">📦</span>
+            <span class="bone-name">body</span>
+            <span class="bone-tag">root</span>
+          </div>
+
+          <div class="bone-item" role="treeitem" style="padding-left: 26px;">
+            <span class="bone-icon">🦴</span>
+            <span class="bone-name">head</span>
+          </div>
+
+          <div class="bone-item" role="treeitem" style="padding-left: 26px;">
+            <span class="bone-icon">🦴</span>
+            <span class="bone-name">arm_left</span>
+          </div>
+
+          <div class="bone-item" role="treeitem" style="padding-left: 26px;">
+            <span class="bone-icon">🦴</span>
+            <span class="bone-name">arm_right</span>
+          </div>
+
+          <div class="bone-item" role="treeitem" aria-expanded="true" style="padding-left: 26px;">
+            <span class="bone-toggle">▼</span>
+            <span class="bone-icon">📦</span>
+            <span class="bone-name">legs</span>
+          </div>
+
+          <div class="bone-item" role="treeitem" style="padding-left: 42px;">
+            <span class="bone-icon">🦴</span>
+            <span class="bone-name">leg_left</span>
+          </div>
+
+          <div class="bone-item" role="treeitem" style="padding-left: 42px;">
+            <span class="bone-icon">🦴</span>
+            <span class="bone-name">leg_right</span>
+          </div>
+
+        </div>
+
+        <!-- アタッチメントポイント -->
+        <div class="section-heading">アタッチメントポイント</div>
+        <div class="attachment-list">
+          <div class="attachment-item">
+            <span class="attachment-dot"></span>
+            <span>rightHand</span>
+          </div>
+          <div class="attachment-item">
+            <span class="attachment-dot"></span>
+            <span>leftHand</span>
+          </div>
+          <div class="attachment-item">
+            <span class="attachment-dot"></span>
+            <span>mouth</span>
+          </div>
+        </div>
+
+      </div><!-- /#tab-geo -->
+
+      <!-- ===== テクスチャタブ ===== -->
+      <div id="tab-tex" class="tab-pane" role="tabpanel">
+
+        <!-- テクスチャスロット一覧 -->
+        <div class="section-heading">テクスチャスロット</div>
+
+        <!-- default スロット -->
+        <div class="texture-slot">
+          <div class="texture-thumb" aria-label="テクスチャプレビュー">画像<br>プレビュー</div>
+          <div class="texture-info">
+            <div class="texture-slot-name">default</div>
+            <div class="texture-path">textures/entity/my_cool_mob.png</div>
+          </div>
+          <button class="btn-change">変更</button>
+        </div>
+
+        <!-- damage スロット -->
+        <div class="texture-slot">
+          <div class="texture-thumb" aria-label="テクスチャプレビュー">画像<br>プレビュー</div>
+          <div class="texture-info">
+            <div class="texture-slot-name">damage</div>
+            <div class="texture-path">textures/entity/my_cool_mob_hurt.png</div>
+          </div>
+          <button class="btn-change">変更</button>
+        </div>
+
+        <!-- スロット追加 -->
+        <button style="
+          width: 100%; padding: 8px; margin-top: 4px;
+          background: none; border: 1.5px dashed #D1D5DB; border-radius: 6px;
+          font-family: inherit; font-size: 0.8rem; color: #6B7280; cursor: pointer;
+        ">＋ スロットを追加</button>
+
+        <!-- UV マッピング設定（詳細モードのみ）-->
+        <div class="detail-only">
+          <div class="section-heading">UV マッピング設定</div>
+          <div class="uv-row">
+            <span class="uv-label">マッピングタイプ</span>
+            <select class="field-select">
+              <option>Linear</option>
+              <option>Per-face UV</option>
+            </select>
+          </div>
+          <div class="uv-row">
+            <span class="uv-label">テクスチャサイズ</span>
+            <span style="font-size: 0.8rem; color: #6B7280; margin-right: 4px;">W</span>
+            <input type="text" class="uv-input" value="64"/>
+            <span style="font-size: 0.8rem; color: #6B7280; margin: 0 4px;">H</span>
+            <input type="text" class="uv-input" value="64"/>
+          </div>
+        </div>
+
+      </div><!-- /#tab-tex -->
+
+      <!-- ===== マテリアルタブ（詳細モードのみ）===== -->
+      <div id="tab-material" class="tab-pane" role="tabpanel">
+
+        <!-- シンプルモードでは案内メッセージを表示 -->
+        <div class="simple-only simple-only-msg">
+          <strong>⚙️ 詳細モードの機能</strong>
+          マテリアル設定は詳細モードで確認できます。<br>
+          右上の「くわしい」ボタンを押してください。
+        </div>
+
+        <!-- 詳細モードのみ：マテリアル設定 -->
+        <div class="detail-only">
+
+          <div class="section-heading">マテリアル設定</div>
+
+          <div class="field-group">
+            <label class="field-label">マテリアル名</label>
+            <select class="field-select" style="width: 100%;">
+              <option>entity_alphatest</option>
+              <option>entity_emissive</option>
+              <option>entity_change_color</option>
+              <option>entity_nodepthtest</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">レンダーコントローラー</label>
+            <input type="text" class="field-input"
+                   value="controller.render.my_cool_mob"
+                   placeholder="例: controller.render.my_mob" style="width: 100%;"/>
+          </div>
+
+          <div class="section-heading">シェーダー設定</div>
+
+          <div class="field-group">
+            <label class="field-label">カリングモード</label>
+            <select class="field-select" style="width: 100%;">
+              <option>back</option>
+              <option>front</option>
+              <option>none</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">ブレンドモード</label>
+            <select class="field-select" style="width: 100%;">
+              <option>alpha</option>
+              <option>opaque</option>
+              <option>add</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">エミッシブ係数</label>
+            <input type="text" class="field-input" value="0.0" style="width: 100%;"/>
+          </div>
+
+        </div>
+
+      </div><!-- /#tab-material -->
+
+    </div><!-- /.property-pane -->
+
+  </div><!-- /.editor-layout -->
+
+  <!-- フッターアクションバー -->
+  <div class="action-bar">
+    <button class="btn-save">💾 保存</button>
+    <button class="btn-export">⬇️ エクスポート</button>
+  </div>
+
+  <script>
+    /** タブ切り替え */
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(function(p) {
+        p.classList.remove('tab-active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(function(b) {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      var pane = document.getElementById(tabId);
+      var btn  = document.querySelector('[data-tab="' + tabId + '"]');
+      if (pane) pane.classList.add('tab-active');
+      if (btn)  { btn.classList.add('active'); btn.setAttribute('aria-selected', 'true'); }
+    }
+
+    /** シンプル / 詳細モード切り替え */
+    function setMode(mode) {
+      document.body.classList.remove('simple-mode', 'detail-mode');
+      document.body.classList.add(mode + '-mode');
+      document.querySelector('.btn-simple').classList.toggle('active', mode === 'simple');
+      document.querySelector('.btn-detail').classList.toggle('active', mode === 'detail');
+
+      /* シンプルモードに切り替えたとき、マテリアルタブが選択中なら
+         ジオメトリタブに戻す */
+      if (mode === 'simple') {
+        var materialPane = document.getElementById('tab-material');
+        if (materialPane && materialPane.classList.contains('tab-active')) {
+          switchTab('tab-geo');
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

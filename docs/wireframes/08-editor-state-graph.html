@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ja">
+<!--
+  画面名: 状態グラフエディタ
+  対象ユーザー: アドオン開発者（初心者〜上級者）
+  主要な操作: 状態ノードの追加・削除・選択、遷移条件の設定、アニメーション割り当て
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>状態グラフエディタ — ワイヤーフレーム #08</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, 'Noto Sans JP', sans-serif;
+      background: #F9FAFB;
+      color: #111827;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== メタバナー ===== */
+    .meta-banner {
+      background: #FFD700;
+      padding: 10px 24px;
+      border-bottom: 2px solid #C8960C;
+      flex-shrink: 0;
+    }
+    .meta-banner-label {
+      font-size: 0.7rem; font-weight: 700; color: #78580A;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .meta-banner-title { font-size: 1rem; font-weight: 700; color: #1a1a1a; }
+    .meta-banner-desc { font-size: 0.8rem; color: #554400; margin-top: 2px; }
+
+    /* ===== ヘッダー ===== */
+    .header {
+      background: #fff; border-bottom: 1px solid #E5E7EB;
+      padding: 10px 24px; flex-shrink: 0;
+    }
+    .header-inner { display: flex; align-items: center; gap: 16px; }
+    .logo-box {
+      width: 140px; height: 36px; background: #D1D5DB; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; color: #6B7280; flex-shrink: 0;
+    }
+    .breadcrumb { font-size: 0.85rem; color: #6B7280; }
+    .breadcrumb span { color: #111827; font-weight: 500; }
+    .header-spacer { flex: 1; }
+    .lang-select {
+      padding: 5px 10px; border: 1px solid #D1D5DB; border-radius: 4px;
+      font-family: inherit; font-size: 0.85rem; background: #fff; color: #374151;
+    }
+    .mode-toggle { display: flex; border: 1px solid #D1D5DB; border-radius: 6px; overflow: hidden; }
+    .mode-toggle button {
+      padding: 5px 14px; border: none; background: #F3F4F6;
+      font-family: inherit; font-size: 0.8rem; cursor: pointer; color: #6B7280;
+    }
+    .btn-simple.active { background: #5D9C3B; color: #fff; font-weight: 600; }
+    .btn-detail.active { background: #374151; color: #fff; font-weight: 600; }
+
+    /* ===== エディタ 3ペインレイアウト ===== */
+    .editor-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ===== 左パネル（状態一覧）===== */
+    .panel-left {
+      width: 200px;
+      min-width: 160px;
+      background: #fff;
+      border-right: 1px solid #E5E7EB;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .panel-section-title {
+      font-size: 0.7rem; font-weight: 700; color: #6B7280;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 12px 14px 8px;
+      border-bottom: 1px solid #F3F4F6;
+      flex-shrink: 0;
+    }
+    .state-list { flex: 1; overflow-y: auto; }
+    .state-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 12px; border-bottom: 1px solid #F3F4F6; cursor: pointer;
+    }
+    .state-item:hover { background: #F9FAFB; }
+    .state-item.active { background: #F0F8EA; }
+    .state-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #D1D5DB; flex-shrink: 0;
+    }
+    .state-dot.initial { background: #5D9C3B; }
+    .state-label {
+      flex: 1; font-size: 0.82rem;
+      font-family: 'Cascadia Code', 'Source Code Pro', monospace;
+      color: #111827;
+    }
+    .state-item.active .state-label { color: #5D9C3B; font-weight: 700; }
+    .state-actions { display: flex; gap: 2px; }
+    .btn-icon {
+      width: 22px; height: 22px; border: none; border-radius: 3px;
+      background: none; cursor: pointer; font-size: 0.72rem; color: #9CA3AF;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .btn-icon:hover { background: #F3F4F6; color: #374151; }
+    .btn-add-state {
+      margin: 10px;
+      background: none; border: 1.5px dashed #D1D5DB; border-radius: 6px;
+      padding: 8px; font-family: inherit; font-size: 0.8rem;
+      color: #6B7280; cursor: pointer; display: block; width: calc(100% - 20px);
+      flex-shrink: 0;
+    }
+    .btn-add-state:hover { border-color: #9CA3AF; color: #374151; }
+
+    /* ===== グラフキャンバス ===== */
+    .graph-wrap {
+      flex: 1;
+      position: relative;
+      /* グレーの点線グリッド背景 */
+      background-color: #F4F5F7;
+      background-image: radial-gradient(circle, #BFC5CE 1px, transparent 1px);
+      background-size: 24px 24px;
+      overflow: auto;
+    }
+    .graph-svg {
+      display: block;
+      /* ノードはドラッグ可能（実装はReact + D3.js等で対応予定） */
+    }
+    .graph-svg text {
+      font-family: -apple-system, 'Noto Sans JP', sans-serif;
+      user-select: none;
+    }
+    .graph-controls {
+      position: absolute; bottom: 12px; right: 12px;
+      display: flex; gap: 6px;
+    }
+    .graph-ctrl-btn {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #D1D5DB;
+      border-radius: 4px; padding: 6px 14px;
+      font-family: inherit; font-size: 0.78rem; color: #374151; cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .graph-ctrl-btn:hover { background: #fff; }
+    .graph-hint {
+      position: absolute; top: 10px; left: 10px;
+      font-size: 0.72rem; color: #9CA3AF;
+      background: rgba(255,255,255,0.85);
+      padding: 3px 8px; border-radius: 3px;
+      pointer-events: none;
+    }
+
+    /* ===== 右パネル（状態詳細）===== */
+    .panel-right {
+      width: 280px;
+      min-width: 220px;
+      background: #fff;
+      border-left: 1px solid #E5E7EB;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .right-section {
+      padding: 14px;
+      border-bottom: 1px solid #E5E7EB;
+    }
+    .right-section-title {
+      font-size: 0.7rem; font-weight: 700; color: #6B7280;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+    .field-group { margin-bottom: 12px; }
+    .field-label {
+      display: block; font-size: 0.78rem; font-weight: 500;
+      color: #374151; margin-bottom: 4px;
+    }
+    .field-input {
+      width: 100%; padding: 7px 10px;
+      border: 1px solid #D1D5DB; border-radius: 4px;
+      font-family: 'Cascadia Code', 'Source Code Pro', monospace, sans-serif;
+      font-size: 0.82rem; color: #111827; background: #fff;
+    }
+    .field-input:focus {
+      outline: none; border-color: #5D9C3B;
+      box-shadow: 0 0 0 2px rgba(93,156,59,0.15);
+    }
+
+    /* 遷移条件アイテム */
+    .transition-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+    .transition-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 10px; background: #F9FAFB;
+      border: 1px solid #E5E7EB; border-radius: 4px;
+    }
+    .transition-condition {
+      flex: 1; font-size: 0.72rem;
+      font-family: 'Cascadia Code', 'Source Code Pro', monospace;
+      color: #374151;
+      word-break: break-all;
+    }
+    .transition-target {
+      font-size: 0.72rem; color: #5D9C3B; font-weight: 700; white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* 変数リスト */
+    .var-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    .var-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 8px; border-radius: 4px;
+      border: 1px solid #E5E7EB;
+    }
+    .var-name {
+      font-family: 'Cascadia Code', monospace; color: #2563EB; flex: 1; font-size: 0.72rem;
+    }
+    .var-value { color: #6B7280; font-size: 0.72rem; white-space: nowrap; }
+
+    /* 汎用追加ボタン */
+    .btn-add {
+      width: 100%; padding: 7px;
+      background: none; border: 1.5px dashed #D1D5DB; border-radius: 4px;
+      font-family: inherit; font-size: 0.8rem; color: #6B7280; cursor: pointer;
+    }
+    .btn-add:hover { border-color: #9CA3AF; color: #374151; }
+
+    /* ===== フッターアクションバー ===== */
+    .action-bar {
+      background: #fff; border-top: 1px solid #E5E7EB;
+      padding: 10px 24px;
+      display: flex; justify-content: flex-end;
+      align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .btn-save {
+      background: none; border: 1px solid #D1D5DB; border-radius: 6px;
+      padding: 8px 18px; font-family: inherit; font-size: 0.85rem; color: #374151; cursor: pointer;
+    }
+    .btn-export {
+      background: #5D9C3B; border: none; border-radius: 6px;
+      padding: 8px 18px; font-family: inherit; font-size: 0.85rem;
+      font-weight: 600; color: #fff; cursor: pointer;
+    }
+
+    /* ===== シンプル / 詳細モード切り替え ===== */
+    body.detail-mode .simple-only { display: none; }
+    body.simple-mode  .detail-only { display: none; }
+  </style>
+</head>
+<body class="simple-mode">
+
+  <!-- メタバナー -->
+  <div class="meta-banner">
+    <div class="meta-banner-label">ワイヤーフレーム #08</div>
+    <div class="meta-banner-title">状態グラフエディタ</div>
+    <div class="meta-banner-desc">エンティティのアニメーション・行動をステートマシンとして視覚的に編集する画面</div>
+  </div>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo-box">アプリロゴ（プレースホルダー）</div>
+      <div class="breadcrumb">マイプロジェクト &gt; <span>かっこいいモブ</span> &gt; 状態グラフ</div>
+      <div class="header-spacer"></div>
+      <select class="lang-select">
+        <option>日本語</option>
+        <option>English</option>
+        <option>かんたん日本語</option>
+      </select>
+      <div class="mode-toggle">
+        <button class="btn-simple active" onclick="setMode('simple')">かんたん</button>
+        <button class="btn-detail" onclick="setMode('detail')">くわしい</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- エディタ本体（3ペイン） -->
+  <div class="editor-layout">
+
+    <!-- 左パネル：状態一覧 -->
+    <aside class="panel-left">
+      <div class="panel-section-title">状態一覧</div>
+      <div class="state-list">
+
+        <!-- idle（初期状態：緑ドット）-->
+        <div class="state-item">
+          <span class="state-dot initial" title="初期状態"></span>
+          <span class="state-label">idle</span>
+          <div class="state-actions">
+            <button class="btn-icon" title="選択">↵</button>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+        </div>
+
+        <!-- walk -->
+        <div class="state-item">
+          <span class="state-dot"></span>
+          <span class="state-label">walk</span>
+          <div class="state-actions">
+            <button class="btn-icon" title="選択">↵</button>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+        </div>
+
+        <!-- attack（選択中：グリーン行）-->
+        <div class="state-item active">
+          <span class="state-dot"></span>
+          <span class="state-label">attack</span>
+          <div class="state-actions">
+            <button class="btn-icon" title="選択">↵</button>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+        </div>
+
+        <!-- hurt -->
+        <div class="state-item">
+          <span class="state-dot"></span>
+          <span class="state-label">hurt</span>
+          <div class="state-actions">
+            <button class="btn-icon" title="選択">↵</button>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+        </div>
+
+        <!-- death -->
+        <div class="state-item">
+          <span class="state-dot"></span>
+          <span class="state-label">death</span>
+          <div class="state-actions">
+            <button class="btn-icon" title="選択">↵</button>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+        </div>
+
+      </div>
+      <button class="btn-add-state">＋ 状態を追加</button>
+    </aside>
+
+    <!-- 中央：グラフキャンバス -->
+    <div class="graph-wrap">
+      <div class="graph-hint">ノードをドラッグして配置できます（実装予定）</div>
+
+      <!--
+        グラフキャンバス：SVGによるステートマシン可視化
+        ノードはドラッグ可能（React + D3.js / XState などで実装予定）
+        遷移条件は Molang クエリ式で記述
+      -->
+      <svg class="graph-svg" width="560" height="400" viewBox="0 0 560 400"
+           aria-label="ステートマシン グラフ">
+        <defs>
+          <!-- 通常の矢印マーカー -->
+          <marker id="arr" markerWidth="9" markerHeight="6"
+                  refX="9" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+            <polygon points="0 0, 9 3, 0 6" fill="#6B7280"/>
+          </marker>
+          <!-- 選択ノードへの矢印マーカー（緑）-->
+          <marker id="arr-green" markerWidth="9" markerHeight="6"
+                  refX="9" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+            <polygon points="0 0, 9 3, 0 6" fill="#5D9C3B"/>
+          </marker>
+        </defs>
+
+        <!-- ===== 遷移矢印（ノードより先に描画して重なりを回避）===== -->
+
+        <!-- idle → walk -->
+        <line x1="130" y1="110" x2="190" y2="110"
+              stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- walk → attack（緑：選択中ノードへ）-->
+        <line x1="300" y1="110" x2="360" y2="110"
+              stroke="#5D9C3B" stroke-width="1.5" marker-end="url(#arr-green)"/>
+        <!-- walk → hurt -->
+        <line x1="245" y1="130" x2="245" y2="230"
+              stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- attack → hurt（対角線）-->
+        <line x1="415" y1="132" x2="300" y2="250"
+              stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- hurt → death -->
+        <line x1="245" y1="270" x2="245" y2="330"
+              stroke="#6B7280" stroke-width="1.5" marker-end="url(#arr)"/>
+
+        <!-- ===== 遷移ラベル（詳細モードのみ）===== -->
+        <text class="detail-only" x="160" y="102" text-anchor="middle"
+              font-size="10" fill="#6B7280">移動開始</text>
+        <text class="detail-only" x="330" y="102" text-anchor="middle"
+              font-size="10" fill="#5D9C3B">目標発見</text>
+        <text class="detail-only" x="236" y="183" text-anchor="end"
+              font-size="10" fill="#6B7280">被弾</text>
+        <text class="detail-only" x="390" y="192" text-anchor="middle"
+              font-size="10" fill="#6B7280">被弾</text>
+        <text class="detail-only" x="236" y="302" text-anchor="end"
+              font-size="10" fill="#6B7280">HP=0</text>
+
+        <!-- ===== 初期状態マーカー（▶）===== -->
+        <polygon points="4,103 17,110 4,117" fill="#5D9C3B"
+                 aria-label="初期状態"/>
+
+        <!-- ===== 状態ノード（ノードより後に描画して矢印の起点を隠す）===== -->
+
+        <!-- idle（初期状態）-->
+        <g role="button" aria-label="idle 状態" style="cursor:pointer">
+          <rect x="20" y="90" width="110" height="40" rx="5"
+                fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+          <text x="75" y="115" text-anchor="middle" font-size="12"
+                font-weight="600" fill="#374151">idle</text>
+        </g>
+
+        <!-- walk -->
+        <g role="button" aria-label="walk 状態" style="cursor:pointer">
+          <rect x="190" y="90" width="110" height="40" rx="5"
+                fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+          <text x="245" y="115" text-anchor="middle" font-size="12"
+                font-weight="600" fill="#374151">walk</text>
+        </g>
+
+        <!-- attack（選択中：グリーンハイライト）-->
+        <g role="button" aria-label="attack 状態（選択中）" style="cursor:pointer">
+          <rect x="358" y="88" width="116" height="44" rx="5"
+                fill="#F0F8EA" stroke="#5D9C3B" stroke-width="2.5"/>
+          <text x="416" y="115" text-anchor="middle" font-size="12"
+                font-weight="700" fill="#5D9C3B">attack</text>
+        </g>
+
+        <!-- hurt -->
+        <g role="button" aria-label="hurt 状態" style="cursor:pointer">
+          <rect x="190" y="230" width="110" height="40" rx="5"
+                fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+          <text x="245" y="255" text-anchor="middle" font-size="12"
+                font-weight="600" fill="#374151">hurt</text>
+        </g>
+
+        <!-- death -->
+        <g role="button" aria-label="death 状態" style="cursor:pointer">
+          <rect x="190" y="330" width="110" height="40" rx="5"
+                fill="#F9FAFB" stroke="#D1D5DB" stroke-width="1.5"/>
+          <text x="245" y="355" text-anchor="middle" font-size="12"
+                font-weight="600" fill="#374151">death</text>
+        </g>
+
+      </svg>
+
+      <!-- グラフコントロール（右下）: ズーム・リセット（機能は実装予定）-->
+      <div class="graph-controls">
+        <button class="graph-ctrl-btn">🔍 ズーム</button>
+        <button class="graph-ctrl-btn">↺ リセット</button>
+      </div>
+    </div><!-- /.graph-wrap -->
+
+    <!-- 右パネル：選択状態の詳細 -->
+    <aside class="panel-right">
+
+      <!-- 選択中の状態名バッジ -->
+      <div class="right-section" style="padding-bottom: 10px;">
+        <div style="font-size: 0.7rem; color: #9CA3AF; margin-bottom: 6px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;">選択中の状態</div>
+        <div style="font-size: 1rem; font-weight: 700; font-family: 'Cascadia Code', monospace; color: #5D9C3B;">attack</div>
+      </div>
+
+      <!-- 基本設定（シンプル・詳細共通）-->
+      <div class="right-section">
+        <div class="right-section-title">基本設定</div>
+        <div class="field-group">
+          <label class="field-label">状態名</label>
+          <input type="text" class="field-input" value="attack"/>
+        </div>
+        <div class="field-group" style="margin-bottom: 0;">
+          <label class="field-label">アニメーション</label>
+          <input type="text" class="field-input" value="animation.attack"
+                 placeholder="例: animation.my_mob.attack"/>
+        </div>
+      </div>
+
+      <!-- 遷移条件（詳細モードのみ）-->
+      <div class="right-section detail-only">
+        <div class="right-section-title">遷移条件</div>
+        <div class="transition-list">
+          <div class="transition-item">
+            <span class="transition-condition">query.is_hurt == true</span>
+            <span class="transition-target">→ hurt</span>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+          <div class="transition-item">
+            <span class="transition-condition">query.health == 0</span>
+            <span class="transition-target">→ death</span>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+          <div class="transition-item">
+            <span class="transition-condition">query.has_target == false</span>
+            <span class="transition-target">→ idle</span>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+        </div>
+        <button class="btn-add">＋ 遷移を追加</button>
+      </div>
+
+      <!-- 変数（詳細モードのみ）-->
+      <div class="right-section detail-only">
+        <div class="right-section-title">変数</div>
+        <div class="var-list">
+          <div class="var-item">
+            <span class="var-name">variable.attack_time</span>
+            <span class="var-value">= 0.0</span>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+          <div class="var-item">
+            <span class="var-name">variable.attack_cooldown</span>
+            <span class="var-value">= 1.0</span>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+        </div>
+        <button class="btn-add">＋ 変数を追加</button>
+      </div>
+
+      <!-- イベントトリガー（詳細モードのみ）-->
+      <div class="right-section detail-only">
+        <div class="right-section-title">イベントトリガー</div>
+        <div class="transition-list">
+          <div class="transition-item">
+            <span class="transition-condition">on_entry</span>
+            <span class="transition-target">→ play_sound</span>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+          <div class="transition-item">
+            <span class="transition-condition">on_exit</span>
+            <span class="transition-target">→ stop_sound</span>
+            <button class="btn-icon" title="削除">✕</button>
+          </div>
+        </div>
+        <button class="btn-add">＋ トリガーを追加</button>
+      </div>
+
+    </aside>
+
+  </div><!-- /.editor-layout -->
+
+  <!-- フッターアクションバー -->
+  <div class="action-bar">
+    <button class="btn-save">💾 保存</button>
+    <button class="btn-export">⬇️ エクスポート</button>
+  </div>
+
+  <script>
+    function setMode(mode) {
+      document.body.classList.remove('simple-mode', 'detail-mode');
+      document.body.classList.add(mode + '-mode');
+      document.querySelector('.btn-simple').classList.toggle('active', mode === 'simple');
+      document.querySelector('.btn-detail').classList.toggle('active', mode === 'detail');
+    }
+  </script>
+
+</body>
+</html>
