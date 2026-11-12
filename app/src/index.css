@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --color-mc-green: #5D9C3B;
+  --color-mc-green-dark: #4A7A2D;
+  --color-mc-green-light: #7AC14E;
+  --color-mc-dirt: #866043;
+  --color-mc-stone: #828282;
+  --color-mc-sky: #87CEEB;
+  --color-surface: #F9FAFB;
+  --color-border: #E5E7EB;
+  --font-sans: 'Noto Sans JP', -apple-system, sans-serif;
+}
