@@ -33,6 +33,14 @@ describe('isValidId', () => {
   it('rejects strings with hyphens', () => {
     expect(isValidId('my-cool-mob')).toBe(false)
   })
+
+  it('rejects underscore-only string', () => {
+    expect(isValidId('_')).toBe(false)
+  })
+
+  it('rejects all-underscore string', () => {
+    expect(isValidId('___')).toBe(false)
+  })
 })
 
 describe('toId (display name → ID conversion)', () => {
@@ -56,7 +64,7 @@ describe('toId (display name → ID conversion)', () => {
     expect(toId('🐾🐉')).toBe('')
   })
 
-  it('returns empty string for mixed Japanese + spaces', () => {
+  it('returns single underscore for Japanese text with spaces', () => {
     expect(toId('かっこいい モブ')).toBe('_')
   })
 

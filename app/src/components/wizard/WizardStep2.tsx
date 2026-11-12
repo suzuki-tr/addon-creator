@@ -10,9 +10,9 @@ export function toId(displayName: string): string {
     .replace(/[^a-z0-9_]/g, '')
 }
 
-/** Check if ID string is valid */
+/** Check if ID string is valid: must contain at least one alphanumeric character */
 export function isValidId(id: string): boolean {
-  return /^[a-z0-9_]+$/.test(id)
+  return /^[a-z0-9_]*[a-z0-9][a-z0-9_]*$/.test(id)
 }
 
 interface WizardStep2Props {
@@ -37,7 +37,7 @@ export const WizardStep2 = ({
     // Auto-suggest ID from display name, but skip when toId() strips all
     // characters (e.g. Japanese-only input) to avoid overwriting with "".
     const suggestedId = toId(displayName)
-    onChange({ displayName, ...(suggestedId ? { id: suggestedId } : {}) })
+    onChange({ displayName, ...(suggestedId && isValidId(suggestedId) ? { id: suggestedId } : {}) })
   }
 
   const handleIdChange = (e: React.ChangeEvent<HTMLInputElement>): void => {

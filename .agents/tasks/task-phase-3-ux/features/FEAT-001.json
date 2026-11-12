@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-001",
+  "type": "fix",
+  "description": "Fix 3 non-blocking Phase 2 findings: (a) isValidId underscore-only guard, (b) wizard.spec.ts test name typo, (c) EditorPage tab ARIA linkage. All three fixes are small and independent. Source of truth for each fix: .agents/tasks/phase2-review.md.",
+  "status": "completed",
+  "steps": [
+    "Step 1 — Fix isValidId regex in app/src/components/wizard/WizardStep2.tsx: change '/^[a-z0-9_]+$/' to '/^[a-z0-9_]*[a-z0-9][a-z0-9_]*$/' so underscore-only strings like '_' and '___' are rejected (require at least one alphanumeric char). Also update the handleDisplayNameChange guard from 'if (suggestedId)' to 'if (suggestedId && isValidId(suggestedId))' so underscore-only auto-suggestions are skipped.",
+    "Step 2 — Add 2 new tests to app/src/components/wizard/wizard.spec.ts in the isValidId describe block: it('rejects underscore-only string', () => expect(isValidId('_')).toBe(false)) and it('rejects all-underscore string', () => expect(isValidId('___')).toBe(false)). Total test count becomes 19.",
+    "Step 3 — Fix test name typo in app/src/components/wizard/wizard.spec.ts: change the describe('toId ...') test 'returns empty string for mixed Japanese + spaces' to 'returns single underscore for Japanese text with spaces' (phase2-review.md recommends this exact wording). The assertion toBe('_') stays unchanged.",
+    "Step 4 — Fix tab ARIA linkage in app/src/pages/EditorPage.tsx: (a) add id={'tab-' + tab.id} and aria-controls={'tabpanel-' + tab.id} to each tab <button> in the TABS.map(); (b) change the tab content <div role='tabpanel'> to have id={'tabpanel-' + activeTab} and aria-labelledby={'tab-' + activeTab}; (c) remove the aria-label attribute from the tabpanel div (it conflicts with aria-labelledby). The tabpanel id must update on every activeTab state change.",
+    "Step 5 — Run npm test from app/ directory. Confirm 19/19 pass. Run npm run build. Confirm exit 0. Commit: fix(wizard,editor): address 3 non-blocking Phase 2 findings"
+  ],
+  "acceptance_criteria": [
+    "isValidId('_') returns false",
+    "isValidId('___') returns false",
+    "isValidId('a_b') still returns true",
+    "isValidId('my_cool_mob') still returns true",
+    "handleDisplayNameChange with display name 'かっこいい モブ' does NOT overwrite the id field with '_'",
+    "npm test exits 0 with 19 tests passing",
+    "Test description 'returns single underscore for Japanese text with spaces' exists in wizard.spec.ts",
+    "Each tab button in EditorPage has id attribute (e.g. id='tab-traits') and aria-controls (e.g. aria-controls='tabpanel-traits')",
+    "The tabpanel div has id and aria-labelledby attributes that match the active tab"
+  ],
+  "verification": [
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm test",
+    "Output must show: Tests 19 passed (19)",
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm run build",
+    "Output must show 0 TypeScript errors"
+  ],
+  "blocked_reason": null,
+  "findings": "All 3 findings resolved. isValidId regex updated to require at least one alphanumeric char (rejects '_', '___'). handleDisplayNameChange guard upgraded to also check isValidId(suggestedId). Two new tests added (19 total). Test description typo fixed. EditorPage tab buttons now have id/aria-controls; tabpanel uses id+aria-labelledby keyed on activeTab. Build: 0 TS errors. Tests: 19/19 pass."
+}

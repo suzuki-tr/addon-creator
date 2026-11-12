@@ -138,6 +138,8 @@ export const EditorPage = (): JSX.Element => {
               key={tab.id}
               type="button"
               role="tab"
+              id={'tab-' + tab.id}
+              aria-controls={'tabpanel-' + tab.id}
               aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={[
@@ -156,7 +158,8 @@ export const EditorPage = (): JSX.Element => {
         <div
           className="flex-1 overflow-y-auto p-6"
           role="tabpanel"
-          aria-label={t(TABS.find((t) => t.id === activeTab)?.labelKey ?? 'editor.tabs.traits')}
+          id={'tabpanel-' + activeTab}
+          aria-labelledby={'tab-' + activeTab}
         >
           {activeTab === 'traits' && (
             <>
