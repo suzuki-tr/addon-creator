@@ -30,17 +30,17 @@
     "progress": "{{current}} / {{total}} ステップ",
     "step1": {
       "title": "なにをつくりますか？",
-      "mob": "モブ（いきもの）",
+      "mob": "Mob（モブ）",
       "mobDesc": "てきや なかまの いきものをつくれます",
-      "block": "ブロック",
+      "block": "Block（ブロック）",
       "blockDesc": "せかいにおける オリジナルブロックをつくれます",
-      "item": "アイテム",
+      "item": "Item（アイテム）",
       "itemDesc": "たべもの・ぶき・どうぐなどをつくれます"
     },
     "step2": {
       "title": "ベースをえらんでください",
       "fromScratch": "ゼロからつくる",
-      "fromVanilla": "バニラからアレンジする",
+      "fromVanilla": "Vanilla（バニラ）からアレンジする",
       "searchPlaceholder": "なまえでさがす..."
     },
     "step3": {
