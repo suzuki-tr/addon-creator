@@ -39,6 +39,12 @@ Phase 3 — 追加エディタ・全体 i18n 対応（待機中）
 - [ ] ウィザード E2E テスト（wizard.spec.ts）
 - [ ] ユニットテストカバレッジ > 80%
 
+## 未解決の非ブロッキング指摘
+
+1. `'_'` のみのID入力ガード漏れ（`isValidId` / `toId` のアンダースコア除去で空文字になるケース）
+2. `wizard.spec.ts` のテスト名に誤記あり（内容は phase2-review.md を参照）
+3. タブコンポーネントの ARIA 属性が未連結（`aria-controls` / `aria-labelledby` 未設定）
+
 ## 参照ドキュメント
 - porting-plan.md: フェーズ定義・完了条件
 - i18n-design.md: i18n 設計
