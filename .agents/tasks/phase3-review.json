@@ -1,5 +1,21 @@
 {
   "verdict": "APPROVED",
+  "summary": "Second-pass review confirms both prior blocking issues are resolved: ComponentPanel.tsx now calls t() for health slider labels (all three locale files carry the keys), and AppShell reads locale from useUiStore to switch between bg-[#FFFBEB] (ja-kids) and bg-[#F9FAFB] (standard). All 8 B-tasks are complete — isValidId('_') returns false, ARIA tab ids and aria-controls are linked, the 3-column advanced editor layout is in place, StateGraph and AppearancePanel use pure SVG with no external library, the ja-kids home variant matches wireframe #07 (large buttons, warm-yellow background, no mode toggle), locale coverage works via intentional fallbackLng, and build/tests both pass (0 TS errors, 19/19). Two non-blocking concerns remain: AppearancePanel borrows editor.stateGraph.reset for the UV zoom reset button (wrong namespace, correct text), and MaterialPanel select options use hardcoded English graphics terms that bypass t().",
+  "issues": [
+    {
+      "id": "R3",
+      "severity": "non-blocking",
+      "file": "app/src/components/editor/AppearancePanel.tsx",
+      "description": "Line 299 calls t('editor.stateGraph.reset') for the UV zoom reset button. The translation renders correctly ('↺ Reset' / '↺ リセット') but the key is in the wrong namespace. Future changes to the stateGraph section may break this silently. Fix: add editor.appearance.texture.uvReset to en.json and ja.json, omit from ja-kids.json (fallback covers it), and update the call site."
+    },
+    {
+      "id": "R4",
+      "severity": "non-blocking",
+      "file": "app/src/components/editor/AppearancePanel.tsx",
+      "description": "MaterialPanel and TexturePanel select options use hardcoded English strings not going through t(): UV, Triplanar (mapping type); Back, Front, None (culling); None, Alpha, Additive (blend mode). The Minecraft material names (entity_alphatest, entity, entity_emissive) are API identifiers and can remain. All affected options are behind mode==='advanced' gates. Fix: add locale keys for the display-label options (UV/Triplanar/Back/Front/None/Alpha/Additive) to all three locale files."
+    }
+  ],
+  "reviewDoc": "c:/Git/minecraft/minecraft-addon-creator/.agents/tasks/2026-11-13-010906-review.md",
   "build": {
     "command": "npm run build",
     "cwd": "c:/Git/minecraft/minecraft-addon-creator/app",
@@ -9,18 +25,5 @@
     "command": "npm test",
     "cwd": "c:/Git/minecraft/minecraft-addon-creator/app",
     "result": "exit 0 — 19/19 tests passed (1 test file)"
-  },
-  "commits_verified": [
-    "d9963b3 fix(wizard,editor): address 3 non-blocking Phase 2 findings (FEAT-001)",
-    "c415575 feat(editor): detail mode layout, StateGraph, AppearancePanel, JsonPreviewPanel (B-2 B-3 B-4) (FEAT-002)",
-    "de94ab6 feat(home,i18n): ja-kids home variant, full locale coverage (B-5 B-6) (FEAT-003)",
-    "50298bb docs: mark Phase 3 complete (FEAT-004)"
-  ],
-  "cross_feat_checks": [
-    "FEAT-001: isValidId regex updated to /^[a-z0-9_]*[a-z0-9][a-z0-9_]*$/ — rejects '_' and '___'. handleDisplayNameChange guard uses isValidId(suggestedId). EditorPage tab buttons have id='tab-{id}' and aria-controls='tabpanel-{id}'. Tabpanel has id='tabpanel-{activeTab}' and aria-labelledby='tab-{activeTab}'.",
-    "FEAT-002: JsonPreviewPanel, ComponentPanel, StateGraph, AppearancePanel all created and imported in EditorPage. Advanced mode renders 3-column layout with right JsonPreviewPanel aside. Tab list is mode-dependent (simple: traits/status/appearance; advanced: traits/status/components/stateGraph/appearance). useEffect resets activeTab to 'traits' when switching from advanced to simple while on a advanced-only tab. i18n keys (editor.tabs.components, editor.tabs.stateGraph, editor.jsonPreview.*, editor.stateGraph.*, editor.appearance.*, editor.components.*) present in ja.json.",
-    "FEAT-003: HomePage KidsHomeLayout component gated on locale === 'ja-kids' renders bg-[#FFFBEB], large min-h-[64px] CTA buttons, flex-col project list. Header hides mode toggle via {locale !== 'ja-kids' && ...}. daysAgo2/daysAgo5/weeksAgo1 keys added to ja.json, en.json, ja-kids.json. ja-kids.json has home.newAddon, home.openProject, home.recentProjects, home.project.edit overrides.",
-    "FEAT-004: progress.md updated — 現在のフェーズ: 'Phase 4 — 高度エディタ（待機中）', Phase 3 items marked [x], commit history recorded."
-  ],
-  "findings": []
+  }
 }

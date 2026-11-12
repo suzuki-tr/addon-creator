@@ -1,0 +1,30 @@
+{
+  "project_type": "Vite 8 + React 19 SPA, TypeScript strict, Tailwind CSS v4",
+  "language": "TypeScript + TSX",
+  "build_system": "Vite 8 (vite.config.ts). Path alias @/ → src/ configured in both vite.config.ts and tsconfig.app.json. Single package at app/. Run all commands from c:/Git/minecraft/minecraft-addon-creator/app/",
+  "test_framework": "Vitest 3 with @testing-library/react. One spec file: app/src/components/wizard/wizard.spec.ts (17 tests at baseline). Baseline: 17/17 pass.",
+  "build_command": "npm run build (runs tsc -b && vite build). Must exit 0.",
+  "test_command": "npm test (from app/ directory). The npm script already includes --silent and --reporter=dot. NEVER pass --silent again (npm test -- --silent causes vitest error 'Expected a single value'). Always use exactly: npm test",
+  "verification_instructions": "1. cd c:/Git/minecraft/minecraft-addon-creator/app  2. npm run build (must exit 0, 0 TS errors)  3. npm test (must exit 0, all tests pass)  4. Commit with 'git add <specific files> && git commit -m \"type(scope): message\"' — never git add -A",
+  "snapshot_or_generated_files": null,
+  "environment_constraints": "Windows/bash shell. npm test -- --silent causes error; never use it. Tailwind v4 only (no MUI). SVG components: no external SVG library. All imports must follow verbatimModuleSyntax: type-only imports use 'import type'. noUnusedLocals/noUnusedParameters are true: every declared variable/parameter must be used. exactOptionalPropertyTypes is true: optional props cannot be passed undefined explicitly without the type including undefined.",
+  "contribution_requirements": "TypeScript strict (strict:true, noImplicitAny, strictNullChecks, noUnusedLocals, noUnusedParameters, exactOptionalPropertyTypes). Named exports only. JSX return type: 'import type { JSX } from \"react\"' then ': JSX.Element'. Tailwind CSS v4 utility classes only. i18n: all display strings via useTranslation() / t(). New i18n keys MUST be added to ja.json first (it is the TypeScript type source in types/i18next.d.ts), then en.json, then ja-kids.json. Conventional commits: type(scope): description.",
+  "key_patterns": "React functional components: 'export const MyComp = (): JSX.Element => { ... }'. Zustand: 'const { locale, mode, setLocale, setMode } = useUiStore()'. i18n: 'const { t } = useTranslation()' then t('key.path'). Tailwind className: template literal or array.join(' '). Mode gate: mode === 'advanced'. Locale gate: locale === 'ja-kids'. Tab ARIA pattern: tab button has role=tab + id='tab-{id}' + aria-controls='tabpanel-{id}' + aria-selected; tabpanel div has role=tabpanel + id='tabpanel-{activeTab}' + aria-labelledby='tab-{activeTab}'.",
+  "relevant_files": [
+    "app/src/pages/EditorPage.tsx",
+    "app/src/pages/HomePage.tsx",
+    "app/src/components/layout/Header.tsx",
+    "app/src/components/layout/AppShell.tsx",
+    "app/src/components/editor/TraitCard.tsx",
+    "app/src/components/wizard/WizardStep2.tsx",
+    "app/src/components/wizard/wizard.spec.ts",
+    "app/src/stores/uiStore.ts",
+    "app/src/i18n/index.ts",
+    "app/src/i18n/locales/ja.json",
+    "app/src/i18n/locales/en.json",
+    "app/src/i18n/locales/ja-kids.json",
+    "app/src/types/i18next.d.ts",
+    "app/src/App.tsx"
+  ],
+  "directory_structure": "app/src/: App.tsx (BrowserRouter routes), main.tsx (entry, imports ./i18n). pages/: EditorPage (entity editor, noPadding route), HomePage, WizardPage. components/editor/: TraitCard.tsx (pattern for new editor components — no props except data+callback). components/layout/: AppShell.tsx (Header + main flex-col), Header.tsx (mode toggle + locale select). components/wizard/: WizardStep2.tsx (exports isValidId, toId for tests). i18n/: index.ts (i18next init) + locales/. stores/: uiStore.ts (UIMode='simple'|'advanced', SupportedLocale). types/: i18next.d.ts (imports typeof ja.json as type base)."
+}

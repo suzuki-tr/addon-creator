@@ -1,0 +1,7 @@
+{
+  "task_id": "task-phase-3-ux",
+  "task_description": "Phase 3 UX: fix 3 non-blocking Phase 2 findings, implement editor detail mode (3-column layout + JSON preview + StateGraph + AppearancePanel), add ja-kids home page variant, complete full locale coverage, verify build and tests pass, update progress.md",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}

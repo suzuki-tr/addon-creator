@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement ja-kids HomePage variant (B-5) and complete full locale coverage (B-6). Depends on FEAT-001 and FEAT-002 for new i18n keys being in ja.json. FEAT-003 and FEAT-002 are independent in terms of files touched (FEAT-003 touches HomePage, Header, locale files; FEAT-002 touches EditorPage, new editor components, locale files). If run after FEAT-002, the locale files already have editor keys; this FEAT adds home/app-level keys.",
+  "status": "completed",
+  "steps": [
+    "Step 1 — Add ja-kids home override keys to app/src/i18n/locales/ja-kids.json. These keys override ja.json values with kids-appropriate text. Inside 'home' key: newAddon='✨ あたらしくつくる', openProject='📂 まえにつくったものをひらく', recentProjects='このまえつくったもの'. Inside 'home.project': edit='つづきをつくる →'. Inside 'home.hero': subtitle key already exists in ja-kids.json (verify it says 'じぶんだけのアドオンをつくってみましょう！ 🎮' per wireframe #07). No new keys to add to ja.json or en.json for these since they already exist in those files (B-6 audit will catch any gaps).",
+    "Step 2 — Add placeholder project relative-time i18n keys to app/src/i18n/locales/ja.json (inside home.project): daysAgo2='2日前', daysAgo5='5日前', weeksAgo1='1週間前'. Add same keys to app/src/i18n/locales/en.json: daysAgo2='2 days ago', daysAgo5='5 days ago', weeksAgo1='1 week ago'. Add to app/src/i18n/locales/ja-kids.json: daysAgo2='2日まえ', daysAgo5='5日まえ', weeksAgo1='1しゅうかんまえ'. These replace hardcoded Japanese strings in PLACEHOLDER_PROJECTS.",
+    "Step 3 — Update app/src/pages/HomePage.tsx: (a) Add import for useUiStore. (b) Read locale: const { locale } = useUiStore(). (c) Update PLACEHOLDER_PROJECTS to use t() for daysAgo: change 'daysAgo' field from a hardcoded string to a translation key reference — either move daysAgo into the render loop using t('home.project.daysAgo2') etc., or define a daysAgoKey field on each project and call t(project.daysAgoKey). (d) Add conditional kids layout: if (locale === 'ja-kids') return <KidsHomeLayout ... />. The KidsHomeLayout (can be a local inline component or just a conditional JSX block) follows wireframe #07: bg-[#FFFBEB] wrapper with max-w-[900px] mx-auto px-6 py-9; Hero section: white bg, rounded-2xl, border-2, text-center, py-12 px-8; h1 with text-[2.2rem] font-bold; p with text-[1.3rem] text-gray-700; two full-width stacked buttons (flex-col gap-4, max-w-[560px] mx-auto): primary button (bg-[#5D9C3B] text-white min-h-[64px] text-[1.3rem] font-bold rounded-2xl w-full) calls handleNewAddon, secondary button (bg-white border-[2.5px] min-h-[64px] text-[1.3rem] font-semibold rounded-2xl w-full) calls handleOpenProject; Recent projects section: h2 with text-[1.5rem] font-bold mb-4; project list as flex-col gap-3.5 (not grid); each card: bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 flex items-center gap-5; emoji span text-[2.8rem]; card body flex-1 (name text-[1.3rem] font-bold, date text-base text-gray-500); continue button (bg-[#5D9C3B] text-white min-h-[48px] rounded-xl px-5 font-bold). All text uses t(). The continue button text uses t('home.project.edit') which ja-kids.json now overrides to 'つづきをつくる →'.",
+    "Step 4 — Update app/src/components/layout/Header.tsx: (a) Add import for useUiStore (already imported). (b) Read locale from useUiStore: destructure locale alongside mode. (c) Conditionally render the mode toggle group: wrap the mode toggle <div role='group'> in {locale !== 'ja-kids' && ( ... )}. This hides mode toggle entirely when ja-kids is selected, matching wireframe #07 which has no mode toggle in that locale.",
+    "Step 5 — Full locale audit: scan all app/src/pages/*.tsx and app/src/components/**/*.tsx for hardcoded non-i18n UI strings (exclude placeholder data, code literals, aria-label bilingual patterns). Check: (a) EditorPage.tsx — aria-label for the outer tablist container is t()-based, confirm no raw Japanese/English strings remain; (b) Header.tsx — the aria-label '言語を選ぶ / Select language' is bilingual by design and acceptable; (c) WizardStep3.tsx — open this file and check for any hardcoded strings; (d) WizardPage.tsx — check for hardcoded strings. For any found, add key to ja.json and en.json, then replace with t(). ja-kids.json only needs the key if the kids text differs from ja.",
+    "Step 6 — Run npm run build from app/. Fix any TypeScript errors (most likely: new keys not matching the i18next type if ja.json structure is wrong, or unused variables). Run npm test from app/. All 19 tests must pass. Commit: feat(home,i18n): add ja-kids home variant, complete locale coverage (B-5 B-6)"
+  ],
+  "acceptance_criteria": [
+    "npm run build exits 0 with 0 TypeScript errors",
+    "npm test exits 0 with 19 tests passing",
+    "When locale is 'ja-kids', HomePage renders the kids layout (large buttons, min-h-[64px], bg-[#FFFBEB], vertical stack project list)",
+    "When locale is 'ja-kids', Header does not render the mode toggle group",
+    "When locale is 'en', HomePage renders the standard grid layout",
+    "When locale is 'ja', HomePage renders the standard grid layout",
+    "PLACEHOLDER_PROJECTS daysAgo values use t() — switching locale changes 'ago' text from Japanese to English",
+    "ja-kids.json has home.newAddon='✨ あたらしくつくる', home.openProject='📂 まえにつくったものをひらく', home.recentProjects='このまえつくったもの', home.project.edit='つづきをつくる →'",
+    "No hardcoded Japanese or English UI label strings remain in page or layout components (placeholder data strings acceptable)"
+  ],
+  "verification": [
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm run build",
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm test",
+    "Output must show: Tests 19 passed (19)"
+  ],
+  "blocked_reason": null,
+  "findings": "Implemented ja-kids HomePage variant (KidsHomeLayout: bg-[#FFFBEB], large min-h-[64px] buttons, flex-col project list) gated on locale === 'ja-kids'. Header mode toggle hidden via {locale !== 'ja-kids' && ...}. Added daysAgo2/daysAgo5/weeksAgo1 i18n keys to ja.json, en.json, ja-kids.json; PLACEHOLDER_PROJECTS now use daysAgoKey referencing t(). ja-kids.json home overrides updated: newAddon='✨ あたらしくつくる', openProject='📂 まえにつくったものをひらく', recentProjects='このまえつくったもの', project.edit='つづきをつくる →', hero.subtitle corrected to match wireframe #07. Build: 0 TS errors. Tests: 19/19 passed. Commit: de94ab6."
+}
