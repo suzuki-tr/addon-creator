@@ -8,6 +8,7 @@ import { JsonPreviewPanel } from '@/components/editor/JsonPreviewPanel'
 import { ComponentPanel } from '@/components/editor/ComponentPanel'
 import { StateGraph } from '@/components/editor/StateGraph'
 import { AppearancePanel } from '@/components/editor/AppearancePanel'
+import { StatusPanel } from '@/components/editor/StatusPanel'
 
 type EditorTab = 'traits' | 'status' | 'appearance' | 'components' | 'stateGraph'
 
@@ -225,12 +226,7 @@ export const EditorPage = (): JSX.Element => {
             </>
           )}
 
-          {activeTab === 'status' && (
-            <div className="text-gray-500 text-sm">
-              {/* Phase 3: status panel */}
-              <p>{t('common.label.loading')}</p>
-            </div>
-          )}
+          {activeTab === 'status' && <StatusPanel />}
 
           {activeTab === 'components' && <ComponentPanel />}
 

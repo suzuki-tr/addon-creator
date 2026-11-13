@@ -311,7 +311,7 @@ const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset }: UvPaneProps): JSX.Elem
           onClick={onReset}
           className="px-2 py-1 border border-gray-200 rounded text-xs text-gray-600 hover:bg-white cursor-pointer bg-white"
         >
-          {t('editor.stateGraph.reset')}
+          {t('editor.appearance.texture.uvReset')}
         </button>
         <span className="ml-auto text-xs text-gray-400">
           {Math.round(uvZoom * 100)}%
@@ -475,8 +475,8 @@ const TextureSlotPanel = (): JSX.Element => {
               {t('editor.appearance.texture.mappingType')}
             </label>
             <select className="border border-gray-200 rounded px-2 py-1.5 text-xs text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]">
-              <option>UV</option>
-              <option>Triplanar</option>
+              <option value="UV">{t('editor.appearance.texture.mappingTypeUV')}</option>
+              <option value="Triplanar">{t('editor.appearance.texture.mappingTypeTriplanar')}</option>
             </select>
           </div>
           <div className="flex flex-col gap-1">
@@ -631,9 +631,9 @@ const MaterialPanel = (): JSX.Element => {
               {t('editor.appearance.material.culling')}
             </label>
             <select className="border border-gray-200 rounded px-2 py-1.5 text-xs text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]">
-              <option>Back</option>
-              <option>Front</option>
-              <option>None</option>
+              <option value="Back">{t('editor.appearance.material.cullingBack')}</option>
+              <option value="Front">{t('editor.appearance.material.cullingFront')}</option>
+              <option value="None">{t('editor.appearance.material.cullingNone')}</option>
             </select>
           </div>
           <div className="flex flex-col gap-1">
@@ -641,9 +641,9 @@ const MaterialPanel = (): JSX.Element => {
               {t('editor.appearance.material.blend')}
             </label>
             <select className="border border-gray-200 rounded px-2 py-1.5 text-xs text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]">
-              <option>None</option>
-              <option>Alpha</option>
-              <option>Additive</option>
+              <option value="None">{t('editor.appearance.material.blendNone')}</option>
+              <option value="Alpha">{t('editor.appearance.material.blendAlpha')}</option>
+              <option value="Additive">{t('editor.appearance.material.blendAdditive')}</option>
             </select>
           </div>
           <div className="flex flex-col gap-1">

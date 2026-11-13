@@ -135,20 +135,43 @@
       "selectedState": "えらんでいるじょうたい",
       "stateName": "じょうたいのなまえ",
       "transitions": "つながりのじょうけん",
-      "addTransition": "＋ つながりをついか"
+      "addTransition": "＋ つながりをついか",
+      "variables": "変数",
+      "variablesName": "変数名",
+      "variablesDefault": "初期値",
+      "addVariable": "＋ 変数を追加",
+      "eventTriggers": "イベントトリガー",
+      "onEntry": "on_entry（開始時）",
+      "onExit": "on_exit（終了時）",
+      "addEvent": "＋ 追加"
     },
     "appearance": {
       "geometry": {
         "browseButton": "さがす",
         "bonesTitle": "ボーンのリスト",
-        "attachmentTitle": "アタッチメントポイント"
+        "attachmentTitle": "アタッチメントポイント",
+        "fileLabel": "ファイルのパス",
+        "idLabel": "Geometry（ジオメトリ）のID"
       },
       "texture": {
-        "addSlot": "＋ スロットをついか"
+        "addSlot": "＋ スロットをついか",
+        "slotsTitle": "テクスチャのスロット",
+        "uvTitle": "UV マッピング",
+        "change": "かえる",
+        "variantsTitle": "テクスチャのバリアント",
+        "variantAdvancedOnly": "テクスチャのバリアントはくわしいモードでみられます。右上の「くわしい」ボタンをおしてください。",
+        "mappingTypeUV": "UV",
+        "mappingTypeTriplanar": "Triplanar"
       },
       "material": {
         "simpleNotice": "マテリアルのせっていはくわしいモードでみられます。",
-        "title": "マテリアルのせってい"
+        "title": "マテリアルのせってい",
+        "cullingBack": "Back",
+        "cullingFront": "Front",
+        "cullingNone": "なし",
+        "blendNone": "なし",
+        "blendAlpha": "Alpha",
+        "blendAdditive": "Additive"
       }
     },
     "components": {
@@ -158,6 +181,10 @@
         "maxLabel": "たいりょく (さいだい)",
         "defaultLabel": "はじめのち"
       }
+    },
+    "status": {
+      "heading": "ステータスをきめてください",
+      "resetDefault": "もとにもどす"
     }
   },
   "entity": {

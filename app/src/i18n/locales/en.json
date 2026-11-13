@@ -158,7 +158,15 @@
       "transitions": "Transitions",
       "addTransition": "+ Add Transition",
       "zoom": "🔍 Zoom",
-      "reset": "↺ Reset"
+      "reset": "↺ Reset",
+      "variables": "Variables",
+      "variablesName": "Variable Name",
+      "variablesDefault": "Default Value",
+      "addVariable": "+ Add Variable",
+      "eventTriggers": "Event Triggers",
+      "onEntry": "on_entry (on enter)",
+      "onExit": "on_exit (on exit)",
+      "addEvent": "+ Add"
     },
     "appearance": {
       "tabs": {
@@ -185,7 +193,10 @@
         "variantAdvancedOnly": "Texture variants are available in Advanced Mode.",
         "addVariant": "+ Add Variant",
         "variantDescription": "Description",
-        "variantSlot": "Slot"
+        "variantSlot": "Slot",
+        "uvReset": "↺ Reset",
+        "mappingTypeUV": "UV",
+        "mappingTypeTriplanar": "Triplanar"
       },
       "material": {
         "simpleNotice": "Material settings are available in Advanced Mode.",
@@ -195,7 +206,13 @@
         "shaderSettings": "Shader Settings",
         "culling": "Culling Mode",
         "blend": "Blend Mode",
-        "emissive": "Emissive Factor"
+        "emissive": "Emissive Factor",
+        "cullingBack": "Back",
+        "cullingFront": "Front",
+        "cullingNone": "None",
+        "blendNone": "None",
+        "blendAlpha": "Alpha",
+        "blendAdditive": "Additive"
       }
     },
     "components": {
@@ -205,6 +222,10 @@
         "maxLabel": "Health (max)",
         "defaultLabel": "Default"
       }
+    },
+    "status": {
+      "heading": "Set Status Values",
+      "resetDefault": "Default"
     }
   },
   "entity": {

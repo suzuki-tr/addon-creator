@@ -1,6 +1,7 @@
 import type { JSX } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useUiStore } from '@/stores/uiStore'
 
 interface StateNode {
   id: string
@@ -69,11 +70,34 @@ const rectBorderPoint = (
 
 export const StateGraph = (): JSX.Element => {
   const { t } = useTranslation()
+  const { mode } = useUiStore()
   const [nodes] = useState<StateNode[]>(INITIAL_NODES)
   const [transitions] = useState<StateTransition[]>(INITIAL_TRANSITIONS)
   const [selectedStateId, setSelectedStateId] = useState<string | null>(
     'attack',
   )
+  const [variables, setVariables] = useState<
+    Array<{ name: string; defaultValue: number }>
+  >([])
+  const [events, setEvents] = useState<
+    Array<{ type: 'entry' | 'exit'; action: string }>
+  >([])
+
+  const handleAddVariable = (): void => {
+    setVariables((prev) => [...prev, { name: '', defaultValue: 0 }])
+  }
+
+  const handleDeleteVariable = (idx: number): void => {
+    setVariables((prev) => prev.filter((_, i) => i !== idx))
+  }
+
+  const handleAddEvent = (type: 'entry' | 'exit'): void => {
+    setEvents((prev) => [...prev, { type, action: '' }])
+  }
+
+  const handleDeleteEvent = (idx: number): void => {
+    setEvents((prev) => prev.filter((_, i) => i !== idx))
+  }
 
   const selectedNode = nodes.find((n) => n.id === selectedStateId) ?? null
   const selectedTransitions = transitions.filter(
@@ -351,6 +375,149 @@ export const StateGraph = (): JSX.Element => {
                 {t('editor.stateGraph.addTransition')}
               </button>
             </div>
+
+            {/* Variables section — advanced mode only */}
+            {mode === 'advanced' && (
+              <div className="flex flex-col gap-1.5">
+                <div className="text-xs font-bold text-gray-500">
+                  {t('editor.stateGraph.variables')}
+                </div>
+                {variables.map((v, i) => (
+                  <div key={i} className="flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      value={v.name}
+                      placeholder={t('editor.stateGraph.variablesName')}
+                      onChange={(e) => {
+                        const name = e.target.value
+                        setVariables((prev) =>
+                          prev.map((item, idx) =>
+                            idx === i ? { ...item, name } : item,
+                          ),
+                        )
+                      }}
+                      className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs font-mono text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
+                    />
+                    <input
+                      type="number"
+                      value={v.defaultValue}
+                      placeholder={t('editor.stateGraph.variablesDefault')}
+                      onChange={(e) => {
+                        const defaultValue = parseFloat(e.target.value) || 0
+                        setVariables((prev) =>
+                          prev.map((item, idx) =>
+                            idx === i ? { ...item, defaultValue } : item,
+                          ),
+                        )
+                      }}
+                      className="w-16 border border-gray-200 rounded px-2 py-1 text-xs font-mono text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteVariable(i)}
+                      aria-label="変数を削除"
+                      className="w-5 h-5 flex items-center justify-center text-xs text-gray-300 hover:text-red-400 cursor-pointer border-none bg-transparent rounded flex-shrink-0"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={handleAddVariable}
+                  className="text-xs text-[#5D9C3B] border border-dashed border-[#5D9C3B] rounded px-2 py-1.5 hover:bg-[#F0F8EA] cursor-pointer bg-transparent mt-1"
+                >
+                  {t('editor.stateGraph.addVariable')}
+                </button>
+              </div>
+            )}
+
+            {/* Event Triggers section — advanced mode only */}
+            {mode === 'advanced' && (
+              <div className="flex flex-col gap-1.5">
+                <div className="text-xs font-bold text-gray-500">
+                  {t('editor.stateGraph.eventTriggers')}
+                </div>
+
+                {/* on_entry */}
+                <div className="text-xs text-gray-500 font-medium mt-1">
+                  {t('editor.stateGraph.onEntry')}
+                </div>
+                {events.map((ev, idx) =>
+                  ev.type === 'entry' ? (
+                    <div key={idx} className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={ev.action}
+                        onChange={(e) => {
+                          const action = e.target.value
+                          setEvents((prev) =>
+                            prev.map((item, i) =>
+                              i === idx ? { ...item, action } : item,
+                            ),
+                          )
+                        }}
+                        className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs font-mono text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteEvent(idx)}
+                        aria-label="イベントを削除"
+                        className="w-5 h-5 flex items-center justify-center text-xs text-gray-300 hover:text-red-400 cursor-pointer border-none bg-transparent rounded flex-shrink-0"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : null,
+                )}
+                <button
+                  type="button"
+                  onClick={() => handleAddEvent('entry')}
+                  className="text-xs text-[#5D9C3B] border border-dashed border-[#5D9C3B] rounded px-2 py-1.5 hover:bg-[#F0F8EA] cursor-pointer bg-transparent"
+                >
+                  {t('editor.stateGraph.addEvent')}
+                </button>
+
+                {/* on_exit */}
+                <div className="text-xs text-gray-500 font-medium mt-2">
+                  {t('editor.stateGraph.onExit')}
+                </div>
+                {events.map((ev, idx) =>
+                  ev.type === 'exit' ? (
+                    <div key={idx} className="flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={ev.action}
+                        onChange={(e) => {
+                          const action = e.target.value
+                          setEvents((prev) =>
+                            prev.map((item, i) =>
+                              i === idx ? { ...item, action } : item,
+                            ),
+                          )
+                        }}
+                        className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs font-mono text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteEvent(idx)}
+                        aria-label="イベントを削除"
+                        className="w-5 h-5 flex items-center justify-center text-xs text-gray-300 hover:text-red-400 cursor-pointer border-none bg-transparent rounded flex-shrink-0"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : null,
+                )}
+                <button
+                  type="button"
+                  onClick={() => handleAddEvent('exit')}
+                  className="text-xs text-[#5D9C3B] border border-dashed border-[#5D9C3B] rounded px-2 py-1.5 hover:bg-[#F0F8EA] cursor-pointer bg-transparent"
+                >
+                  {t('editor.stateGraph.addEvent')}
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className="p-4 text-xs text-gray-400 text-center mt-4">

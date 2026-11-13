@@ -158,7 +158,15 @@
       "transitions": "遷移条件",
       "addTransition": "＋ 遷移を追加",
       "zoom": "🔍 ズーム",
-      "reset": "↺ リセット"
+      "reset": "↺ リセット",
+      "variables": "変数",
+      "variablesName": "変数名",
+      "variablesDefault": "初期値",
+      "addVariable": "＋ 変数を追加",
+      "eventTriggers": "イベントトリガー",
+      "onEntry": "on_entry（開始時）",
+      "onExit": "on_exit（終了時）",
+      "addEvent": "＋ 追加"
     },
     "appearance": {
       "tabs": {
@@ -185,7 +193,10 @@
         "variantAdvancedOnly": "テクスチャバリアントは詳細モードで確認できます。右上の「くわしい」ボタンを押してください。",
         "addVariant": "＋ バリアントを追加",
         "variantDescription": "説明",
-        "variantSlot": "使用スロット"
+        "variantSlot": "使用スロット",
+        "uvReset": "↺ リセット",
+        "mappingTypeUV": "UV",
+        "mappingTypeTriplanar": "Triplanar"
       },
       "material": {
         "simpleNotice": "マテリアル設定は詳細モードで確認できます。",
@@ -195,7 +206,13 @@
         "shaderSettings": "シェーダー設定",
         "culling": "カリングモード",
         "blend": "ブレンドモード",
-        "emissive": "エミッシブ係数"
+        "emissive": "エミッシブ係数",
+        "cullingBack": "Back",
+        "cullingFront": "Front",
+        "cullingNone": "なし",
+        "blendNone": "なし",
+        "blendAlpha": "Alpha",
+        "blendAdditive": "Additive"
       }
     },
     "components": {
@@ -205,6 +222,10 @@
         "maxLabel": "体力 (max)",
         "defaultLabel": "初期値"
       }
+    },
+    "status": {
+      "heading": "ステータスを設定してください",
+      "resetDefault": "デフォルト"
     }
   },
   "entity": {
