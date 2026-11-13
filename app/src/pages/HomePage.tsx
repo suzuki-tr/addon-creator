@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useUiStore } from '@/stores/uiStore'
 
@@ -137,6 +137,42 @@ const KidsHomeLayout = ({
           </div>
         ))}
       </div>
+
+      {/* Editor Tools section */}
+      <div className="mt-9">
+        <h2 className="text-[1.5rem] font-bold text-gray-900 mb-4">
+          {t('home.tools.title')}
+        </h2>
+        <div className="grid grid-cols-3 gap-3.5">
+          <Link
+            to="/recipe"
+            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-[2rem] mb-2">🧪</div>
+            <div className="text-base font-bold text-gray-900">
+              {t('home.tools.recipe')}
+            </div>
+          </Link>
+          <Link
+            to="/loot-table"
+            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-[2rem] mb-2">🎲</div>
+            <div className="text-base font-bold text-gray-900">
+              {t('home.tools.lootTable')}
+            </div>
+          </Link>
+          <Link
+            to="/spawn-rules"
+            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-[2rem] mb-2">🌍</div>
+            <div className="text-base font-bold text-gray-900">
+              {t('home.tools.spawnRules')}
+            </div>
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }
@@ -236,6 +272,42 @@ const StandardHomeLayout = ({
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Editor Tools section */}
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          {t('home.tools.title')}
+        </h2>
+        <div className="grid grid-cols-3 gap-4">
+          <Link
+            to="/recipe"
+            className="bg-white border border-[#E5E7EB] rounded-xl p-4 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-2xl mb-2">🧪</div>
+            <div className="text-sm font-medium text-gray-900">
+              {t('home.tools.recipe')}
+            </div>
+          </Link>
+          <Link
+            to="/loot-table"
+            className="bg-white border border-[#E5E7EB] rounded-xl p-4 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-2xl mb-2">🎲</div>
+            <div className="text-sm font-medium text-gray-900">
+              {t('home.tools.lootTable')}
+            </div>
+          </Link>
+          <Link
+            to="/spawn-rules"
+            className="bg-white border border-[#E5E7EB] rounded-xl p-4 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-2xl mb-2">🌍</div>
+            <div className="text-sm font-medium text-gray-900">
+              {t('home.tools.spawnRules')}
+            </div>
+          </Link>
+        </div>
       </div>
     </>
   )

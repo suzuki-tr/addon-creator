@@ -39,6 +39,10 @@
       "daysAgo2": "2日まえ",
       "daysAgo5": "5日まえ",
       "weeksAgo1": "1しゅうかんまえ"
+    },
+    "tools": {
+      "lootTable": "Loot（ドロップ）テーブルエディタ",
+      "spawnRules": "Spawn（スポーン）ルールエディタ"
     }
   },
   "wizard": {
@@ -233,5 +237,23 @@
     "success": "「{{name}}.mcaddon」をダウンロードしました",
     "validating": "チェックしています...",
     "generating": "ファイルをつくっています..."
+  },
+  "recipe": {
+    "pageTitle": "レシピエディタ",
+    "tabs": {
+      "shaped": "クラフト（かたちあり）",
+      "shapeless": "クラフト（かたちなし）"
+    },
+    "result": "できるもの",
+    "resultCount": "こすう",
+    "ingredients": "ざいりょう",
+    "addIngredient": "＋ ざいりょうをついか",
+    "empty": "（から）",
+    "itemId": "アイテムのID"
+  },
+  "lootTable": {
+    "pageTitle": "ドロップテーブルエディタ",
+    "addPool": "＋ プールをついか",
+    "addEntry": "＋ エントリーをついか"
   }
 }

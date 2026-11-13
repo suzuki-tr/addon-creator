@@ -39,6 +39,12 @@
       "daysAgo2": "2日前",
       "daysAgo5": "5日前",
       "weeksAgo1": "1週間前"
+    },
+    "tools": {
+      "title": "エディタツール",
+      "recipe": "レシピエディタ",
+      "lootTable": "ドロップテーブルエディタ",
+      "spawnRules": "スポーンルールエディタ"
     }
   },
   "wizard": {
@@ -310,5 +316,70 @@
     "success": "「{{name}}.mcaddon」をダウンロードしました",
     "validating": "確認中...",
     "generating": "ファイルを生成中..."
+  },
+  "recipe": {
+    "pageTitle": "レシピエディタ",
+    "tabs": {
+      "shaped": "クラフト（形あり）",
+      "shapeless": "クラフト（形なし）",
+      "furnace": "かまど"
+    },
+    "result": "完成品",
+    "resultCount": "個数",
+    "pattern": "パターン（3×3）",
+    "keys": "材料の対応",
+    "addKey": "＋ 追加",
+    "deleteKey": "削除",
+    "ingredients": "材料",
+    "addIngredient": "＋ 材料を追加",
+    "input": "入力アイテム",
+    "output": "出力アイテム",
+    "cookTime": "加熱時間（tick）",
+    "experience": "経験値",
+    "slot": "スロット",
+    "empty": "（空）",
+    "itemId": "アイテム ID"
+  },
+  "lootTable": {
+    "pageTitle": "ドロップテーブルエディタ",
+    "pools": "プール一覧",
+    "pool": "プール",
+    "rolls": "ドロップ回数",
+    "rollsMin": "最小",
+    "rollsMax": "最大",
+    "entries": "エントリー",
+    "addEntry": "＋ エントリーを追加",
+    "addPool": "＋ プールを追加",
+    "deletePool": "プールを削除",
+    "entryType": "種類",
+    "entryName": "アイテム ID",
+    "entryWeight": "重み",
+    "entryCount": "個数",
+    "typeItem": "アイテム",
+    "typeLootTable": "別のテーブル"
+  },
+  "spawnRules": {
+    "pageTitle": "スポーンルールエディタ",
+    "entityId": "エンティティ ID",
+    "populationControl": "出現設定",
+    "onSurface": "地上に出現",
+    "underground": "地下に出現",
+    "inLava": "溶岩に出現",
+    "conditions": "条件",
+    "weight": "重み",
+    "groupSizeMin": "グループ最小",
+    "groupSizeMax": "グループ最大",
+    "biomeFilter": "バイオームフィルター",
+    "addBiomeTag": "＋ タグを追加",
+    "deleteBiomeTag": "削除",
+    "difficultyFilter": "難易度フィルター",
+    "lightLevel": "明るさレベル",
+    "lightMin": "最小",
+    "lightMax": "最大",
+    "timeOfDay": "時間帯",
+    "timeDawn": "夜明け",
+    "timeDay": "昼",
+    "timeDusk": "夕暮れ",
+    "timeNight": "夜"
   }
 }

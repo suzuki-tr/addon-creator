@@ -39,6 +39,12 @@
       "daysAgo2": "2 days ago",
       "daysAgo5": "5 days ago",
       "weeksAgo1": "1 week ago"
+    },
+    "tools": {
+      "title": "Editor Tools",
+      "recipe": "Recipe Editor",
+      "lootTable": "Loot Table Editor",
+      "spawnRules": "Spawn Rules Editor"
     }
   },
   "wizard": {
@@ -310,5 +316,70 @@
     "success": "Downloaded \"{{name}}.mcaddon\"",
     "validating": "Validating...",
     "generating": "Generating files..."
+  },
+  "recipe": {
+    "pageTitle": "Recipe Editor",
+    "tabs": {
+      "shaped": "Shaped Crafting",
+      "shapeless": "Shapeless Crafting",
+      "furnace": "Furnace"
+    },
+    "result": "Result Item",
+    "resultCount": "Count",
+    "pattern": "Pattern (3×3)",
+    "keys": "Key Mapping",
+    "addKey": "+ Add Key",
+    "deleteKey": "Delete",
+    "ingredients": "Ingredients",
+    "addIngredient": "+ Add Ingredient",
+    "input": "Input Item",
+    "output": "Output Item",
+    "cookTime": "Cook Time (ticks)",
+    "experience": "Experience",
+    "slot": "Slot",
+    "empty": "(Empty)",
+    "itemId": "Item ID"
+  },
+  "lootTable": {
+    "pageTitle": "Loot Table Editor",
+    "pools": "Pools",
+    "pool": "Pool",
+    "rolls": "Roll Count",
+    "rollsMin": "Min",
+    "rollsMax": "Max",
+    "entries": "Entries",
+    "addEntry": "+ Add Entry",
+    "addPool": "+ Add Pool",
+    "deletePool": "Delete Pool",
+    "entryType": "Type",
+    "entryName": "Item ID",
+    "entryWeight": "Weight",
+    "entryCount": "Count",
+    "typeItem": "Item",
+    "typeLootTable": "Loot Table"
+  },
+  "spawnRules": {
+    "pageTitle": "Spawn Rules Editor",
+    "entityId": "Entity ID",
+    "populationControl": "Population Control",
+    "onSurface": "Spawns on surface",
+    "underground": "Spawns underground",
+    "inLava": "Spawns in lava",
+    "conditions": "Conditions",
+    "weight": "Weight",
+    "groupSizeMin": "Min group size",
+    "groupSizeMax": "Max group size",
+    "biomeFilter": "Biome Filter",
+    "addBiomeTag": "+ Add Tag",
+    "deleteBiomeTag": "Delete",
+    "difficultyFilter": "Difficulty Filter",
+    "lightLevel": "Light Level",
+    "lightMin": "Min",
+    "lightMax": "Max",
+    "timeOfDay": "Time of Day",
+    "timeDawn": "Dawn",
+    "timeDay": "Day",
+    "timeDusk": "Dusk",
+    "timeNight": "Night"
   }
 }
