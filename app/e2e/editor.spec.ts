@@ -38,6 +38,18 @@ test.describe('エディタページ', () => {
     const traitCards = page.getByRole('checkbox')
     await expect(traitCards).toHaveCount(9)
 
+    // Verify 3-column layout: cards 0, 1, 2 share the same row (lg:grid-cols-3 at 1280 px)
+    const [b0, b1, b2, b3] = await Promise.all([
+      traitCards.nth(0).boundingBox(),
+      traitCards.nth(1).boundingBox(),
+      traitCards.nth(2).boundingBox(),
+      traitCards.nth(3).boundingBox(),
+    ])
+    expect(b0).not.toBeNull()
+    expect(Math.abs(b0!.y - b1!.y)).toBeLessThan(5)  // cards 0 and 1 share row 1
+    expect(Math.abs(b0!.y - b2!.y)).toBeLessThan(5)  // cards 0 and 2 share row 1
+    expect(b3!.y).toBeGreaterThan(b0!.y + 20)        // card 3 starts on row 2
+
     // JSON preview panel is not rendered in simple mode
     // ("JSON プレビュー" text does not appear)
     await expect(page.getByText('JSON プレビュー')).not.toBeVisible()
@@ -56,15 +68,26 @@ test.describe('エディタページ', () => {
     // (app.mode.advanced in ja = "くわしいモード")
     await page.getByRole('button', { name: 'くわしいモード' }).click()
 
+    // Verify 3-column layout is preserved in advanced mode (trait grid still uses lg:grid-cols-3)
+    const advTraitCards = page.getByRole('checkbox')
+    await expect(advTraitCards).toHaveCount(9)
+    const [ab0, ab1, ab2, ab3] = await Promise.all([
+      advTraitCards.nth(0).boundingBox(),
+      advTraitCards.nth(1).boundingBox(),
+      advTraitCards.nth(2).boundingBox(),
+      advTraitCards.nth(3).boundingBox(),
+    ])
+    expect(ab0).not.toBeNull()
+    expect(Math.abs(ab0!.y - ab1!.y)).toBeLessThan(5)  // cards 0 and 1 share row 1
+    expect(Math.abs(ab0!.y - ab2!.y)).toBeLessThan(5)  // cards 0 and 2 share row 1
+    expect(ab3!.y).toBeGreaterThan(ab0!.y + 20)        // card 3 starts on row 2
+
     // JSON preview panel should now be visible (right aside)
     await expect(page.getByText('JSON プレビュー')).toBeVisible()
 
     // Components and State Graph tabs are added in advanced mode
     await expect(page.getByRole('tab', { name: /コンポーネント/ })).toBeVisible()
     await expect(page.getByRole('tab', { name: /状態グラフ/ })).toBeVisible()
-
-    // Trait cards remain visible in the traits tab
-    await expect(page.getByRole('checkbox')).toHaveCount(9)
   })
 
   test('外観タブでジオメトリ/テクスチャサブタブが切り替わる', async ({ page }) => {
