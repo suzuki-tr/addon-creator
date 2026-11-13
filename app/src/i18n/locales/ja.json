@@ -150,13 +150,14 @@
     "stateGraph": {
       "stateListTitle": "状態一覧",
       "addState": "＋ 状態を追加",
+      "deleteState": "削除",
       "canvasHint": "ノードをドラッグして配置できます（実装予定）",
       "selectedState": "選択中の状態",
       "stateName": "状態名",
       "animation": "アニメーション",
       "transitions": "遷移条件",
       "addTransition": "＋ 遷移を追加",
-      "zoom": "ズーム",
+      "zoom": "🔍 ズーム",
       "reset": "↺ リセット"
     },
     "appearance": {
@@ -176,9 +177,15 @@
         "slotsTitle": "テクスチャスロット",
         "uvTitle": "UV マッピング",
         "addSlot": "＋ スロットを追加",
+        "deleteSlot": "スロットを削除",
         "change": "変更",
         "mappingType": "マッピングタイプ",
-        "textureSize": "テクスチャサイズ"
+        "textureSize": "テクスチャサイズ",
+        "variantsTitle": "テクスチャバリアント",
+        "variantAdvancedOnly": "テクスチャバリアントは詳細モードで確認できます。右上の「くわしい」ボタンを押してください。",
+        "addVariant": "＋ バリアントを追加",
+        "variantDescription": "説明",
+        "variantSlot": "使用スロット"
       },
       "material": {
         "simpleNotice": "マテリアル設定は詳細モードで確認できます。",

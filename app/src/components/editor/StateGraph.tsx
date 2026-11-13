@@ -95,25 +95,35 @@ export const StateGraph = (): JSX.Element => {
 
         <div className="flex flex-col gap-0.5 p-2 flex-1">
           {nodes.map((node) => (
-            <button
-              key={node.id}
-              type="button"
-              onClick={() => setSelectedStateId(node.id)}
-              className={[
-                'flex items-center gap-2 px-2 py-1.5 rounded text-left text-xs font-mono cursor-pointer border-none transition-colors',
-                selectedStateId === node.id
-                  ? 'bg-[#F0F8EA] text-[#5D9C3B] font-semibold'
-                  : 'bg-transparent text-gray-700 hover:bg-gray-100',
-              ].join(' ')}
-            >
-              <span
-                className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{
-                  backgroundColor: node.isInitial ? '#5D9C3B' : '#9CA3AF',
-                }}
-              />
-              {node.id}
-            </button>
+            <div key={node.id} className="flex items-center gap-0.5">
+              <button
+                type="button"
+                onClick={() => setSelectedStateId(node.id)}
+                className={[
+                  'flex-1 flex items-center gap-2 px-2 py-1.5 rounded text-left text-xs font-mono cursor-pointer border-none transition-colors',
+                  selectedStateId === node.id
+                    ? 'bg-[#F0F8EA] text-[#5D9C3B] font-semibold'
+                    : 'bg-transparent text-gray-700 hover:bg-gray-100',
+                ].join(' ')}
+              >
+                <span
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{
+                    backgroundColor: node.isInitial ? '#5D9C3B' : '#9CA3AF',
+                  }}
+                />
+                {node.id}
+              </button>
+              {/* Per-state delete button (wireframe #08) */}
+              <button
+                type="button"
+                onClick={() => {/* Phase 3: remove state from graph */}}
+                aria-label={`${node.id} を削除`}
+                className="w-5 h-5 flex-shrink-0 text-xs text-gray-300 hover:text-red-400 cursor-pointer border-none bg-transparent flex items-center justify-center rounded"
+              >
+                ✕
+              </button>
+            </div>
           ))}
         </div>
 
@@ -129,6 +139,11 @@ export const StateGraph = (): JSX.Element => {
 
       {/* Center: SVG canvas */}
       <div className="flex-1 overflow-hidden relative">
+        {/* Canvas hint overlay — wireframe #08 */}
+        <div className="absolute top-2 left-2 z-10 text-xs text-gray-400 bg-white/80 px-2 py-1 rounded pointer-events-none">
+          {t('editor.stateGraph.canvasHint')}
+        </div>
+
         <svg
           width="100%"
           height="100%"
@@ -255,6 +270,22 @@ export const StateGraph = (): JSX.Element => {
             )
           })}
         </svg>
+
+        {/* Zoom / Reset overlay controls — wireframe #08 */}
+        <div className="absolute bottom-3 right-3 flex gap-1.5">
+          <button
+            type="button"
+            className="bg-white/95 border border-[#D1D5DB] rounded px-3 py-1.5 text-xs text-gray-700 cursor-pointer hover:bg-white shadow-sm"
+          >
+            {t('editor.stateGraph.zoom')}
+          </button>
+          <button
+            type="button"
+            className="bg-white/95 border border-[#D1D5DB] rounded px-3 py-1.5 text-xs text-gray-700 cursor-pointer hover:bg-white shadow-sm"
+          >
+            {t('editor.stateGraph.reset')}
+          </button>
+        </div>
       </div>
 
       {/* Right panel: selected state details */}

@@ -50,6 +50,7 @@ export const Header = (): JSX.Element => {
                 : t('app.mode.toggleToSimple')
             }
           >
+            {/* Simple: green active, Advanced: dark (#374151) active — wireframe #06 */}
             <button
               type="button"
               onClick={() => handleModeClick('simple')}
@@ -69,7 +70,7 @@ export const Header = (): JSX.Element => {
               className={
                 `px-3.5 py-1.5 text-xs font-medium border-none cursor-pointer transition-colors` +
                 (mode === 'advanced'
-                  ? ' bg-[#5D9C3B] text-white font-semibold'
+                  ? ' bg-[#374151] text-white font-semibold'
                   : ' bg-gray-100 text-gray-500 hover:bg-gray-200')
               }
               aria-pressed={mode === 'advanced'}
@@ -79,12 +80,16 @@ export const Header = (): JSX.Element => {
           </div>
         )}
 
-        {/* Language selector */}
+        {/* Language selector — wireframe #07: larger green-bordered variant for ja-kids */}
         <select
           value={locale}
           onChange={handleLocaleChange}
           aria-label="言語を選ぶ / Select language"
-          className="px-2.5 py-1.5 border border-[#D1D5DB] rounded text-sm bg-white text-gray-700 cursor-pointer"
+          className={
+            locale === 'ja-kids'
+              ? 'px-3.5 py-2 border-2 border-[#5D9C3B] rounded-lg text-base font-semibold bg-white text-gray-700 cursor-pointer'
+              : 'px-2.5 py-1.5 border border-[#D1D5DB] rounded text-sm bg-white text-gray-700 cursor-pointer'
+          }
         >
           {(Object.entries(LOCALE_LABELS) as [SupportedLocale, string][]).map(
             ([lang, label]) => (

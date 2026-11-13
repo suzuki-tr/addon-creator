@@ -150,13 +150,14 @@
     "stateGraph": {
       "stateListTitle": "States",
       "addState": "+ Add State",
+      "deleteState": "Delete",
       "canvasHint": "Drag nodes to reposition (coming soon)",
       "selectedState": "Selected State",
       "stateName": "State Name",
       "animation": "Animation",
       "transitions": "Transitions",
       "addTransition": "+ Add Transition",
-      "zoom": "Zoom",
+      "zoom": "🔍 Zoom",
       "reset": "↺ Reset"
     },
     "appearance": {
@@ -176,9 +177,15 @@
         "slotsTitle": "Texture Slots",
         "uvTitle": "UV Mapping",
         "addSlot": "+ Add Slot",
+        "deleteSlot": "Delete Slot",
         "change": "Change",
         "mappingType": "Mapping Type",
-        "textureSize": "Texture Size"
+        "textureSize": "Texture Size",
+        "variantsTitle": "Texture Variants",
+        "variantAdvancedOnly": "Texture variants are available in Advanced Mode.",
+        "addVariant": "+ Add Variant",
+        "variantDescription": "Description",
+        "variantSlot": "Slot"
       },
       "material": {
         "simpleNotice": "Material settings are available in Advanced Mode.",
