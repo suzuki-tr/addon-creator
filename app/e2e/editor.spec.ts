@@ -65,8 +65,8 @@ test.describe('エディタページ', () => {
     await page.goto('/editor')
 
     // Switch to advanced mode via the mode toggle in the Header
-    // (app.mode.advanced in ja = "くわしいモード")
-    await page.getByRole('button', { name: 'くわしいモード' }).click()
+    // (app.mode.advanced in ja = "くわしい")
+    await page.getByRole('button', { name: 'くわしい' }).click()
 
     // Verify 3-column layout is preserved in advanced mode (trait grid still uses lg:grid-cols-3)
     const advTraitCards = page.getByRole('checkbox')
@@ -117,7 +117,7 @@ test.describe('エディタページ', () => {
     await page.goto('/editor')
 
     // State graph tab only exists in advanced mode
-    await page.getByRole('button', { name: 'くわしいモード' }).click()
+    await page.getByRole('button', { name: 'くわしい' }).click()
 
     // Click the "状態グラフ" tab (editor.tabs.stateGraph in ja)
     await page.getByRole('tab', { name: '状態グラフ' }).click()

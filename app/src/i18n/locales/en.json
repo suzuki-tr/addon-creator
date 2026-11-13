@@ -19,8 +19,8 @@
   "app": {
     "name": "Minecraft Addon Creator",
     "mode": {
-      "simple": "Simple Mode",
-      "advanced": "Advanced Mode",
+      "simple": "Simple",
+      "advanced": "Advanced",
       "toggleToAdvanced": "Switch to Advanced Mode",
       "toggleToSimple": "Switch to Simple Mode"
     }

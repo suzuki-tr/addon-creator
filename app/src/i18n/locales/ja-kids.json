@@ -19,8 +19,8 @@
   "app": {
     "name": "マインクラフト アドオン クリエイター",
     "mode": {
-      "simple": "かんたんモード",
-      "advanced": "くわしいモード",
+      "simple": "かんたん",
+      "advanced": "くわしい",
       "toggleToAdvanced": "くわしいモードにきりかえる",
       "toggleToSimple": "かんたんモードにきりかえる"
     }
