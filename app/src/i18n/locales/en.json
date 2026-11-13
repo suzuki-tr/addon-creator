@@ -44,7 +44,9 @@
       "title": "Editor Tools",
       "recipe": "Recipe Editor",
       "lootTable": "Loot Table Editor",
-      "spawnRules": "Spawn Rules Editor"
+      "spawnRules": "Spawn Rules Editor",
+      "animationController": "Animation Controller Editor",
+      "sound": "Sound Definition Editor"
     }
   },
   "wizard": {
@@ -381,5 +383,50 @@
     "timeDay": "Day",
     "timeDusk": "Dusk",
     "timeNight": "Night"
+  },
+  "animationController": {
+    "pageTitle": "Animation Controller Editor",
+    "identifier": "Identifier",
+    "states": "States",
+    "addState": "+ Add State",
+    "initialState": "Initial State",
+    "stateName": "State Name",
+    "animations": "Animations",
+    "addAnimation": "+ Add Animation",
+    "deleteAnimation": "Delete",
+    "transitions": "Transitions",
+    "addTransition": "+ Add Transition",
+    "variables": "Variables",
+    "addVariable": "+ Add Variable",
+    "variablesName": "Variable Name",
+    "variablesDefault": "Default Value",
+    "onEntry": "on_entry (on enter)",
+    "onExit": "on_exit (on exit)",
+    "addEvent": "+ Add",
+    "canvasHint": "Drag nodes to reposition (coming soon)"
+  },
+  "sound": {
+    "pageTitle": "Sound Definition Editor",
+    "identifier": "Sound ID",
+    "category": "Category",
+    "volume": "Volume",
+    "pitch": "Pitch",
+    "is3D": "3D Sound",
+    "loop": "Loop",
+    "files": "Sound Files",
+    "addFile": "+ Add File",
+    "filePath": "File Path",
+    "fileVolume": "Volume",
+    "filePitch": "Pitch",
+    "deleteFile": "Delete",
+    "categories": {
+      "entity": "entity",
+      "neutral": "neutral",
+      "ambient": "ambient",
+      "block": "block",
+      "player": "player",
+      "music": "music",
+      "weather": "weather"
+    }
   }
 }

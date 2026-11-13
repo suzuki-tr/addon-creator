@@ -44,7 +44,9 @@
       "title": "エディタツール",
       "recipe": "レシピエディタ",
       "lootTable": "ドロップテーブルエディタ",
-      "spawnRules": "スポーンルールエディタ"
+      "spawnRules": "スポーンルールエディタ",
+      "animationController": "アニメーションコントローラーエディタ",
+      "sound": "サウンド定義エディタ"
     }
   },
   "wizard": {
@@ -381,5 +383,50 @@
     "timeDay": "昼",
     "timeDusk": "夕暮れ",
     "timeNight": "夜"
+  },
+  "animationController": {
+    "pageTitle": "アニメーションコントローラーエディタ",
+    "identifier": "識別子",
+    "states": "状態一覧",
+    "addState": "＋ 状態を追加",
+    "initialState": "初期状態",
+    "stateName": "状態名",
+    "animations": "アニメーション一覧",
+    "addAnimation": "＋ アニメーションを追加",
+    "deleteAnimation": "削除",
+    "transitions": "遷移条件",
+    "addTransition": "＋ 遷移を追加",
+    "variables": "変数",
+    "addVariable": "＋ 変数を追加",
+    "variablesName": "変数名",
+    "variablesDefault": "初期値",
+    "onEntry": "on_entry（開始時）",
+    "onExit": "on_exit（終了時）",
+    "addEvent": "＋ 追加",
+    "canvasHint": "ノードをドラッグして配置できます（実装予定）"
+  },
+  "sound": {
+    "pageTitle": "サウンド定義エディタ",
+    "identifier": "サウンド ID",
+    "category": "カテゴリ",
+    "volume": "音量",
+    "pitch": "ピッチ",
+    "is3D": "3D サウンド",
+    "loop": "ループ再生",
+    "files": "サウンドファイル",
+    "addFile": "＋ ファイルを追加",
+    "filePath": "ファイルパス",
+    "fileVolume": "音量",
+    "filePitch": "ピッチ",
+    "deleteFile": "削除",
+    "categories": {
+      "entity": "entity",
+      "neutral": "neutral",
+      "ambient": "ambient",
+      "block": "block",
+      "player": "player",
+      "music": "music",
+      "weather": "weather"
+    }
   }
 }

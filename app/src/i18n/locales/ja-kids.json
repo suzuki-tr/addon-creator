@@ -42,7 +42,8 @@
     },
     "tools": {
       "lootTable": "Loot（ドロップ）テーブルエディタ",
-      "spawnRules": "Spawn（スポーン）ルールエディタ"
+      "spawnRules": "Spawn（スポーン）ルールエディタ",
+      "sound": "サウンドエディタ"
     }
   },
   "wizard": {

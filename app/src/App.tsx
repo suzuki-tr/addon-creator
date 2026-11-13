@@ -7,6 +7,8 @@ import { EditorPage } from '@/pages/EditorPage'
 import { RecipeEditorPage } from '@/pages/RecipeEditorPage'
 import { LootTableEditorPage } from '@/pages/LootTableEditorPage'
 import { SpawnRulesEditorPage } from '@/pages/SpawnRulesEditorPage'
+import { AnimationControllerEditorPage } from '@/pages/AnimationControllerEditorPage'
+import { SoundEditorPage } from '@/pages/SoundEditorPage'
 
 const App = (): JSX.Element => {
   return (
@@ -57,6 +59,22 @@ const App = (): JSX.Element => {
           element={
             <AppShell noPadding>
               <SpawnRulesEditorPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/animation-controller"
+          element={
+            <AppShell noPadding>
+              <AnimationControllerEditorPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/sound"
+          element={
+            <AppShell noPadding>
+              <SoundEditorPage />
             </AppShell>
           }
         />

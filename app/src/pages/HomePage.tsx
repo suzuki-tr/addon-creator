@@ -171,6 +171,24 @@ const KidsHomeLayout = ({
               {t('home.tools.spawnRules')}
             </div>
           </Link>
+          <Link
+            to="/animation-controller"
+            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-[2rem] mb-2">🎬</div>
+            <div className="text-base font-bold text-gray-900">
+              {t('home.tools.animationController')}
+            </div>
+          </Link>
+          <Link
+            to="/sound"
+            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-[2rem] mb-2">🔊</div>
+            <div className="text-base font-bold text-gray-900">
+              {t('home.tools.sound')}
+            </div>
+          </Link>
         </div>
       </div>
     </div>
@@ -305,6 +323,24 @@ const StandardHomeLayout = ({
             <div className="text-2xl mb-2">🌍</div>
             <div className="text-sm font-medium text-gray-900">
               {t('home.tools.spawnRules')}
+            </div>
+          </Link>
+          <Link
+            to="/animation-controller"
+            className="bg-white border border-[#E5E7EB] rounded-xl p-4 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-2xl mb-2">🎬</div>
+            <div className="text-sm font-medium text-gray-900">
+              {t('home.tools.animationController')}
+            </div>
+          </Link>
+          <Link
+            to="/sound"
+            className="bg-white border border-[#E5E7EB] rounded-xl p-4 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
+          >
+            <div className="text-2xl mb-2">🔊</div>
+            <div className="text-sm font-medium text-gray-900">
+              {t('home.tools.sound')}
             </div>
           </Link>
         </div>
