@@ -37,7 +37,7 @@ const STATUS_ROWS: StatusRow[] = [
   },
   {
     key: 'movementSpeed',
-    emoji: '👟',
+    emoji: '🏃',
     labelKey: 'entity.status.movementSpeed',
     defaultValue: 0.25,
     min: 0.01,
