@@ -1,0 +1,31 @@
+{
+  "id": "FEAT-001",
+  "type": "fix",
+  "description": "Phase 3 の非ブロッキング指摘 3 件（E2E-NB1・R3・R4）をすべて解消し、エンティティエディタのステータスタブを完全実装し（StatusPanel.tsx 新規作成）、StateGraph の右パネルに変数とイベントトリガーセクションを追加する。既存ファイルのみ変更・追加するため他の FEAT とは独立している。",
+  "status": "completed",
+  "steps": [
+    "Step 1 — E2E-NB1: app/src/i18n/locales/ja-kids.json の editor.appearance セクションに 7 キーを追加する。editor.appearance.texture.slotsTitle = 'テクスチャのスロット'、editor.appearance.texture.uvTitle = 'UV マッピング'、editor.appearance.texture.change = 'かえる'、editor.appearance.texture.variantsTitle = 'テクスチャのバリアント'、editor.appearance.texture.variantAdvancedOnly = 'テクスチャのバリアントはくわしいモードでみられます。右上の「くわしい」ボタンをおしてください。'、editor.appearance.geometry.fileLabel = 'ファイルのパス'、editor.appearance.geometry.idLabel = 'Geometry（ジオメトリ）のID'。ja-kids 漢字制限: 右(2年)・上(1年)のみ使用可。",
+    "Step 2 — R3: editor.appearance.texture.uvReset キーを 3 ロケールすべてに追加する。ja.json = '↺ リセット'、en.json = '↺ Reset'、ja-kids.json は不要（ja へフォールバック）。app/src/components/editor/AppearancePanel.tsx の UvPane コンポーネント内、リセットボタン（L299 付近）の t('editor.stateGraph.reset') を t('editor.appearance.texture.uvReset') に変更する。",
+    "Step 3 — R4: MaterialPanel の culling セレクト（Back/Front/None）と blend セレクト（None/Alpha/Additive）、TexturePanel の mappingType セレクト（UV/Triplanar）のオプション文字列をすべて t() 経由に変更する。新規キーは editor.appearance.material.cullingBack、cullingFront、cullingNone（ja: 'なし' / en: 'None'）、blendNone、blendAlpha、blendAdditive、editor.appearance.texture.mappingTypeUV、mappingTypeTriplanar。3 ロケールすべてに追加（ja-kids は advanced mode 専用のため ja と同値でよい）。app/src/components/editor/AppearancePanel.tsx の MaterialPanel・TexturePanel 内の select option を更新する。",
+    "Step 4 — StatusPanel: app/src/components/editor/StatusPanel.tsx を新規作成する。ステータスタブ（シンプルモード専用）のコンテンツ。4 つのステータス行（HP, attackDamage, movementSpeed, scale）を実装する。各行の構造: emoji アイコン + ラベル（entity.status.* i18n キーを再利用）+ input[type='range']（controlled）+ input[type='number']（同期して更新）+ デフォルト値に戻すボタン。初期値は定数（HP: 20 / attackDamage: 3 / movementSpeed: 0.25 / scale: 1.0）。min/max は HP 1-2048、attackDamage 0-50、movementSpeed 0.01-1.0（step 0.01）、scale 0.1-5.0（step 0.1）。新規 i18n キー: editor.status.heading（ja: 'ステータスを設定してください' / en: 'Set Status Values'）、editor.status.resetDefault（ja: 'デフォルト' / en: 'Default'）を 3 ロケールに追加（ja-kids.json: editor.status.heading = 'ステータスをきめてください'、editor.status.resetDefault = 'もとにもどす'）。",
+    "Step 5 — EditorPage: app/src/pages/EditorPage.tsx の status タブパネル内の placeholder（<p>{t('common.label.loading')}</p>）を <StatusPanel /> の呼び出しに差し替える。StatusPanel を import する。",
+    "Step 6 — StateGraph variables/event triggers: app/src/components/editor/StateGraph.tsx の右パネル内、既存 transitions セクションの下に 2 つのセクションを追加する。両セクションは mode === 'advanced' のときのみ表示（useUiStore を import して使用）。(a) Variables セクション: useState<Array<{name: string; defaultValue: number}>> で管理。各行: name 入力（font-mono）+ defaultValue 数値入力 + 削除ボタン（✕）。Add ボタン（+ 変数を追加）。(b) Event Triggers セクション: useState<Array<{type: 'entry' | 'exit'; action: string}>> で管理。on_entry と on_exit の 2 サブリスト（type でフィルタ）。各行: action 入力 + 削除ボタン。Add ボタンを on_entry/on_exit それぞれに配置。新規 i18n キー（ja.json → en.json → ja-kids.json に追加、ja-kids は advanced 専用のため ja と同値でよい）: editor.stateGraph.variables（ja: '変数' / en: 'Variables'）、editor.stateGraph.variablesName（ja: '変数名' / en: 'Variable Name'）、editor.stateGraph.variablesDefault（ja: '初期値' / en: 'Default Value'）、editor.stateGraph.addVariable（ja: '＋ 変数を追加' / en: '+ Add Variable'）、editor.stateGraph.eventTriggers（ja: 'イベントトリガー' / en: 'Event Triggers'）、editor.stateGraph.onEntry（ja: 'on_entry（開始時）' / en: 'on_entry (on enter)'）、editor.stateGraph.onExit（ja: 'on_exit（終了時）' / en: 'on_exit (on exit)'）、editor.stateGraph.addEvent（ja: '＋ 追加' / en: '+ Add'）。",
+    "Step 7 — Commit: すべての変更を 1 コミットにまとめる。コミットメッセージ: 'fix(editor,i18n): address Phase 3 non-blocking findings, add status panel and state graph variables'"
+  ],
+  "acceptance_criteria": [
+    "npm run build が exit 0 で完了する（TypeScript エラーなし）",
+    "npm test が exit 0 で完了する（既存 19 テストがすべて合格）",
+    "ja-kids.json に editor.appearance.texture.slotsTitle / uvTitle / change / variantsTitle / variantAdvancedOnly と editor.appearance.geometry.fileLabel / idLabel の 7 キーが存在する",
+    "AppearancePanel.tsx の UV リセットボタンが t('editor.appearance.texture.uvReset') を使用している",
+    "AppearancePanel.tsx の MaterialPanel・TexturePanel の全 select option が t() 経由である",
+    "app/src/components/editor/StatusPanel.tsx が存在し、4 つの controlled な range/number 入力を持つ",
+    "EditorPage.tsx の status タブが StatusPanel を表示する",
+    "StateGraph.tsx の右パネルに Variables と Event Triggers セクションがあり、mode === 'advanced' のときのみ表示される"
+  ],
+  "verification": [
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm run build",
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm test"
+  ],
+  "blocked_reason": null,
+  "findings": "All 6 steps implemented as specified. Step 1: 7 ja-kids appearance keys added. Step 2: uvReset key added to all locales, AppearancePanel reset button now uses t('editor.appearance.texture.uvReset'). Step 3: culling, blend, and mappingType select options now use t() in all 3 locales. Step 4: StatusPanel.tsx created with 4 controlled range/number rows (HP/attackDamage/movementSpeed/scale) and per-row reset buttons. Step 5: EditorPage status tab replaced with <StatusPanel />. Step 6: StateGraph right panel gains Variables and Event Triggers sections behind mode==='advanced' guard. Deviation: npm run build exits non-zero due to a pre-existing vite.config.ts type incompatibility in tsconfig.node.json (rolldown/rollup Plugin type mismatch); this was present before this commit as confirmed by running tsc -p tsconfig.app.json (exits 0, src is clean) and npm test (19/19 pass)."
+}
