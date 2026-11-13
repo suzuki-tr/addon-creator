@@ -33,7 +33,7 @@ const STATUS_ROWS: StatusRow[] = [
     defaultValue: 3,
     min: 0,
     max: 50,
-    step: 1,
+    step: 0.5,
   },
   {
     key: 'movementSpeed',
