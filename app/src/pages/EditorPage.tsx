@@ -33,9 +33,15 @@ export const EditorPage = (): JSX.Element => {
     new Set(['hostile']),
   )
 
-  /** Reset activeTab to 'traits' when switching to simple mode if on a advanced-only tab */
+  /**
+   * Reset activeTab when the current tab is not available in the new mode:
+   * - switching to simple mode while on a advanced-only tab (components, stateGraph)
+   * - switching to advanced mode while on status tab (simple-only)
+   */
   useEffect(() => {
-    if (
+    if (mode === 'advanced' && activeTab === 'status') {
+      setActiveTab('traits')
+    } else if (
       mode === 'simple' &&
       (activeTab === 'components' || activeTab === 'stateGraph')
     ) {
@@ -51,7 +57,6 @@ export const EditorPage = (): JSX.Element => {
     ]
     const advancedTabs: TabDef[] = [
       { id: 'traits', labelKey: 'editor.tabs.traits' },
-      { id: 'status', labelKey: 'editor.tabs.status' },
       { id: 'components', labelKey: 'editor.tabs.components' },
       { id: 'stateGraph', labelKey: 'editor.tabs.stateGraph' },
       { id: 'appearance', labelKey: 'editor.tabs.appearance' },
