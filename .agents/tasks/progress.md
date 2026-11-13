@@ -35,6 +35,10 @@ Phase 4 — 高度エディタ（待機中）
   - [x] ウィザードテスト 17 → 19 件（isValidId/toId 修正対応）
   - [x] ビルド 0 エラー・テスト 19/19 合格
 
+## 未解決の非ブロッキング指摘
+
+- E2E-NB1: `ja-kids.json` に Appearance パネル向け7キー（`appearance.slotsTitle` / `appearance.uvTitle` / `appearance.change` / `appearance.variantsTitle` / `appearance.variantAdvancedOnly` / `appearance.fileLabel` / `appearance.idLabel`）が未翻訳。fallbackLng（ja→en）で動作は壊れないが、テクスチャ/ジオメトリラベルが標準日本語表示になる。
+
 ## 未解決の非ブロッキング指摘（Phase 3）
 
 - R3: `AppearancePanel` の UV ズームリセットボタンが `t('editor.stateGraph.reset')` を流用している。名前空間が不適切（stateGraph キーを appearance で流用）。`editor.appearance.texture.uvReset` のような専用キーに分離すること。  
