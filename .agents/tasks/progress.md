@@ -37,14 +37,19 @@ Phase 4 — 高度エディタ（待機中）
 
 ## 未解決の非ブロッキング指摘
 
-- E2E-NB1: `ja-kids.json` に Appearance パネル向け7キー（`appearance.slotsTitle` / `appearance.uvTitle` / `appearance.change` / `appearance.variantsTitle` / `appearance.variantAdvancedOnly` / `appearance.fileLabel` / `appearance.idLabel`）が未翻訳。fallbackLng（ja→en）で動作は壊れないが、テクスチャ/ジオメトリラベルが標準日本語表示になる。
+- ~~E2E-NB1: `ja-kids.json` に Appearance パネル向け7キー（`appearance.slotsTitle` / `appearance.uvTitle` / `appearance.change` / `appearance.variantsTitle` / `appearance.variantAdvancedOnly` / `appearance.fileLabel` / `appearance.idLabel`）が未翻訳。fallbackLng（ja→en）で動作は壊れないが、テクスチャ/ジオメトリラベルが標準日本語表示になる。~~ ✅ **解決済み** (Phase 4 にて対応)
 
 ## 未解決の非ブロッキング指摘（Phase 3）
 
-- R3: `AppearancePanel` の UV ズームリセットボタンが `t('editor.stateGraph.reset')` を流用している。名前空間が不適切（stateGraph キーを appearance で流用）。`editor.appearance.texture.uvReset` のような専用キーに分離すること。  
-  対象: `app/src/components/editor/AppearancePanel.tsx` L299
-- R4: `MaterialPanel` / `TexturePanel` のセレクトオプション（UV / Triplanar / Back / Front / None / Alpha / Additive 等）が `t()` を通さずハードコードされている。詳細モード（`mode === 'advanced'`）限定だが、全ロケールファイルにキーを追加して `t()` 経由に統一すること。  
-  対象: `app/src/components/editor/AppearancePanel.tsx`（MaterialPanel・TexturePanel 内）
+- ~~R3: `AppearancePanel` の UV ズームリセットボタンが `t('editor.stateGraph.reset')` を流用している。名前空間が不適切（stateGraph キーを appearance で流用）。`editor.appearance.texture.uvReset` のような専用キーに分離すること。  
+  対象: `app/src/components/editor/AppearancePanel.tsx` L299~~ ✅ **解決済み** (Phase 4 にて対応)
+- ~~R4: `MaterialPanel` / `TexturePanel` のセレクトオプション（UV / Triplanar / Back / Front / None / Alpha / Additive 等）が `t()` を通さずハードコードされている。詳細モード（`mode === 'advanced'`）限定だが、全ロケールファイルにキーを追加して `t()` 経由に統一すること。  
+  対象: `app/src/components/editor/AppearancePanel.tsx`（MaterialPanel・TexturePanel 内）~~ ✅ **解決済み** (Phase 4 にて対応)
+
+## 未解決の非ブロッキング指摘（Phase 4）
+
+- ~~NB-P4-1: `attackDamage` のステップ値が `1` になっている（計画仕様は `0.5`）。半刻み精度が利用不可。~~ ✅ **解決済み** (`fix/phase4-nb-fixes` → v0.4.1-hotfix)
+- ~~NB-P4-2: `movementSpeed` のアイコンが `👟`（計画仕様は `🏃`）。表示のみの差異。~~ ✅ **解決済み** (`fix/phase4-nb-fixes` → v0.4.1-hotfix)
 
 ## 次にやること（Phase 4）
 
