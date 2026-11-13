@@ -8,5 +8,7 @@ export default defineConfig({
   resolve: { alias: { '@': `${import.meta.dirname}/src` } },
   test: {
     exclude: ['**/node_modules/**', '**/e2e/**'],
+    environment: 'happy-dom',
+    setupFiles: ['./src/test/setup.ts'],
   },
 })
