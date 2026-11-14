@@ -5,7 +5,7 @@ import { useUiStore } from '@/stores/uiStore'
 import { useProjectStore, DEFAULT_STATUS } from '@/stores/projectStore'
 import type { ProjectData } from '@/stores/projectStore'
 import { downloadMcaddon } from '@/lib/mcaddonGenerator'
-import { saveProjectFile } from '@/lib/projectFile'
+import { saveProjectToDirectory } from '@/lib/projectFile'
 import { TraitCard } from '@/components/editor/TraitCard'
 import type { TraitCardData } from '@/components/editor/TraitCard'
 import { JsonPreviewPanel } from '@/components/editor/JsonPreviewPanel'
@@ -13,6 +13,7 @@ import { ComponentPanel } from '@/components/editor/ComponentPanel'
 import { StateGraph } from '@/components/editor/StateGraph'
 import { AppearancePanel } from '@/components/editor/AppearancePanel'
 import { StatusPanel } from '@/components/editor/StatusPanel'
+import { ResizeHandle } from '@/components/editor/ResizeHandle'
 
 type EditorTab = 'traits' | 'status' | 'appearance' | 'components' | 'stateGraph'
 
@@ -39,6 +40,10 @@ export const EditorPage = (): JSX.Element => {
   const [selectedTraits, setSelectedTraits] = useState<Set<string>>(
     new Set(project?.selectedTraits ?? []),
   )
+  const [jsonPanelWidth, setJsonPanelWidth] = useState<number>(() => {
+    const s = localStorage.getItem('json-panel-width')
+    return s !== null ? parseInt(s, 10) : 360
+  })
 
   /**
    * Reset activeTab when the current tab is not available in the new mode:
@@ -55,6 +60,10 @@ export const EditorPage = (): JSX.Element => {
       setActiveTab('traits')
     }
   }, [mode, activeTab])
+
+  useEffect(() => {
+    localStorage.setItem('json-panel-width', String(jsonPanelWidth))
+  }, [jsonPanelWidth])
 
   const TABS: TabDef[] = useMemo(() => {
     const simpleTabs: TabDef[] = [
@@ -128,6 +137,24 @@ export const EditorPage = (): JSX.Element => {
     },
   ]
 
+  const handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
+    e.preventDefault()
+    const startX = e.clientX
+    const startWidth = jsonPanelWidth
+    const onMove = (me: MouseEvent): void => {
+      const delta = startX - me.clientX
+      setJsonPanelWidth(
+        Math.max(200, Math.min(Math.floor(window.innerWidth * 0.5), startWidth + delta)),
+      )
+    }
+    const onUp = (): void => {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+    }
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+  }
+
   const handleToggleTrait = (id: string): void => {
     const next = new Set(selectedTraits)
     if (next.has(id)) {
@@ -151,7 +178,7 @@ export const EditorPage = (): JSX.Element => {
       ...(project?.geometry !== undefined && { geometry: project.geometry }),
       ...(project?.texture !== undefined && { texture: project.texture }),
     }
-    saveProjectFile(exportData)
+    void saveProjectToDirectory(exportData)
   }
 
   const handleExport = (): void => {
@@ -294,8 +321,14 @@ export const EditorPage = (): JSX.Element => {
 
       {/* Right panel: JSON preview (advanced mode only) */}
       {mode === 'advanced' && (
-        <aside className="w-[30%] min-w-[220px] max-w-[360px] bg-white border-l border-[#E5E7EB] flex flex-col overflow-y-auto flex-shrink-0">
-          <JsonPreviewPanel entityName={entityName} />
+        <aside
+          className="bg-white border-l border-[#E5E7EB] flex flex-row overflow-hidden flex-shrink-0"
+          style={{ width: jsonPanelWidth }}
+        >
+          <ResizeHandle onMouseDown={handleResizeMouseDown} />
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <JsonPreviewPanel entityName={entityName} />
+          </div>
         </aside>
       )}
     </div>

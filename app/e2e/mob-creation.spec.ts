@@ -87,6 +87,12 @@ test.describe('モブ作成 E2E', () => {
   })
 
   test('ニワトリからカスタマイズして騎乗可能なモブをプロジェクト保存', async ({ page }) => {
+    // Remove showDirectoryPicker so saveProjectToDirectory falls back to download
+    await page.addInitScript(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (window as any).showDirectoryPicker
+    })
+
     await goThroughWizard(
       page,
       'ニワトリ',
@@ -102,7 +108,7 @@ test.describe('モブ作成 E2E', () => {
     }
     await expect(rideableCard).toHaveAttribute('aria-checked', 'true')
 
-    // Save project as JSON file
+    // Save project — showDirectoryPicker is absent so falls back to JSON download
     const downloadPromise = page.waitForEvent('download')
     await page.getByRole('button', { name: /保存/ }).click()
     const download: Download = await downloadPromise
