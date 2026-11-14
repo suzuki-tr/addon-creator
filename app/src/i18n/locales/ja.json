@@ -189,7 +189,11 @@
         "idLabel": "ジオメトリ識別子",
         "browseButton": "参照",
         "bonesTitle": "ボーン一覧",
-        "attachmentTitle": "アタッチメントポイント"
+        "attachmentTitle": "アタッチメントポイント",
+        "vanillaTitle": "バニラ外観",
+        "vanillaUseLabel": "エクスポート時にバニラリソースパックを参照します",
+        "vanillaGeometryId": "ジオメトリ ID",
+        "vanillaTexturePath": "テクスチャパス"
       },
       "texture": {
         "slotsTitle": "テクスチャスロット",

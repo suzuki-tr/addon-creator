@@ -10,6 +10,10 @@ export interface VanillaEntity {
     attackDamage?: number
     movementSpeed?: number
   }
+  defaultAppearance?: {
+    geometryId: string
+    texturePath: string
+  }
 }
 
 /** Returns true if the entity matches the given search query (case-insensitive). */
@@ -24,26 +28,26 @@ export function matchesSearch(entity: VanillaEntity, query: string): boolean {
 }
 
 export const VANILLA_MOBS: VanillaEntity[] = [
-  { id: 'minecraft:cow', nameJa: '牛', nameJaKids: 'ウシ', nameEn: 'Cow', icon: '🐄', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 0, movementSpeed: 0.25 } },
-  { id: 'minecraft:chicken', nameJa: '鶏', nameJaKids: 'ニワトリ', nameEn: 'Chicken', icon: '🐔', defaultHealth: 4, defaultComponents: { health: 4, attackDamage: 0, movementSpeed: 0.25 } },
-  { id: 'minecraft:pig', nameJa: 'ブタ', nameJaKids: 'ブタ', nameEn: 'Pig', icon: '🐷', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 0, movementSpeed: 0.25 } },
-  { id: 'minecraft:sheep', nameJa: 'ヒツジ', nameJaKids: 'ヒツジ', nameEn: 'Sheep', icon: '🐑', defaultHealth: 8, defaultComponents: { health: 8, attackDamage: 0, movementSpeed: 0.23 } },
-  { id: 'minecraft:wolf', nameJa: 'オオカミ', nameJaKids: 'オオカミ', nameEn: 'Wolf', icon: '🐺', defaultHealth: 8, defaultComponents: { health: 8, attackDamage: 4, movementSpeed: 0.3 } },
-  { id: 'minecraft:creeper', nameJa: 'クリーパー', nameJaKids: 'クリーパー', nameEn: 'Creeper', icon: '💚', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 0, movementSpeed: 0.25 } },
-  { id: 'minecraft:zombie', nameJa: 'ゾンビ', nameJaKids: 'ゾンビ', nameEn: 'Zombie', icon: '🧟', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 3, movementSpeed: 0.23 } },
-  { id: 'minecraft:skeleton', nameJa: 'スケルトン', nameJaKids: 'スケルトン', nameEn: 'Skeleton', icon: '💀', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 2, movementSpeed: 0.25 } },
-  { id: 'minecraft:spider', nameJa: 'クモ', nameJaKids: 'クモ', nameEn: 'Spider', icon: '🕷️', defaultHealth: 16, defaultComponents: { health: 16, attackDamage: 2, movementSpeed: 0.3 } },
-  { id: 'minecraft:enderman', nameJa: 'エンダーマン', nameJaKids: 'エンダーマン', nameEn: 'Enderman', icon: '👾', defaultHealth: 40, defaultComponents: { health: 40, attackDamage: 7, movementSpeed: 0.3 } },
-  { id: 'minecraft:villager', nameJa: '村人', nameJaKids: 'むらびと', nameEn: 'Villager', icon: '👨‍🌾', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 0, movementSpeed: 0.5 } },
-  { id: 'minecraft:horse', nameJa: 'ウマ', nameJaKids: 'ウマ', nameEn: 'Horse', icon: '🐴', defaultHealth: 30, defaultComponents: { health: 30, attackDamage: 0, movementSpeed: 0.225 } },
-  { id: 'minecraft:cat', nameJa: 'ネコ', nameJaKids: 'ネコ', nameEn: 'Cat', icon: '🐱', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 3, movementSpeed: 0.3 } },
-  { id: 'minecraft:fox', nameJa: 'キツネ', nameJaKids: 'キツネ', nameEn: 'Fox', icon: '🦊', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 2, movementSpeed: 0.3 } },
-  { id: 'minecraft:panda', nameJa: 'パンダ', nameJaKids: 'パンダ', nameEn: 'Panda', icon: '🐼', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 2, movementSpeed: 0.15 } },
-  { id: 'minecraft:bee', nameJa: 'ハチ', nameJaKids: 'ハチ', nameEn: 'Bee', icon: '🐝', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 2, movementSpeed: 0.3 } },
-  { id: 'minecraft:axolotl', nameJa: 'ウーパールーパー', nameJaKids: 'ウーパールーパー', nameEn: 'Axolotl', icon: '🦎', defaultHealth: 14, defaultComponents: { health: 14, attackDamage: 2, movementSpeed: 0.1 } },
-  { id: 'minecraft:frog', nameJa: 'カエル', nameJaKids: 'カエル', nameEn: 'Frog', icon: '🐸', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 0, movementSpeed: 0.2 } },
-  { id: 'minecraft:goat', nameJa: 'ヤギ', nameJaKids: 'ヤギ', nameEn: 'Goat', icon: '🐐', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 2, movementSpeed: 0.4 } },
-  { id: 'minecraft:squid', nameJa: 'イカ', nameJaKids: 'イカ', nameEn: 'Squid', icon: '🦑', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 0, movementSpeed: 0.15 } },
+  { id: 'minecraft:cow', nameJa: '牛', nameJaKids: 'ウシ', nameEn: 'Cow', icon: '🐄', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 0, movementSpeed: 0.25 }, defaultAppearance: { geometryId: 'geometry.cow', texturePath: 'textures/entity/cow/cow' } },
+  { id: 'minecraft:chicken', nameJa: '鶏', nameJaKids: 'ニワトリ', nameEn: 'Chicken', icon: '🐔', defaultHealth: 4, defaultComponents: { health: 4, attackDamage: 0, movementSpeed: 0.25 }, defaultAppearance: { geometryId: 'geometry.chicken', texturePath: 'textures/entity/chicken' } },
+  { id: 'minecraft:pig', nameJa: 'ブタ', nameJaKids: 'ブタ', nameEn: 'Pig', icon: '🐷', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 0, movementSpeed: 0.25 }, defaultAppearance: { geometryId: 'geometry.pig', texturePath: 'textures/entity/pig/pig' } },
+  { id: 'minecraft:sheep', nameJa: 'ヒツジ', nameJaKids: 'ヒツジ', nameEn: 'Sheep', icon: '🐑', defaultHealth: 8, defaultComponents: { health: 8, attackDamage: 0, movementSpeed: 0.23 }, defaultAppearance: { geometryId: 'geometry.sheep', texturePath: 'textures/entity/sheep/sheep' } },
+  { id: 'minecraft:wolf', nameJa: 'オオカミ', nameJaKids: 'オオカミ', nameEn: 'Wolf', icon: '🐺', defaultHealth: 8, defaultComponents: { health: 8, attackDamage: 4, movementSpeed: 0.3 }, defaultAppearance: { geometryId: 'geometry.wolf', texturePath: 'textures/entity/wolf/wolf' } },
+  { id: 'minecraft:creeper', nameJa: 'クリーパー', nameJaKids: 'クリーパー', nameEn: 'Creeper', icon: '💚', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 0, movementSpeed: 0.25 }, defaultAppearance: { geometryId: 'geometry.creeper', texturePath: 'textures/entity/creeper/creeper' } },
+  { id: 'minecraft:zombie', nameJa: 'ゾンビ', nameJaKids: 'ゾンビ', nameEn: 'Zombie', icon: '🧟', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 3, movementSpeed: 0.23 }, defaultAppearance: { geometryId: 'geometry.zombie', texturePath: 'textures/entity/zombie/zombie' } },
+  { id: 'minecraft:skeleton', nameJa: 'スケルトン', nameJaKids: 'スケルトン', nameEn: 'Skeleton', icon: '💀', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 2, movementSpeed: 0.25 }, defaultAppearance: { geometryId: 'geometry.skeleton.skeleton', texturePath: 'textures/entity/skeleton/skeleton' } },
+  { id: 'minecraft:spider', nameJa: 'クモ', nameJaKids: 'クモ', nameEn: 'Spider', icon: '🕷️', defaultHealth: 16, defaultComponents: { health: 16, attackDamage: 2, movementSpeed: 0.3 }, defaultAppearance: { geometryId: 'geometry.spider', texturePath: 'textures/entity/spider/spider' } },
+  { id: 'minecraft:enderman', nameJa: 'エンダーマン', nameJaKids: 'エンダーマン', nameEn: 'Enderman', icon: '👾', defaultHealth: 40, defaultComponents: { health: 40, attackDamage: 7, movementSpeed: 0.3 }, defaultAppearance: { geometryId: 'geometry.enderman', texturePath: 'textures/entity/enderman/enderman' } },
+  { id: 'minecraft:villager', nameJa: '村人', nameJaKids: 'むらびと', nameEn: 'Villager', icon: '👨‍🌾', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 0, movementSpeed: 0.5 }, defaultAppearance: { geometryId: 'geometry.villager.v2', texturePath: 'textures/entity/villager2/professions/farmer' } },
+  { id: 'minecraft:horse', nameJa: 'ウマ', nameJaKids: 'ウマ', nameEn: 'Horse', icon: '🐴', defaultHealth: 30, defaultComponents: { health: 30, attackDamage: 0, movementSpeed: 0.225 }, defaultAppearance: { geometryId: 'geometry.horse.v2', texturePath: 'textures/entity/horse2/horse_brown' } },
+  { id: 'minecraft:cat', nameJa: 'ネコ', nameJaKids: 'ネコ', nameEn: 'Cat', icon: '🐱', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 3, movementSpeed: 0.3 }, defaultAppearance: { geometryId: 'geometry.cat', texturePath: 'textures/entity/cat/tabby' } },
+  { id: 'minecraft:fox', nameJa: 'キツネ', nameJaKids: 'キツネ', nameEn: 'Fox', icon: '🦊', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 2, movementSpeed: 0.3 }, defaultAppearance: { geometryId: 'geometry.fox', texturePath: 'textures/entity/fox/fox' } },
+  { id: 'minecraft:panda', nameJa: 'パンダ', nameJaKids: 'パンダ', nameEn: 'Panda', icon: '🐼', defaultHealth: 20, defaultComponents: { health: 20, attackDamage: 2, movementSpeed: 0.15 }, defaultAppearance: { geometryId: 'geometry.panda', texturePath: 'textures/entity/panda/panda' } },
+  { id: 'minecraft:bee', nameJa: 'ハチ', nameJaKids: 'ハチ', nameEn: 'Bee', icon: '🐝', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 2, movementSpeed: 0.3 }, defaultAppearance: { geometryId: 'geometry.bee', texturePath: 'textures/entity/bee/bee' } },
+  { id: 'minecraft:axolotl', nameJa: 'ウーパールーパー', nameJaKids: 'ウーパールーパー', nameEn: 'Axolotl', icon: '🦎', defaultHealth: 14, defaultComponents: { health: 14, attackDamage: 2, movementSpeed: 0.1 }, defaultAppearance: { geometryId: 'geometry.axolotl', texturePath: 'textures/entity/axolotl/axolotl_lucy' } },
+  { id: 'minecraft:frog', nameJa: 'カエル', nameJaKids: 'カエル', nameEn: 'Frog', icon: '🐸', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 0, movementSpeed: 0.2 }, defaultAppearance: { geometryId: 'geometry.frog', texturePath: 'textures/entity/frog/temperate_frog' } },
+  { id: 'minecraft:goat', nameJa: 'ヤギ', nameJaKids: 'ヤギ', nameEn: 'Goat', icon: '🐐', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 2, movementSpeed: 0.4 }, defaultAppearance: { geometryId: 'geometry.goat', texturePath: 'textures/entity/goat/goat' } },
+  { id: 'minecraft:squid', nameJa: 'イカ', nameJaKids: 'イカ', nameEn: 'Squid', icon: '🦑', defaultHealth: 10, defaultComponents: { health: 10, attackDamage: 0, movementSpeed: 0.15 }, defaultAppearance: { geometryId: 'geometry.squid', texturePath: 'textures/entity/squid' } },
 ]
 
 export const VANILLA_ITEMS: VanillaEntity[] = [

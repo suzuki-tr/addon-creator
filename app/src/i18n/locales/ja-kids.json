@@ -158,7 +158,11 @@
         "bonesTitle": "ボーンのリスト",
         "attachmentTitle": "アタッチメントポイント",
         "fileLabel": "ファイルのパス",
-        "idLabel": "Geometry（ジオメトリ）のID"
+        "idLabel": "Geometry（ジオメトリ）のID",
+        "vanillaTitle": "バニラのみため",
+        "vanillaUseLabel": "エクスポートするときに、バニラのリソースパックをつかいます",
+        "vanillaGeometryId": "ジオメトリ ID",
+        "vanillaTexturePath": "テクスチャパス"
       },
       "texture": {
         "addSlot": "＋ スロットをついか",

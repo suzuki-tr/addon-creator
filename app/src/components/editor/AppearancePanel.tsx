@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUiStore } from '@/stores/uiStore'
 import { useProjectStore } from '@/stores/projectStore'
+import { VANILLA_MOBS } from '@/data/vanilla-entities'
+import { BabylonPreview } from '@/components/editor/BabylonPreview'
 
 type AppearanceSubTab = 'geometry' | 'texture' | 'material'
 
@@ -134,26 +136,20 @@ const UV_BONES: UvBone[] = [
 ]
 
 // ---------------------------------------------------------------------------
-// Left pane — 3D preview placeholder with camera controls (wireframe #09)
+// Left pane — Babylon.js 3D preview with camera controls (wireframe #09)
 // Shown for geometry and material sub-tabs.
 // ---------------------------------------------------------------------------
 const PreviewPane = (): JSX.Element => {
   const { t } = useTranslation()
+  const { project } = useProjectStore()
   return (
     <div className="w-1/2 min-w-[260px] max-w-[480px] border-r border-[#E5E7EB] flex flex-col flex-shrink-0">
-      {/* 3D preview area placeholder */}
-      <div className="flex-1 bg-[#C9CDD4] flex items-center justify-center flex-col gap-3">
-        {/* Babylon.js canvas will mount here in a later phase */}
-        <span className="text-5xl opacity-50" aria-hidden="true">
-          🐾
-        </span>
-        <span className="text-sm font-semibold text-gray-600">
-          {t('editor.preview3d.title')}
-        </span>
-        <span className="text-xs text-gray-400">{t('editor.preview3d.placeholder')}</span>
+      <div className="flex-1 bg-[#C9CDD4] overflow-hidden">
+        <BabylonPreview
+          geometryJson={project?.geometry?.content}
+          textureUrl={project?.texture?.dataUrl}
+        />
       </div>
-
-      {/* Camera control buttons — wireframe #09 */}
       <div className="flex gap-1.5 p-2.5 bg-white border-t border-[#E5E7EB] flex-shrink-0 flex-wrap">
         {(
           [
@@ -414,6 +410,43 @@ const GeometryPanel = (): JSX.Element => {
           className="border border-gray-200 rounded px-2 py-1.5 text-xs font-mono text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
         />
       </div>
+
+      {/* Vanilla appearance info (shown when a vanilla entity is selected) */}
+      {(() => {
+        const vanillaEntity = project?.selectedVanillaId
+          ? VANILLA_MOBS.find((m) => m.id === project.selectedVanillaId)
+          : null
+        if (!vanillaEntity?.defaultAppearance) return null
+        const { geometryId, texturePath } = vanillaEntity.defaultAppearance
+        return (
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 flex flex-col gap-1.5">
+            <div className="text-xs font-bold text-blue-700">
+              {t('editor.appearance.geometry.vanillaTitle')}
+            </div>
+            <div className="text-xs text-blue-600">
+              {t('editor.appearance.geometry.vanillaUseLabel')}
+            </div>
+            <div className="flex gap-3 mt-0.5 flex-wrap">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-gray-500">
+                  {t('editor.appearance.geometry.vanillaGeometryId')}
+                </span>
+                <span className="text-xs font-mono bg-white border border-blue-100 rounded px-2 py-0.5 text-gray-700">
+                  {geometryId}
+                </span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-gray-500">
+                  {t('editor.appearance.geometry.vanillaTexturePath')}
+                </span>
+                <span className="text-xs font-mono bg-white border border-blue-100 rounded px-2 py-0.5 text-gray-700">
+                  {texturePath}
+                </span>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Bone tree */}
       <div>

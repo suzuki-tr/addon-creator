@@ -189,7 +189,11 @@
         "idLabel": "Geometry ID",
         "browseButton": "Browse",
         "bonesTitle": "Bone List",
-        "attachmentTitle": "Attachment Points"
+        "attachmentTitle": "Attachment Points",
+        "vanillaTitle": "Vanilla Appearance",
+        "vanillaUseLabel": "Uses Vanilla Resource Pack on export",
+        "vanillaGeometryId": "Geometry ID",
+        "vanillaTexturePath": "Texture Path"
       },
       "texture": {
         "slotsTitle": "Texture Slots",

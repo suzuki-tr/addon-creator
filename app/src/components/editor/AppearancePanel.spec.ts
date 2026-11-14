@@ -35,8 +35,9 @@ describe('AppearancePanel', () => {
     expect(textureTab.getAttribute('aria-selected')).toBe('true')
   })
 
-  it('renders 3D preview placeholder in geometry pane', () => {
+  it('renders 3D preview canvas in geometry pane', () => {
     render(createElement(AppearancePanel))
-    expect(screen.getByText('editor.preview3d.title')).toBeTruthy()
+    // BabylonPreview renders a <canvas> element for the 3D viewport
+    expect(document.querySelector('canvas')).toBeTruthy()
   })
 })
