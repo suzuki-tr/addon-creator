@@ -142,12 +142,17 @@ const UV_BONES: UvBone[] = [
 const PreviewPane = (): JSX.Element => {
   const { t } = useTranslation()
   const { project } = useProjectStore()
+  const vanillaEntity = project?.selectedVanillaId
+    ? VANILLA_MOBS.find((m) => m.id === project.selectedVanillaId)
+    : null
+  const vanillaShape = vanillaEntity?.shapeCategory
   return (
     <div className="w-1/2 min-w-[260px] max-w-[480px] border-r border-[#E5E7EB] flex flex-col flex-shrink-0">
       <div className="flex-1 bg-[#C9CDD4] overflow-hidden relative">
         <BabylonPreview
           geometryJson={project?.geometry?.content}
           textureUrl={project?.texture?.dataUrl}
+          vanillaShape={vanillaShape}
         />
         {/* Known limitation: UV atlas offsets and bone pivot/rotation transforms are not applied */}
         <div className="absolute bottom-1 inset-x-0 flex justify-center pointer-events-none">
@@ -155,6 +160,13 @@ const PreviewPane = (): JSX.Element => {
             {t('editor.preview3d.limitationNote')}
           </span>
         </div>
+        {vanillaShape !== undefined && project?.geometry === undefined && (
+          <div className="absolute top-1 inset-x-0 flex justify-center pointer-events-none">
+            <span className="text-[10px] text-gray-500 bg-white/80 px-2 py-0.5 rounded select-none">
+              {t('editor.preview3d.vanillaShapeNote')}
+            </span>
+          </div>
+        )}
       </div>
       <div className="flex gap-1.5 p-2.5 bg-white border-t border-[#E5E7EB] flex-shrink-0 flex-wrap">
         {(

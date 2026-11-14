@@ -33,11 +33,88 @@ interface BedrockGeoFile {
 interface BabylonPreviewProps {
   geometryJson?: string | undefined
   textureUrl?: string | undefined
+  vanillaShape?: 'quadruped' | 'bird' | 'humanoid' | 'fish' | 'aquatic'
+}
+
+/** Build procedural box meshes representing common vanilla entity shapes */
+function buildVanillaShape(
+  shape: 'quadruped' | 'bird' | 'humanoid' | 'fish' | 'aquatic',
+  scene: Scene,
+): void {
+  switch (shape) {
+    case 'humanoid': {
+      // Torso
+      const torso = MeshBuilder.CreateBox('torso', { width: 0.5, height: 0.75, depth: 0.25 }, scene)
+      torso.position = new Vector3(0, 1.125, 0)
+      // Head
+      const head = MeshBuilder.CreateBox('head', { width: 0.5, height: 0.5, depth: 0.5 }, scene)
+      head.position = new Vector3(0, 1.75, 0)
+      // Arms
+      const armL = MeshBuilder.CreateBox('arm_l', { width: 0.25, height: 0.75, depth: 0.25 }, scene)
+      armL.position = new Vector3(-0.4, 1.125, 0)
+      const armR = MeshBuilder.CreateBox('arm_r', { width: 0.25, height: 0.75, depth: 0.25 }, scene)
+      armR.position = new Vector3(0.4, 1.125, 0)
+      // Legs
+      const legL = MeshBuilder.CreateBox('leg_l', { width: 0.25, height: 0.75, depth: 0.25 }, scene)
+      legL.position = new Vector3(-0.15, 0.375, 0)
+      const legR = MeshBuilder.CreateBox('leg_r', { width: 0.25, height: 0.75, depth: 0.25 }, scene)
+      legR.position = new Vector3(0.15, 0.375, 0)
+      break
+    }
+    case 'quadruped': {
+      // Body
+      const body = MeshBuilder.CreateBox('body', { width: 0.5, height: 0.6, depth: 1.0 }, scene)
+      body.position = new Vector3(0, 0.8, 0)
+      // Head
+      const head = MeshBuilder.CreateBox('head', { width: 0.45, height: 0.45, depth: 0.45 }, scene)
+      head.position = new Vector3(0, 0.95, -0.65)
+      // Four legs
+      const legFL = MeshBuilder.CreateBox('leg_fl', { width: 0.22, height: 0.6, depth: 0.22 }, scene)
+      legFL.position = new Vector3(-0.3, 0.3, -0.25)
+      const legFR = MeshBuilder.CreateBox('leg_fr', { width: 0.22, height: 0.6, depth: 0.22 }, scene)
+      legFR.position = new Vector3(0.3, 0.3, -0.25)
+      const legBL = MeshBuilder.CreateBox('leg_bl', { width: 0.22, height: 0.6, depth: 0.22 }, scene)
+      legBL.position = new Vector3(-0.3, 0.3, 0.25)
+      const legBR = MeshBuilder.CreateBox('leg_br', { width: 0.22, height: 0.6, depth: 0.22 }, scene)
+      legBR.position = new Vector3(0.3, 0.3, 0.25)
+      break
+    }
+    case 'bird': {
+      // Body
+      const body = MeshBuilder.CreateBox('body', { width: 0.4, height: 0.4, depth: 0.3 }, scene)
+      body.position = new Vector3(0, 0.45, 0)
+      // Head
+      const head = MeshBuilder.CreateBox('head', { width: 0.3, height: 0.3, depth: 0.3 }, scene)
+      head.position = new Vector3(0, 0.8, -0.1)
+      // Wings
+      const wingL = MeshBuilder.CreateBox('wing_l', { width: 0.5, height: 0.08, depth: 0.3 }, scene)
+      wingL.position = new Vector3(-0.45, 0.5, 0)
+      const wingR = MeshBuilder.CreateBox('wing_r', { width: 0.5, height: 0.08, depth: 0.3 }, scene)
+      wingR.position = new Vector3(0.45, 0.5, 0)
+      // Legs
+      const legL = MeshBuilder.CreateBox('leg_l', { width: 0.08, height: 0.3, depth: 0.08 }, scene)
+      legL.position = new Vector3(-0.1, 0.15, 0)
+      const legR = MeshBuilder.CreateBox('leg_r', { width: 0.08, height: 0.3, depth: 0.08 }, scene)
+      legR.position = new Vector3(0.1, 0.15, 0)
+      break
+    }
+    case 'aquatic':
+    case 'fish': {
+      // Body
+      const body = MeshBuilder.CreateBox('body', { width: 0.5, height: 0.35, depth: 1.0 }, scene)
+      body.position = new Vector3(0, 0.4, 0)
+      // Tail
+      const tail = MeshBuilder.CreateBox('tail', { width: 0.25, height: 0.3, depth: 0.25 }, scene)
+      tail.position = new Vector3(0, 0.4, 0.6)
+      break
+    }
+  }
 }
 
 export const BabylonPreview = ({
   geometryJson,
   textureUrl,
+  vanillaShape,
 }: BabylonPreviewProps): JSX.Element => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const engineRef = useRef<Engine | null>(null)
@@ -47,6 +124,9 @@ export const BabylonPreview = ({
   // Keep textureUrl accessible inside the geometry effect without adding it to the dep array
   const textureUrlRef = useRef<string | undefined>(textureUrl)
   textureUrlRef.current = textureUrl
+  // Keep vanillaShape accessible inside the geometry effect without adding it to the dep array
+  const vanillaShapeRef = useRef<typeof vanillaShape>(vanillaShape)
+  vanillaShapeRef.current = vanillaShape
   // Track the texture URL that was last applied so the texture-only effect can skip a redundant
   // apply immediately after the geometry effect already handled it
   const lastAppliedTextureRef = useRef<string | undefined>(undefined)
@@ -111,11 +191,13 @@ export const BabylonPreview = ({
           }
         } catch { /* parse failure — fall through to default box */ }
       }
+      if (!meshCreated && vanillaShapeRef.current) {
+        buildVanillaShape(vanillaShapeRef.current, scene)
+        meshCreated = true
+      }
       if (!meshCreated) {
         MeshBuilder.CreateBox('defaultBox', { size: 1 }, scene)
       }
-
-      // Create shared material and apply current texture via ref
       const mat = new StandardMaterial('mat', scene)
       materialRef.current = mat
       const currentUrl = textureUrlRef.current
@@ -151,7 +233,7 @@ export const BabylonPreview = ({
       materialRef.current = null
       lastAppliedTextureRef.current = undefined
     }
-  }, [geometryJson])
+  }, [geometryJson, vanillaShape])
 
   // ── Texture-only effect: swap diffuseTexture without rebuilding the engine ──
   useEffect(() => {
