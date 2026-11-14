@@ -18,6 +18,14 @@ export interface ProjectData {
   status: EntityStatus
   geometry?: { fileName: string; content: string }
   texture?: { fileName: string; dataUrl: string }
+  /** Behavior-pack manifest header UUID — generated once at project creation to prevent UUID churn */
+  manifestUuid?: string
+  /** Behavior-pack module UUID — generated once at project creation to prevent UUID churn */
+  moduleUuid?: string
+  /** Resource-pack manifest header UUID — generated once at project creation to prevent UUID churn */
+  rpManifestUuid?: string
+  /** Resource-pack module UUID — generated once at project creation to prevent UUID churn */
+  rpModuleUuid?: string
 }
 
 export const DEFAULT_STATUS: EntityStatus = {

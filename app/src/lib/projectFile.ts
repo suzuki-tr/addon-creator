@@ -3,7 +3,7 @@ import type { ProjectData } from '@/stores/projectStore'
 // showDirectoryPicker is not yet fully typed in all TypeScript DOM lib versions
 declare global {
   interface Window {
-    showDirectoryPicker(): Promise<FileSystemDirectoryHandle>
+    showDirectoryPicker(options?: { mode?: 'read' | 'readwrite' }): Promise<FileSystemDirectoryHandle>
   }
 }
 
@@ -36,7 +36,7 @@ export async function saveProjectToDirectory(project: ProjectData): Promise<void
 
   let dirHandle: FileSystemDirectoryHandle
   try {
-    dirHandle = await window.showDirectoryPicker()
+    dirHandle = await window.showDirectoryPicker({ mode: 'readwrite' })
   } catch {
     return // user cancelled
   }
@@ -70,17 +70,20 @@ export async function saveProjectToDirectory(project: ProjectData): Promise<void
   // project.json — full project state
   await writeText(dirHandle, 'project.json', JSON.stringify(project, null, 2))
 
+  // ── Behavior pack (root directory) ───────────────────────────────────────
+
   // manifest.json (behavior pack)
+  // UUIDs are read from ProjectData so iterative saves keep the same pack identity in Minecraft
   const manifest = {
     format_version: 2,
     header: {
-      uuid: crypto.randomUUID(),
+      uuid: project.manifestUuid ?? crypto.randomUUID(),
       version: [1, 0, 0],
       name: entityDisplayName,
       description: `Behavior pack for ${entityDisplayName}`,
       min_engine_version: [1, 20, 0],
     },
-    modules: [{ type: 'data', uuid: crypto.randomUUID(), version: [1, 0, 0] }],
+    modules: [{ type: 'data', uuid: project.moduleUuid ?? crypto.randomUUID(), version: [1, 0, 0] }],
   }
   await writeText(dirHandle, 'manifest.json', JSON.stringify(manifest, null, 2))
 
@@ -125,21 +128,56 @@ export async function saveProjectToDirectory(project: ProjectData): Promise<void
   const entitiesDir = await dirHandle.getDirectoryHandle('entities', { create: true })
   await writeText(entitiesDir, `${entityId}.json`, JSON.stringify(entityBehavior, null, 2))
 
-  // models/entity/<id>.geo.json
+  // ── Resource pack (resource_pack/ subdirectory) ───────────────────────────
+  // Geometry and texture files are placed here with a manifest and client-entity
+  // definition so the game can load them. Without this, assets on disk are ignored.
+
+  const rpDir = await dirHandle.getDirectoryHandle('resource_pack', { create: true })
+
+  const rpManifest = {
+    format_version: 2,
+    header: {
+      uuid: project.rpManifestUuid ?? crypto.randomUUID(),
+      version: [1, 0, 0],
+      name: `${entityDisplayName} Resource Pack`,
+      description: `Resource pack for ${entityDisplayName}`,
+      min_engine_version: [1, 20, 0],
+    },
+    modules: [{ type: 'resources', uuid: project.rpModuleUuid ?? crypto.randomUUID(), version: [1, 0, 0] }],
+  }
+  await writeText(rpDir, 'manifest.json', JSON.stringify(rpManifest, null, 2))
+
+  // Client entity definition — wires geometry and texture to the entity identifier
+  const entityClient = {
+    format_version: '1.10.0',
+    'minecraft:client_entity': {
+      description: {
+        identifier: entityIdentifier,
+        materials: { default: 'entity_alphatest' },
+        textures: { default: `textures/entity/${entityId}` },
+        geometry: { default: `geometry.${entityId}` },
+        render_controllers: ['controller.render.default'],
+      },
+    },
+  }
+  const rpEntityDir = await rpDir.getDirectoryHandle('entity', { create: true })
+  await writeText(rpEntityDir, `${entityId}.entity.json`, JSON.stringify(entityClient, null, 2))
+
+  // models/entity/<id>.geo.json → resource pack
   if (project.geometry?.content) {
-    const modelsDir = await dirHandle.getDirectoryHandle('models', { create: true })
-    const entityModelsDir = await modelsDir.getDirectoryHandle('entity', { create: true })
-    await writeText(entityModelsDir, `${entityId}.geo.json`, project.geometry.content)
+    const rpModelsDir = await rpDir.getDirectoryHandle('models', { create: true })
+    const rpEntityModelsDir = await rpModelsDir.getDirectoryHandle('entity', { create: true })
+    await writeText(rpEntityModelsDir, `${entityId}.geo.json`, project.geometry.content)
   }
 
-  // textures/entity/<id>.png
+  // textures/entity/<id>.png → resource pack
   if (project.texture?.dataUrl) {
     const dataUrl = project.texture.dataUrl
     const b64 = dataUrl.includes(',') ? dataUrl.split(',')[1] ?? '' : dataUrl
     const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
-    const texturesDir = await dirHandle.getDirectoryHandle('textures', { create: true })
-    const entityTexDir = await texturesDir.getDirectoryHandle('entity', { create: true })
-    await writeBinary(entityTexDir, `${entityId}.png`, bytes)
+    const rpTexturesDir = await rpDir.getDirectoryHandle('textures', { create: true })
+    const rpEntityTexDir = await rpTexturesDir.getDirectoryHandle('entity', { create: true })
+    await writeBinary(rpEntityTexDir, `${entityId}.png`, bytes)
   }
 }
 

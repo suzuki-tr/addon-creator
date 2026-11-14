@@ -42,7 +42,7 @@ export const EditorPage = (): JSX.Element => {
   )
   const [jsonPanelWidth, setJsonPanelWidth] = useState<number>(() => {
     const s = localStorage.getItem('json-panel-width')
-    return s !== null ? parseInt(s, 10) : 360
+    return s !== null ? (parseInt(s, 10) || 360) : 360
   })
 
   /**
@@ -177,8 +177,16 @@ export const EditorPage = (): JSX.Element => {
       status: project?.status ?? DEFAULT_STATUS,
       ...(project?.geometry !== undefined && { geometry: project.geometry }),
       ...(project?.texture !== undefined && { texture: project.texture }),
+      // Pass through persisted UUIDs so repeated saves keep the same pack identity
+      ...(project?.manifestUuid !== undefined && { manifestUuid: project.manifestUuid }),
+      ...(project?.moduleUuid !== undefined && { moduleUuid: project.moduleUuid }),
+      ...(project?.rpManifestUuid !== undefined && { rpManifestUuid: project.rpManifestUuid }),
+      ...(project?.rpModuleUuid !== undefined && { rpModuleUuid: project.rpModuleUuid }),
     }
-    void saveProjectToDirectory(exportData)
+    saveProjectToDirectory(exportData).catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : String(err)
+      window.alert(`${t('error.storage.saveFailed')}: ${message}`)
+    })
   }
 
   const handleExport = (): void => {

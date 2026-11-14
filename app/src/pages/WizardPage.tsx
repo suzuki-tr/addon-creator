@@ -119,6 +119,11 @@ export const WizardPage = (): JSX.Element => {
         movementSpeed: vanillaEntity?.defaultComponents?.movementSpeed ?? 0.25,
         scale: 1.0,
       },
+      // UUIDs generated once so repeated saves don't create new pack identities in Minecraft
+      manifestUuid: crypto.randomUUID(),
+      moduleUuid: crypto.randomUUID(),
+      rpManifestUuid: crypto.randomUUID(),
+      rpModuleUuid: crypto.randomUUID(),
     }
 
     setProject(projectData)
