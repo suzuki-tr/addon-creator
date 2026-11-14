@@ -1,6 +1,7 @@
 import type { JSX } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useProjectStore } from '@/stores/projectStore'
 
 interface ComponentItem {
   id: string
@@ -14,39 +15,11 @@ const COMPONENTS: ComponentItem[] = [
   { id: 'melee_attack', name: 'minecraft:behavior.melee_attack' },
 ]
 
-interface SliderRowProps {
-  label: string
-  value: number
-  min: number
-  max: number
-}
-
-const SliderRow = ({ label, value, min, max }: SliderRowProps): JSX.Element => {
-  const pct = ((value - min) / (max - min)) * 100
-
-  return (
-    <div className="flex items-center gap-3 py-1">
-      <span className="text-xs text-gray-600 w-20 flex-shrink-0">{label}</span>
-      <div className="flex-1 relative h-2 rounded-full bg-gray-200">
-        <div
-          className="absolute left-0 top-0 h-2 rounded-full bg-[#5D9C3B]"
-          style={{ width: `${pct}%` }}
-        />
-        <div
-          className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white border-2 border-[#5D9C3B] shadow"
-          style={{ left: `calc(${pct}% - 7px)` }}
-        />
-      </div>
-      <span className="text-xs text-gray-700 w-8 text-right font-mono">
-        {value}
-      </span>
-    </div>
-  )
-}
-
 export const ComponentPanel = (): JSX.Element => {
   const { t } = useTranslation()
+  const { project, updateStatus } = useProjectStore()
   const [expandedId, setExpandedId] = useState<string | null>('health')
+  const [healthMax, setHealthMax] = useState(project?.status.health ?? 20)
 
   const handleToggle = (id: string): void => {
     setExpandedId((prev) => (prev === id ? null : id))
@@ -93,9 +66,43 @@ export const ComponentPanel = (): JSX.Element => {
 
             {/* Expanded body — only shown for health */}
             {isExpanded && comp.id === 'health' && (
-              <div className="px-3 py-2 bg-white border-t border-gray-100">
-                <SliderRow label={t('editor.components.health.maxLabel')} value={20} min={1} max={100} />
-                <SliderRow label={t('editor.components.health.defaultLabel')} value={20} min={1} max={100} />
+              <div className="px-3 py-3 bg-white border-t border-gray-100 flex flex-col gap-3">
+                {/* Max health row */}
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-gray-600 w-24 flex-shrink-0">
+                    {t('editor.components.health.maxLabel')}
+                  </span>
+                  <input
+                    type="range"
+                    min={1}
+                    max={2048}
+                    step={1}
+                    value={healthMax}
+                    onChange={(e) => {
+                      const v = Number(e.target.value)
+                      setHealthMax(v)
+                      updateStatus('health', v)
+                    }}
+                    className="flex-1 cursor-pointer accent-[#5D9C3B]"
+                    aria-label={t('editor.components.health.maxLabel')}
+                  />
+                  <input
+                    type="number"
+                    min={1}
+                    max={2048}
+                    step={1}
+                    value={healthMax}
+                    onChange={(e) => {
+                      const v = Math.min(2048, Math.max(1, Number(e.target.value)))
+                      if (!isNaN(v)) {
+                        setHealthMax(v)
+                        updateStatus('health', v)
+                      }
+                    }}
+                    className="w-16 border border-gray-200 rounded px-2 py-1 text-xs font-mono text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
+                    aria-label={t('editor.components.health.maxLabel')}
+                  />
+                </div>
               </div>
             )}
           </div>
