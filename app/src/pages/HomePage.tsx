@@ -2,7 +2,6 @@ import type { JSX, ChangeEvent } from 'react'
 import { useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useUiStore } from '@/stores/uiStore'
 import { useProjectStore } from '@/stores/projectStore'
 import { loadProjectFile } from '@/lib/projectFile'
 
@@ -59,144 +58,6 @@ const PLACEHOLDER_PROJECTS: RecentProject[] = [
     icon: '⚔️',
   },
 ]
-
-// ---------------------------------------------------------------------------
-// Kids home layout (locale === 'ja-kids')
-// Follows wireframe #07: bg-[#FFFBEB], large buttons, vertical project list
-// ---------------------------------------------------------------------------
-
-interface KidsHomeLayoutProps {
-  onNewAddon: () => void
-  onOpenProject: () => void
-  onEditProject: () => void
-}
-
-const KidsHomeLayout = ({
-  onNewAddon,
-  onOpenProject,
-  onEditProject,
-}: KidsHomeLayoutProps): JSX.Element => {
-  const { t } = useTranslation()
-
-  return (
-    <div className="max-w-[900px] mx-auto px-6 py-9">
-      {/* Hero section */}
-      <section className="text-center py-12 px-8 bg-white border-2 border-[#E5E7EB] rounded-2xl mb-9">
-        <h1 className="text-[2.2rem] font-bold text-gray-900 mb-3.5 leading-snug">
-          {t('app.name')}
-        </h1>
-        <p className="text-[1.3rem] text-gray-700 mb-9 leading-relaxed">
-          {t('home.hero.subtitle')}
-        </p>
-
-        {/* Full-width stacked CTA buttons */}
-        <div className="flex flex-col gap-4 max-w-[560px] mx-auto">
-          <button
-            type="button"
-            onClick={onNewAddon}
-            className="bg-[#5D9C3B] text-white border-none min-h-[64px] text-[1.3rem] font-bold rounded-2xl w-full cursor-pointer hover:bg-[#4f8832] transition-colors px-8"
-          >
-            {t('home.newAddon')}
-          </button>
-          <button
-            type="button"
-            onClick={onOpenProject}
-            className="bg-white text-gray-700 border-[2.5px] border-[#D1D5DB] min-h-[64px] text-[1.3rem] font-semibold rounded-2xl w-full cursor-pointer hover:bg-gray-50 transition-colors px-8"
-          >
-            {t('home.openProject')}
-          </button>
-        </div>
-      </section>
-
-      {/* Recent projects — vertical list */}
-      <h2 className="text-[1.5rem] font-bold text-gray-900 mb-4">
-        {t('home.recentProjects')}
-      </h2>
-
-      <div className="flex flex-col gap-3.5">
-        {PLACEHOLDER_PROJECTS.map((project) => (
-          <div
-            key={project.id}
-            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 flex items-center gap-5"
-          >
-            <span className="text-[2.8rem] leading-none flex-shrink-0">
-              {project.icon}
-            </span>
-            <div className="flex-1">
-              <div className="text-[1.3rem] font-bold text-gray-900 mb-1">
-                {project.name}
-              </div>
-              <div className="text-base text-gray-500">
-                {t(project.daysAgoKey)}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={onEditProject}
-              className="bg-[#5D9C3B] text-white border-none min-h-[48px] rounded-xl px-5 font-bold cursor-pointer hover:bg-[#4f8832] transition-colors flex-shrink-0 whitespace-nowrap"
-            >
-              {t('home.project.edit')}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {/* Editor Tools section */}
-      <div className="mt-9">
-        <h2 className="text-[1.5rem] font-bold text-gray-900 mb-4">
-          {t('home.tools.title')}
-        </h2>
-        <div className="grid grid-cols-3 gap-3.5">
-          <Link
-            to="/recipe"
-            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
-          >
-            <div className="text-[2rem] mb-2">🧪</div>
-            <div className="text-base font-bold text-gray-900">
-              {t('home.tools.recipe')}
-            </div>
-          </Link>
-          <Link
-            to="/loot-table"
-            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
-          >
-            <div className="text-[2rem] mb-2">🎲</div>
-            <div className="text-base font-bold text-gray-900">
-              {t('home.tools.lootTable')}
-            </div>
-          </Link>
-          <Link
-            to="/spawn-rules"
-            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
-          >
-            <div className="text-[2rem] mb-2">🌍</div>
-            <div className="text-base font-bold text-gray-900">
-              {t('home.tools.spawnRules')}
-            </div>
-          </Link>
-          <Link
-            to="/animation-controller"
-            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
-          >
-            <div className="text-[2rem] mb-2">🎬</div>
-            <div className="text-base font-bold text-gray-900">
-              {t('home.tools.animationController')}
-            </div>
-          </Link>
-          <Link
-            to="/sound"
-            className="bg-white border-2 border-[#E5E7EB] rounded-2xl p-5 text-center no-underline hover:bg-[#F0F8EA] hover:border-[#5D9C3B] transition-colors"
-          >
-            <div className="text-[2rem] mb-2">🔊</div>
-            <div className="text-base font-bold text-gray-900">
-              {t('home.tools.sound')}
-            </div>
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 // ---------------------------------------------------------------------------
 // Standard home layout (locale === 'ja' or 'en')
@@ -353,12 +214,11 @@ const StandardHomeLayout = ({
 }
 
 // ---------------------------------------------------------------------------
-// Page component — gates on locale
+// Page component — always renders the standard layout
 // ---------------------------------------------------------------------------
 
 export const HomePage = (): JSX.Element => {
   const navigate = useNavigate()
-  const { locale } = useUiStore()
   const { setProject } = useProjectStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -397,19 +257,6 @@ export const HomePage = (): JSX.Element => {
       onChange={handleFileInputChange}
     />
   )
-
-  if (locale === 'ja-kids') {
-    return (
-      <>
-        <KidsHomeLayout
-          onNewAddon={handleNewAddon}
-          onOpenProject={handleOpenProject}
-          onEditProject={handleEditProject}
-        />
-        {hiddenInput}
-      </>
-    )
-  }
 
   return (
     <>

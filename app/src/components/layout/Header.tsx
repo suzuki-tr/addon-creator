@@ -38,57 +38,51 @@ export const Header = (): JSX.Element => {
 
         <div className="flex-1" />
 
-        {/* Mode toggle — hidden when locale is ja-kids (wireframe #07) */}
-        {locale !== 'ja-kids' && (
-          <div
-            className="flex border border-[#D1D5DB] rounded-md overflow-hidden"
-            role="group"
-            aria-label={
-              mode === 'simple'
-                ? t('app.mode.toggleToAdvanced')
-                : t('app.mode.toggleToSimple')
+        {/* Mode toggle — available for all locales */}
+        <div
+          className="flex border border-[#D1D5DB] rounded-md overflow-hidden"
+          role="group"
+          aria-label={
+            mode === 'simple'
+              ? t('app.mode.toggleToAdvanced')
+              : t('app.mode.toggleToSimple')
+          }
+        >
+          {/* Simple: green active, Advanced: dark (#374151) active — wireframe #06 */}
+          <button
+            type="button"
+            onClick={() => handleModeClick('simple')}
+            className={
+              `px-3.5 py-1.5 text-xs font-medium border-none cursor-pointer transition-colors` +
+              (mode === 'simple'
+                ? ' bg-[#5D9C3B] text-white font-semibold'
+                : ' bg-gray-100 text-gray-500 hover:bg-gray-200')
             }
+            aria-pressed={mode === 'simple'}
           >
-            {/* Simple: green active, Advanced: dark (#374151) active — wireframe #06 */}
-            <button
-              type="button"
-              onClick={() => handleModeClick('simple')}
-              className={
-                `px-3.5 py-1.5 text-xs font-medium border-none cursor-pointer transition-colors` +
-                (mode === 'simple'
-                  ? ' bg-[#5D9C3B] text-white font-semibold'
-                  : ' bg-gray-100 text-gray-500 hover:bg-gray-200')
-              }
-              aria-pressed={mode === 'simple'}
-            >
-              {t('app.mode.simple')}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleModeClick('advanced')}
-              className={
-                `px-3.5 py-1.5 text-xs font-medium border-none cursor-pointer transition-colors` +
-                (mode === 'advanced'
-                  ? ' bg-[#374151] text-white font-semibold'
-                  : ' bg-gray-100 text-gray-500 hover:bg-gray-200')
-              }
-              aria-pressed={mode === 'advanced'}
-            >
-              {t('app.mode.advanced')}
-            </button>
-          </div>
-        )}
+            {t('app.mode.simple')}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleModeClick('advanced')}
+            className={
+              `px-3.5 py-1.5 text-xs font-medium border-none cursor-pointer transition-colors` +
+              (mode === 'advanced'
+                ? ' bg-[#374151] text-white font-semibold'
+                : ' bg-gray-100 text-gray-500 hover:bg-gray-200')
+            }
+            aria-pressed={mode === 'advanced'}
+          >
+            {t('app.mode.advanced')}
+          </button>
+        </div>
 
-        {/* Language selector — wireframe #07: larger green-bordered variant for ja-kids */}
+        {/* Language selector */}
         <select
           value={locale}
           onChange={handleLocaleChange}
           aria-label="言語を選ぶ / Select language"
-          className={
-            locale === 'ja-kids'
-              ? 'px-3.5 py-2 border-2 border-[#5D9C3B] rounded-lg text-base font-semibold bg-white text-gray-700 cursor-pointer'
-              : 'px-2.5 py-1.5 border border-[#D1D5DB] rounded text-sm bg-white text-gray-700 cursor-pointer'
-          }
+          className="px-2.5 py-1.5 border border-[#D1D5DB] rounded text-sm bg-white text-gray-700 cursor-pointer"
         >
           {(Object.entries(LOCALE_LABELS) as [SupportedLocale, string][]).map(
             ([lang, label]) => (

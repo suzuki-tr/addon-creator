@@ -1,6 +1,5 @@
 import type { JSX, ReactNode } from 'react'
 import { Header } from './Header'
-import { useUiStore } from '@/stores/uiStore'
 
 interface AppShellProps {
   children: ReactNode
@@ -15,11 +14,8 @@ export const AppShell = ({
   children,
   noPadding = false,
 }: AppShellProps): JSX.Element => {
-  const { locale } = useUiStore()
-  const bgClass = locale === 'ja-kids' ? 'bg-[#FFFBEB]' : 'bg-[#F9FAFB]'
-
   return (
-    <div className={`min-h-screen flex flex-col ${bgClass}`}>
+    <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
       <Header />
       {noPadding ? (
         <main className="flex-1 flex flex-col overflow-hidden min-h-0">
