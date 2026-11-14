@@ -155,7 +155,8 @@
       "cameraReset": "⟳ Reset Rotation",
       "front": "Front",
       "side": "Side",
-      "top": "Top"
+      "top": "Top",
+      "limitationNote": "Simplified preview — UV mapping and bone transforms not applied"
     },
     "stateGraph": {
       "stateListTitle": "States",

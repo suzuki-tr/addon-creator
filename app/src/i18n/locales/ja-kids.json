@@ -136,6 +136,15 @@
     "breadcrumb": {
       "myProject": "マイプロジェクト"
     },
+    "preview3d": {
+      "title": "3D プレビュー",
+      "placeholder": "（あとでつくります）",
+      "cameraReset": "⟳ リセット",
+      "front": "まえ",
+      "side": "よこ",
+      "top": "うえ",
+      "limitationNote": "かんたんプレビュー — テクスチャのみかたはゲームとちがうことがあります"
+    },
     "stateGraph": {
       "stateListTitle": "じょうたいのリスト",
       "addState": "＋ じょうたいをついか",

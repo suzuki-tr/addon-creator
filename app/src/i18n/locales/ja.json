@@ -155,7 +155,8 @@
       "cameraReset": "⟳ 回転リセット",
       "front": "前面",
       "side": "側面",
-      "top": "上面"
+      "top": "上面",
+      "limitationNote": "簡易プレビュー — UVマッピングとボーントランスフォームは未適用"
     },
     "stateGraph": {
       "stateListTitle": "状態一覧",
