@@ -9,6 +9,7 @@ const SAMPLE_DATA: WizardFormData = {
   displayName: 'Test Mob',
   baseType: 'scratch',
   vanillaSearch: '',
+  selectedVanillaId: null,
 }
 
 describe('WizardStep3', () => {

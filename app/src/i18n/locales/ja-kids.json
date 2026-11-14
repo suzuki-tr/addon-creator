@@ -76,7 +76,8 @@
       "fromScratchDesc": "なにもないところから じぶんでカスタマイズします",
       "fromVanillaDesc": "マインクラフトにもともといる モブやブロックをもとにしてアレンジします",
       "vanillaSearchLabel": "もとにする Vanilla（バニラ）をさがしてください",
-      "recommendedBadge": "おすすめ"
+      "recommendedBadge": "おすすめ",
+      "noResults": "みつかりませんでした"
     },
     "step3": {
       "title": "とくせいをえらんでください",
@@ -227,7 +228,8 @@
       "nameEmpty": "なまえをいれてください",
       "nameInvalidChars": "なまえにつかえるのは えいすう字と _ だけです（れい: my_mob）",
       "namespaceMissing": "グループのなまえがひつようです（れい: myaddon:my_mob）",
-      "exportFailed": "ダウンロードがうまくいきませんでした: {{message}}"
+      "exportFailed": "ダウンロードがうまくいきませんでした: {{message}}",
+      "vanillaEntityRequired": "Vanilla（バニラ）をえらんでください"
     },
     "storage": {
       "loadFailed": "さくひんをよみこめませんでした",

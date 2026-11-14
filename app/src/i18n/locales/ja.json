@@ -79,7 +79,8 @@
       "fromScratchDesc": "なにもないところから自分でカスタマイズします",
       "fromVanillaDesc": "マインクラフト標準のモブ・ブロック・アイテムを元にして改造します",
       "vanillaSearchLabel": "元にするバニラを検索してください",
-      "recommendedBadge": "おすすめ"
+      "recommendedBadge": "おすすめ",
+      "noResults": "該当するエンティティが見つかりません"
     },
     "step3": {
       "title": "特性を選んでください",
@@ -307,7 +308,8 @@
       "nameEmpty": "名前を入力してください",
       "nameInvalidChars": "名前に使えるのは英数字・アンダースコアのみです（例: my_mob）",
       "namespaceMissing": "名前空間が必要です（例: myaddon:my_mob）",
-      "exportFailed": "エクスポートに失敗しました: {{message}}"
+      "exportFailed": "エクスポートに失敗しました: {{message}}",
+      "vanillaEntityRequired": "バニラエンティティを選択してください"
     },
     "storage": {
       "loadFailed": "プロジェクトの読み込みに失敗しました",

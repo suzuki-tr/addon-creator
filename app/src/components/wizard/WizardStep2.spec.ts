@@ -4,11 +4,12 @@ import { render, screen } from '@testing-library/react'
 import { WizardStep2 } from './WizardStep2'
 import type { WizardFormData } from '@/pages/WizardPage'
 
-const SAMPLE_DATA: Pick<WizardFormData, 'id' | 'displayName' | 'baseType' | 'vanillaSearch'> = {
+const SAMPLE_DATA: Pick<WizardFormData, 'id' | 'displayName' | 'baseType' | 'vanillaSearch' | 'selectedVanillaId'> = {
   id: 'test_mob',
   displayName: 'Test Mob',
   baseType: 'scratch',
   vanillaSearch: '',
+  selectedVanillaId: null,
 }
 
 describe('WizardStep2 (component)', () => {
@@ -18,6 +19,7 @@ describe('WizardStep2 (component)', () => {
         data: SAMPLE_DATA,
         idError: null,
         displayNameError: null,
+        vanillaEntityError: null,
         onChange: () => {},
       }),
     )
@@ -30,6 +32,7 @@ describe('WizardStep2 (component)', () => {
         data: SAMPLE_DATA,
         idError: null,
         displayNameError: null,
+        vanillaEntityError: null,
         onChange: () => {},
       }),
     )
@@ -42,6 +45,7 @@ describe('WizardStep2 (component)', () => {
         data: SAMPLE_DATA,
         idError: null,
         displayNameError: null,
+        vanillaEntityError: null,
         onChange: () => {},
       }),
     )
@@ -54,6 +58,7 @@ describe('WizardStep2 (component)', () => {
         data: { ...SAMPLE_DATA, id: 'bad id' },
         idError: 'wizard.error.invalidId',
         displayNameError: null,
+        vanillaEntityError: null,
         onChange: () => {},
       }),
     )
@@ -66,6 +71,7 @@ describe('WizardStep2 (component)', () => {
         data: SAMPLE_DATA,
         idError: null,
         displayNameError: null,
+        vanillaEntityError: null,
         onChange: () => {},
       }),
     )

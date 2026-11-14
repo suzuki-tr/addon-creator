@@ -79,7 +79,8 @@
       "fromScratchDesc": "Start completely from scratch and customize everything yourself",
       "fromVanillaDesc": "Start from an existing vanilla mob, block, or item and modify it",
       "vanillaSearchLabel": "Search for a vanilla base",
-      "recommendedBadge": "Recommended"
+      "recommendedBadge": "Recommended",
+      "noResults": "No matching entities found"
     },
     "step3": {
       "title": "Choose Traits",
@@ -307,7 +308,8 @@
       "nameEmpty": "Please enter a name",
       "nameInvalidChars": "Name can only contain letters, numbers, and underscores (e.g. my_mob)",
       "namespaceMissing": "A namespace is required (e.g. myaddon:my_mob)",
-      "exportFailed": "Export failed: {{message}}"
+      "exportFailed": "Export failed: {{message}}",
+      "vanillaEntityRequired": "Please select a vanilla entity"
     },
     "storage": {
       "loadFailed": "Failed to load project",

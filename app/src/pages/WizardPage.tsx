@@ -15,6 +15,7 @@ export interface WizardFormData {
   displayName: string
   baseType: BaseType
   vanillaSearch: string
+  selectedVanillaId: string | null
 }
 
 type WizardStep = 1 | 2 | 3
@@ -30,11 +31,13 @@ export const WizardPage = (): JSX.Element => {
     displayName: '',
     baseType: 'vanilla',
     vanillaSearch: '',
+    selectedVanillaId: null,
   })
 
   // Validation state
   const [idError, setIdError] = useState<string | null>(null)
   const [displayNameError, setDisplayNameError] = useState<string | null>(null)
+  const [vanillaEntityError, setVanillaEntityError] = useState<string | null>(null)
   const [downloadDone, setDownloadDone] = useState(false)
 
   const handleFormChange = (patch: Partial<WizardFormData>): void => {
@@ -42,6 +45,8 @@ export const WizardPage = (): JSX.Element => {
     // Clear errors on change
     if (patch.id !== undefined) setIdError(null)
     if (patch.displayName !== undefined) setDisplayNameError(null)
+    if (patch.selectedVanillaId !== undefined) setVanillaEntityError(null)
+    if (patch.baseType !== undefined) setVanillaEntityError(null)
   }
 
   const validateStep2 = (): boolean => {
@@ -57,6 +62,11 @@ export const WizardPage = (): JSX.Element => {
       valid = false
     } else if (!isValidId(formData.id)) {
       setIdError(t('error.validation.nameInvalidChars'))
+      valid = false
+    }
+
+    if (formData.baseType === 'vanilla' && !formData.selectedVanillaId) {
+      setVanillaEntityError(t('error.validation.vanillaEntityRequired'))
       valid = false
     }
 
@@ -111,6 +121,7 @@ export const WizardPage = (): JSX.Element => {
           data={formData}
           idError={idError}
           displayNameError={displayNameError}
+          vanillaEntityError={vanillaEntityError}
           onChange={handleFormChange}
         />
       )}

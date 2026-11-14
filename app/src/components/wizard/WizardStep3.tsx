@@ -1,6 +1,7 @@
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ContentType, WizardFormData } from '@/pages/WizardPage'
+import { VANILLA_MOBS } from '@/data/vanilla-entities'
 
 const TYPE_ICON: Record<ContentType, string> = {
   mob: '🐾',
@@ -20,12 +21,15 @@ export const WizardStep3 = ({
   const { t } = useTranslation()
 
   const outputFileName = `${data.id}.mcaddon`
+  const vanillaEntity = data.selectedVanillaId
+    ? VANILLA_MOBS.find((e) => e.id === data.selectedVanillaId)
+    : null
   const baseLabel =
-    data.baseType === 'vanilla' && data.vanillaSearch
-      ? `${t('wizard.step2.fromVanilla')}（${data.vanillaSearch}）`
-      : data.baseType === 'vanilla'
-        ? t('wizard.step2.fromVanilla')
-        : t('wizard.step2.fromScratch')
+    data.baseType === 'vanilla'
+      ? vanillaEntity
+        ? `${t('wizard.step2.fromVanilla')}（${vanillaEntity.nameJa}）`
+        : t('wizard.step2.fromVanilla')
+      : t('wizard.step2.fromScratch')
 
   return (
     <div className="bg-white border border-[#E5E7EB] rounded-xl p-8 mb-6">

@@ -1,6 +1,8 @@
 import type { JSX } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { BaseType, WizardFormData } from '@/pages/WizardPage'
+import { VANILLA_MOBS, matchesSearch } from '@/data/vanilla-entities'
 
 /** Convert display name to a valid ID: lowercase, spaces → underscores, strip invalid chars */
 export function toId(displayName: string): string {
@@ -16,9 +18,10 @@ export function isValidId(id: string): boolean {
 }
 
 interface WizardStep2Props {
-  data: Pick<WizardFormData, 'id' | 'displayName' | 'baseType' | 'vanillaSearch'>
+  data: Pick<WizardFormData, 'id' | 'displayName' | 'baseType' | 'vanillaSearch' | 'selectedVanillaId'>
   idError: string | null
   displayNameError: string | null
+  vanillaEntityError: string | null
   onChange: (patch: Partial<WizardFormData>) => void
 }
 
@@ -26,9 +29,18 @@ export const WizardStep2 = ({
   data,
   idError,
   displayNameError,
+  vanillaEntityError,
   onChange,
 }: WizardStep2Props): JSX.Element => {
   const { t } = useTranslation()
+
+  const filteredEntities = useMemo(
+    () =>
+      data.vanillaSearch.trim()
+        ? VANILLA_MOBS.filter((e) => matchesSearch(e, data.vanillaSearch.trim()))
+        : VANILLA_MOBS,
+    [data.vanillaSearch],
+  )
 
   const handleDisplayNameChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -45,7 +57,7 @@ export const WizardStep2 = ({
   }
 
   const handleBaseTypeChange = (baseType: BaseType): void => {
-    onChange({ baseType, vanillaSearch: '' })
+    onChange({ baseType, vanillaSearch: '', selectedVanillaId: null })
   }
 
   const handleVanillaSearch = (
@@ -237,8 +249,46 @@ export const WizardStep2 = ({
                     value={data.vanillaSearch}
                     onChange={handleVanillaSearch}
                     placeholder={t('wizard.step2.searchPlaceholder')}
-                    className="w-full px-3 py-2.5 border border-[#D1D5DB] rounded-md text-sm bg-white focus:border-[#5D9C3B] outline-none"
+                    className="w-full px-3 py-2.5 border border-[#D1D5DB] rounded-md text-sm bg-white focus:border-[#5D9C3B] outline-none mb-2"
                   />
+
+                  {/* Filtered entity list */}
+                  <div
+                    role="listbox"
+                    aria-label={t('wizard.step2.vanillaSearchLabel')}
+                    className="max-h-48 overflow-y-auto border border-[#E5E7EB] rounded-md bg-white"
+                  >
+                    {filteredEntities.map((entity) => (
+                      <button
+                        key={entity.id}
+                        type="button"
+                        role="option"
+                        data-testid={`vanilla-entity-${entity.id}`}
+                        aria-selected={data.selectedVanillaId === entity.id}
+                        onClick={() => onChange({ selectedVanillaId: entity.id })}
+                        className={[
+                          'w-full flex items-center gap-2 px-3 py-2 text-left text-sm border-b border-[#F3F4F6] last:border-b-0 transition-colors cursor-pointer',
+                          data.selectedVanillaId === entity.id
+                            ? 'bg-[#F0F8EA] border-l-2 border-l-[#5D9C3B]'
+                            : 'bg-white hover:bg-gray-50',
+                        ].join(' ')}
+                      >
+                        <span>{entity.icon}</span>
+                        <span className="font-medium">{entity.nameJa}</span>
+                        <span className="text-xs text-gray-400 ml-1">({entity.nameEn})</span>
+                      </button>
+                    ))}
+                    {filteredEntities.length === 0 && data.vanillaSearch.trim() && (
+                      <p className="text-xs text-gray-400 p-3 text-center">
+                        {t('wizard.step2.noResults')}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Vanilla entity validation error */}
+                  {vanillaEntityError && (
+                    <p className="text-xs text-red-500 mt-1.5">{vanillaEntityError}</p>
+                  )}
                 </div>
               )}
             </div>
