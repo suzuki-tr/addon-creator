@@ -1,0 +1,36 @@
+{
+  "id": "FEAT-004",
+  "type": "test",
+  "description": "ユニットテストカバレッジを 80% 超に引き上げる。vitest に happy-dom DOM 環境を追加し、Phase 4 の新規コンポーネントから純粋関数をユーティリティファイルに抽出してテストする。コンポーネントレンダリングテスト（@testing-library/react）も追加する。FEAT-001 〜 FEAT-003 完了後に実行する。",
+  "status": "completed",
+  "steps": [
+    "Step 1 — DOM 環境設定: app/vite.config.ts の test セクションに environment: 'happy-dom' を追加する。app/ ディレクトリで npm install -D happy-dom を実行し package.json を更新する。これにより @testing-library/react を使ったコンポーネントテストが可能になる。",
+    "Step 2 — i18n / store モックのセットアップファイル作成: app/src/test/setup.ts（またはファイル内 vi.mock）で react-i18next と @/stores/uiStore の標準モックを用意する。react-i18next モック: vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key, i18n: { changeLanguage: () => Promise.resolve() } }) }))。uiStore モック: vi.mock('@/stores/uiStore', () => ({ useUiStore: () => ({ mode: 'simple', locale: 'ja' }) }))。vite.config.ts の test.setupFiles に追加する。",
+    "Step 3 — recipeUtils.ts 抽出: app/src/utils/recipeUtils.ts を新規作成する。RecipeEditor から純粋関数を抽出する: (a) isValidItemId(id: string): boolean — id が 'namespace:name' 形式（英数字・アンダースコア・コロン1個）かどうかを検証する。(b) buildShapedRecipeJson(slots: string[], keys: Array<{letter:string;itemId:string}>, resultItem:string, resultCount:number): Record<string, unknown> — Bedrock Edition 形式の shaped recipe JSON オブジェクトを返す。(c) buildFurnaceRecipeJson(input:string, output:string, cookTime:number, experience:number): Record<string, unknown> — Bedrock furnace recipe JSON を返す。",
+    "Step 4 — recipeUtils.spec.ts: app/src/utils/recipeUtils.spec.ts を新規作成する。vitest の describe/it/expect を使用する（@testing-library/react は不要）。テストケース: isValidItemId('minecraft:planks') → true、isValidItemId('') → false、isValidItemId('no_namespace') → false、isValidItemId('a:b:c') → false（コロン 2 個以上は無効）。buildShapedRecipeJson の出力オブジェクトが format_version・minecraft:recipe_shaped・pattern・key・result の各フィールドを持つことを expect する。buildFurnaceRecipeJson の出力が minecraft:recipe_furnace と input/output/tags フィールドを持つことを expect する。最低 8 テストケース。",
+    "Step 5 — lootTableUtils.ts 抽出: app/src/utils/lootTableUtils.ts を新規作成する。LootTableEditor から純粋関数を抽出する: (a) totalWeight(entries: Array<{weight: number}>): number — エントリーの weight 合計を返す。(b) entryProbability(entryWeight: number, totalWeight: number): number — パーセント（0-100）を返す。(c) buildLootTableJson(pools: LootPool[]): Record<string, unknown> — Bedrock loot table JSON を返す（LootPool 型は utils ファイル内で再定義または import）。",
+    "Step 6 — lootTableUtils.spec.ts: app/src/utils/lootTableUtils.spec.ts を新規作成する。totalWeight([{weight:1},{weight:2},{weight:3}]) → 6、entryProbability(2, 6) → 約 33.33（toBeCloseTo 使用）、buildLootTableJson の出力が pools 配列と rolls/entries フィールドを持つことを expect する。最低 6 テストケース。",
+    "Step 7 — StatusPanel.spec.ts: app/src/components/editor/StatusPanel.spec.ts を新規作成する。@testing-library/react の render を使用する。テスト: (a) 'renders health range input with default value 20' — render(<StatusPanel />) 後に screen.getByRole('slider', {name: ...}) の value が '20' であることを確認する。(b) 'renders all 4 stat rows' — screen.getAllByRole('slider') の length が 4 であることを確認する。(c) 'reset button restores default value' — health slider を変更後に Reset ボタンをクリックすると value が '20' に戻ることを確認する（userEvent または fireEvent）。最低 4 テストケース。",
+    "Step 8 — RecipeEditor.spec.ts: app/src/components/editor/RecipeEditor.spec.ts を新規作成する。テスト: (a) 'renders shaped tab by default' — recipe.tabs.shaped のタブボタンの aria-selected が 'true' であることを確認する。(b) 'renders 9 slot buttons in shaped mode' — slot ボタンが 9 個表示されることを確認する。(c) 'switching to shapeless tab renders ingredient list' — shapeless タブをクリック後に recipe.addIngredient ボタンが表示されることを確認する。(d) 'switching to furnace tab renders cook time input' — furnace タブをクリック後に recipe.cookTime ラベルが表示されることを確認する。最低 4 テストケース。",
+    "Step 9 — LootTableEditor.spec.ts と SpawnRulesEditor.spec.ts: 各コンポーネントのスモークテスト（render してクラッシュしないこと + 主要要素の存在確認）をそれぞれ最低 3 テストケースずつ作成する。LootTableEditor: 'renders initial pool'、'add pool button is present'、'delete entry button is present'。SpawnRulesEditor: 'renders entity id input'、'renders surface spawn checkbox checked by default'、'renders biome filter section'。",
+    "Step 10 — カバレッジ確認 + 調整: npm test でテストが全件合格することを確認する。カバレッジレポートを生成する（npx vitest run --coverage、@vitest/coverage-v8 が未インストールの場合は npm install -D @vitest/coverage-v8 を先に実行）。カバレッジが 80% 未満の場合、不足しているモジュールにテストを追加する。カバレッジ確認は一時的であり、設定は元に戻さなくてよい（npm test コマンド自体は --coverage なし）。",
+    "Step 11 — Commit: コミットメッセージ: 'test: add unit tests for Phase 4 editors, >80% coverage'"
+  ],
+  "acceptance_criteria": [
+    "npm run build が exit 0 で完了する",
+    "npm test が exit 0 で完了する（FEAT-001〜004 の全テストが合格）",
+    "app/src/utils/recipeUtils.ts と recipeUtils.spec.ts が存在する（最低 8 テストケース）",
+    "app/src/utils/lootTableUtils.ts と lootTableUtils.spec.ts が存在する（最低 6 テストケース）",
+    "app/src/components/editor/StatusPanel.spec.ts が存在する（最低 4 テストケース）",
+    "app/src/components/editor/RecipeEditor.spec.ts が存在する（最低 4 テストケース）",
+    "app/src/components/editor/LootTableEditor.spec.ts と SpawnRulesEditor.spec.ts が存在する（各最低 3 テストケース）",
+    "npx vitest run --coverage の出力でステートメントカバレッジが 80% 以上",
+    "vite.config.ts の test.environment が 'happy-dom' に設定されている"
+  ],
+  "verification": [
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm run build",
+    "cd c:/Git/minecraft/minecraft-addon-creator/app && npm test"
+  ],
+  "blocked_reason": null,
+  "findings": "All 11 steps implemented. Step 1: happy-dom added to devDependencies, vite.config.ts test section updated with environment:'happy-dom' and setupFiles:['./src/test/setup.ts']. Also installed @vitest/coverage-v8@^3.2.7 (pinned to match vitest 3.x). Step 2: src/test/setup.ts created with vi.mock for react-i18next (t returns key string), @/stores/uiStore (mode:'simple', locale:'ja', setLocale/setMode no-ops), @/i18n (default.changeLanguage mock); afterEach(cleanup) registered manually because Vitest globals mode is off. Step 3: recipeUtils.ts extracted with isValidItemId (namespace:name regex), buildShapedRecipeJson (builds Bedrock shaped recipe JSON), buildFurnaceRecipeJson (builds furnace recipe JSON). Step 4: recipeUtils.spec.ts with 25 tests covering all three functions. Step 5: lootTableUtils.ts extracted with totalWeight, entryProbability, buildLootTableJson. LootPool/LootPoolEntry interfaces exported. Step 6: lootTableUtils.spec.ts with 15 tests. Steps 7-9: Component spec files using createElement() (not JSX) to stay with .spec.ts extension — StatusPanel.spec.ts (6 tests), RecipeEditor.spec.ts (8 tests), LootTableEditor.spec.ts (6 tests), SpawnRulesEditor.spec.ts (7 tests). Step 10: Added smoke tests for all remaining untested components and pages (30 spec files total, 212 tests). Two additional spec files with per-file vi.mock overrides for advanced mode: StateGraph.advanced.spec.ts (mode='advanced') and HomePage.kids.spec.ts (locale='ja-kids'). Final test count: 212 tests, 30 test files, all passing. Statement coverage: 81.18% (threshold 80%). Deviation: @vitest/coverage-v8 installed at ^3.2.7 (not latest 5.x) to match the project's vitest@3.2.7."
+}

@@ -1,0 +1,7 @@
+{
+  "task_id": "task-phase4-editors",
+  "task_description": "Phase 4: 高度エディタの実装。Phase 3 の非ブロッキング指摘 3 件（E2E-NB1・R3・R4）を解消し、エンティティエディタのステータスタブ・StateGraph の変数/イベントトリガーを実装したうえで、レシピ・ルートテーブル・スポーンルール・アニメーションコントローラー・サウンド定義の 5 つの専門エディタページを新規実装する。最後にユニットテストカバレッジを 80% 超に引き上げる。",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}
