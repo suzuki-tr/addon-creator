@@ -87,14 +87,30 @@ Phase 4 — 高度エディタ（待機中）
 - E2E テスト: **18/18 パス**
 - タグ: `v1.0.4`
 
-### 未解決の非ブロッキング指摘（v1.0.4）
+### ~~未解決の非ブロッキング指摘（v1.0.4）~~ ✅ すべて解決済み (v1.0.5 にて対応)
 
-- NB-v1.0.4-1: ItemEditor/BlockEditor の JSON プレビューがエンティティ JSON でなく異なる可能性
-- NB-v1.0.4-2: ItemEditor/BlockEditor の JSON タブで `h-full` によるスクロール封入問題の可能性
-- NB-v1.0.4-3: `vanillaShapeRef` コメントが誤記
-- NB-v1.0.4-4: `fish` シェイプカテゴリが未使用
-- NB-v1.0.4-5: `localStorage` キーがエディタ間で共有されている
-- NB-v1.0.4-6: ItemEditor/BlockEditor パスの E2E カバレッジなし
+- ~~NB-v1.0.4-1: ItemEditor/BlockEditor の JSON プレビューがエンティティ JSON でなく異なる可能性~~ ✅ **解決済み** (B-1 にて対応)
+- ~~NB-v1.0.4-2: ItemEditor/BlockEditor の JSON タブで `h-full` によるスクロール封入問題の可能性~~ ✅ **解決済み** (B-2 にて対応)
+- ~~NB-v1.0.4-3: `vanillaShapeRef` コメントが誤記~~ ✅ **解決済み** (B-3 にて対応)
+- ~~NB-v1.0.4-4: `fish` シェイプカテゴリが未使用~~ ✅ **解決済み** (B-4 にて対応)
+- ~~NB-v1.0.4-5: `localStorage` キーがエディタ間で共有されている~~ ✅ **解決済み** (B-5 にて対応)
+- ~~NB-v1.0.4-6: ItemEditor/BlockEditor パスの E2E カバレッジなし~~ ✅ **解決済み** (B-5 にて対応)
+
+## v1.0.5 リリース (fix/issues-v1.0.4 → master)
+
+- issues_v1.0.4.md に記載の5件をすべて修正・検証済み（B-1〜B-5）
+  1. (B-1) ItemEditor/BlockEditor の JSON プレビューを各エディタ専用 JSON に修正
+  2. (B-2) ItemEditor/BlockEditor の JSON プレビュー領域スクロール封入修正
+  3. (B-3) `vanillaShapeRef` コメント誤記修正
+  4. (B-4) `fish` シェイプカテゴリ削除（未使用）
+  5. (B-5) `localStorage` キーをエディタ別に分離・ItemEditor/BlockEditor E2E カバレッジ追加
+- E2E テスト: パス
+- タグ: `v1.0.5`
+
+### 未解決の非ブロッキング指摘（継続）
+
+- NB-v1.0.3-1: `atob()` で PNG 変換時に破損テクスチャ URL へのガードがない（部分的なディレクトリ出力になる可能性）
+- NB-v1.0.3-2: `ResizeHandle` の `role="separator"` にキーボードハンドラがない（パネルリサイズがキーボード操作不可）
 
 ## v1.0.2 リリース (fix/issues-v1.0.1 → master)
 
