@@ -1,0 +1,12 @@
+{
+  "verdict": "APPROVED",
+  "findings": [
+    "Entity JSON in item/block JSON tabs — JsonPreviewPanel builds minecraft:entity JSON; both ItemEditor and BlockEditor mount it unchanged in their JSON tab. Users will see entity behavior-pack JSON when editing items or blocks. Add item- and block-specific JSON builders or mark the tab as a placeholder.",
+    "JSON scroll containment in tab wrapper — h-full inside overflow-y-auto may resolve to scroll-content height, allowing JsonPreviewPanel to expand rather than scroll internally. Verify visually; if broken, change the tab-content wrapper to flex-1 flex flex-col overflow-hidden when the JSON tab is active.",
+    "Misleading vanillaShapeRef comment — The comment reads 'without adding it to the dep array' but vanillaShape is in [geometryJson, vanillaShape]. Correct or remove the comment.",
+    "'fish' shape category dead code — 'fish' is in the shapeCategory union and buildVanillaShape switch (falls through to 'aquatic') but no VANILLA_MOBS entry uses it. Remove from both the union and the switch, or assign to appropriate mob entries.",
+    "localStorage key collision between editors — Both ItemEditor and BlockEditor use 'json-panel-width'. Use distinct keys if independent panel sizing is desired.",
+    "No automated coverage for new editor paths — ItemEditor/BlockEditor routing and vanilla shape preview have no E2E or unit test coverage. Add smoke-level tests for each path."
+  ],
+  "reviewDoc": "c:/Git/minecraft/minecraft-addon-creator/.agents/tasks/minecraft-addon-creator-fix-issues-v1.0.3-2025-07-10/review.md"
+}
