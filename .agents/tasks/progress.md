@@ -51,6 +51,19 @@ Phase 4 — 高度エディタ（待機中）
 - ~~NB-P4-1: `attackDamage` のステップ値が `1` になっている（計画仕様は `0.5`）。半刻み精度が利用不可。~~ ✅ **解決済み** (`fix/phase4-nb-fixes` → v0.4.1-hotfix)
 - ~~NB-P4-2: `movementSpeed` のアイコンが `👟`（計画仕様は `🏃`）。表示のみの差異。~~ ✅ **解決済み** (`fix/phase4-nb-fixes` → v0.4.1-hotfix)
 
+## v1.0.1 リリース (fix/issues-v1.0.0 → master)
+
+- issues_v1.0.0.md に記載の7件をすべて修正・検証済み
+  1. `<title>` を "mc-addon-editor" に修正
+  2. "既存のプロジェクトを開く" ファイルピッカー実装
+  3. 言語切り替えの二重呼び出し解消（uiStore 一本化 + useSuspense:false）
+  4. バニラエンティティ検索・選択（WizardStep2 + vanilla-entities.ts）
+  5. バニラ選択未選択時の「次へ」ブロック（validateStep2 + エラー表示）
+  6. ヘッダーロゴを `<Link to="/">` に変更・左寄せ
+  7. E2E 3シナリオ追加（mob-creation.spec.ts）
+- E2E テスト: **17/17 パス**、ユニットテスト: 212/212 パス、TS エラー: 0
+- タグ: `v1.0.1`
+
 ## 次にやること（Phase 4）
 
 ### 優先
