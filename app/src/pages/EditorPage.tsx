@@ -31,7 +31,7 @@ interface TabDef {
 export const EditorPage = (): JSX.Element => {
   const { t } = useTranslation()
   const { mode } = useUiStore()
-  const { project } = useProjectStore()
+  const { project, updateTraits } = useProjectStore()
   /** Entity name shown in the sidebar — from loaded project, falls back to i18n placeholder */
   const entityName =
     project?.entityDisplayName ?? t('editor.files.placeholderEntityName')
@@ -129,15 +129,14 @@ export const EditorPage = (): JSX.Element => {
   ]
 
   const handleToggleTrait = (id: string): void => {
-    setSelectedTraits((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
-    })
+    const next = new Set(selectedTraits)
+    if (next.has(id)) {
+      next.delete(id)
+    } else {
+      next.add(id)
+    }
+    setSelectedTraits(next)
+    updateTraits([...next])
   }
 
   const handleSave = (): void => {
@@ -149,6 +148,8 @@ export const EditorPage = (): JSX.Element => {
       selectedVanillaId: project?.selectedVanillaId ?? null,
       selectedTraits: [...selectedTraits],
       status: project?.status ?? DEFAULT_STATUS,
+      ...(project?.geometry !== undefined && { geometry: project.geometry }),
+      ...(project?.texture !== undefined && { texture: project.texture }),
     }
     saveProjectFile(exportData)
   }
@@ -162,6 +163,8 @@ export const EditorPage = (): JSX.Element => {
       selectedVanillaId: project?.selectedVanillaId ?? null,
       selectedTraits: [...selectedTraits],
       status: project?.status ?? DEFAULT_STATUS,
+      ...(project?.geometry !== undefined && { geometry: project.geometry }),
+      ...(project?.texture !== undefined && { texture: project.texture }),
     }
     void downloadMcaddon(exportData)
   }

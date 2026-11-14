@@ -1,5 +1,7 @@
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useProjectStore } from '@/stores/projectStore'
+import type { ProjectData } from '@/stores/projectStore'
 
 interface JsonPreviewPanelProps {
   entityName: string
@@ -13,41 +15,94 @@ interface Token {
   text: string
 }
 
-/** Build a flat token list from a fixed mock entity structure using entityName */
-const buildTokens = (entityName: string): Token[] => {
-  const id = `myaddon:${entityName.replace(/\s+/g, '_').toLowerCase()}`
-  const tokens: Token[] = [
-    { kind: 'punct', text: '{\n' },
-    { kind: 'key', text: '  "format_version"' },
-    { kind: 'punct', text: ': ' },
-    { kind: 'str', text: '"1.21.0"' },
-    { kind: 'punct', text: ',\n' },
-    { kind: 'key', text: '  "minecraft:entity"' },
-    { kind: 'punct', text: ': {\n' },
-    { kind: 'key', text: '    "description"' },
-    { kind: 'punct', text: ': {\n' },
-    { kind: 'key', text: '      "identifier"' },
-    { kind: 'punct', text: ': ' },
-    { kind: 'str', text: `"${id}"` },
-    { kind: 'punct', text: ',\n' },
-    { kind: 'key', text: '      "is_spawnable"' },
-    { kind: 'punct', text: ': ' },
-    { kind: 'str', text: 'true' },
-    { kind: 'punct', text: '\n' },
-    { kind: 'punct', text: '    },\n' },
-    { kind: 'key', text: '    "components"' },
-    { kind: 'punct', text: ': {\n' },
-    { kind: 'key', text: '      "minecraft:health"' },
-    { kind: 'punct', text: ': {\n' },
-    { kind: 'key', text: '        "value"' },
-    { kind: 'punct', text: ': ' },
-    { kind: 'num', text: '20' },
-    { kind: 'punct', text: '\n' },
-    { kind: 'punct', text: '      }\n' },
-    { kind: 'punct', text: '    }\n' },
-    { kind: 'punct', text: '  }\n' },
-    { kind: 'punct', text: '}' },
-  ]
+/** Build entity JSON object from live project data and tokenize it */
+const buildTokens = (project: ProjectData | null, fallbackName: string): Token[] => {
+  const entityId = project?.entityId ?? fallbackName.replace(/\s+/g, '_').toLowerCase()
+  const health = project?.status.health ?? 20
+  const movementSpeed = project?.status.movementSpeed ?? 0.25
+  const scale = project?.status.scale ?? 1.0
+  const attackDamage = project?.status.attackDamage ?? 3
+  const traits = project?.selectedTraits ?? []
+
+  const components: Record<string, unknown> = {
+    'minecraft:health': { value: health, max: health },
+    'minecraft:movement': { value: movementSpeed },
+    'minecraft:scale': { value: scale },
+  }
+
+  if (traits.includes('hostile')) {
+    components['minecraft:behavior.nearest_attackable_target'] = {
+      entity_types: [{ filters: { test: 'is_family', subject: 'other', value: 'player' }, max_dist: 16 }],
+    }
+    components['minecraft:behavior.hurt_by_target'] = {}
+    components['minecraft:attack'] = { damage: attackDamage }
+  }
+
+  if (traits.includes('rideable')) {
+    components['minecraft:rideable'] = {
+      seat_count: 1,
+      seats: [{ position: [0, 1.1, 0] }],
+    }
+  }
+
+  if (traits.includes('flying')) {
+    components['minecraft:navigation.fly'] = {}
+  }
+
+  if (traits.includes('undead')) {
+    components['minecraft:burn_in_daylight'] = { value: true }
+  }
+
+  if (traits.includes('aquatic')) {
+    components['minecraft:underwater_movement'] = { value: 0.06 }
+  }
+
+  if (traits.includes('boss')) {
+    components['minecraft:boss'] = { should_darken_sky: false, hud_range: 55 }
+  }
+
+  if (traits.includes('tameable')) {
+    components['minecraft:tameable'] = { probability: 0.33, tame_items: 'bone' }
+  }
+
+  if (traits.includes('breedable')) {
+    components['minecraft:breedable'] = { require_tame: false }
+  }
+
+  const entityObj = {
+    format_version: '1.20.0',
+    'minecraft:entity': {
+      description: {
+        identifier: `myaddon:${entityId}`,
+        is_spawnable: true,
+      },
+      components,
+    },
+  }
+
+  return tokenizeJson(JSON.stringify(entityObj, null, 2))
+}
+
+/** Simple JSON tokenizer — classifies each segment as key, str, num, or punct */
+function tokenizeJson(jsonStr: string): Token[] {
+  const tokens: Token[] = []
+  // Pattern order matters: strings first, then numbers, booleans, then grouped punct/whitespace
+  const re = /"(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null|[{}\[\],]|:\s*|\s+|./g
+  let match: RegExpExecArray | null
+  while ((match = re.exec(jsonStr)) !== null) {
+    const text = match[0]
+    if (text.startsWith('"')) {
+      // Key if the remaining JSON (after this token) starts with a colon
+      const after = jsonStr.slice(re.lastIndex).trimStart()
+      tokens.push({ kind: after.startsWith(':') ? 'key' : 'str', text })
+    } else if (/^-?\d/.test(text)) {
+      tokens.push({ kind: 'num', text })
+    } else if (text === 'true' || text === 'false' || text === 'null') {
+      tokens.push({ kind: 'str', text })
+    } else {
+      tokens.push({ kind: 'punct', text })
+    }
+  }
   return tokens
 }
 
@@ -62,7 +117,8 @@ export const JsonPreviewPanel = ({
   entityName,
 }: JsonPreviewPanelProps): JSX.Element => {
   const { t } = useTranslation()
-  const tokens = buildTokens(entityName)
+  const { project } = useProjectStore()
+  const tokens = buildTokens(project, entityName)
 
   const handleCopy = (): void => {
     const raw = tokens.map((tk) => tk.text).join('')

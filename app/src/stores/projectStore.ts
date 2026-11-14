@@ -16,6 +16,8 @@ export interface ProjectData {
   selectedVanillaId: string | null
   selectedTraits: string[]
   status: EntityStatus
+  geometry?: { fileName: string; content: string }
+  texture?: { fileName: string; dataUrl: string }
 }
 
 export const DEFAULT_STATUS: EntityStatus = {
@@ -29,6 +31,9 @@ interface ProjectStore {
   project: ProjectData | null
   setProject: (data: ProjectData) => void
   updateStatus: (key: keyof EntityStatus, value: number) => void
+  updateTraits: (traits: string[]) => void
+  updateGeometry: (geo: { fileName: string; content: string } | null) => void
+  updateTexture: (tex: { fileName: string; dataUrl: string } | null) => void
   clearProject: () => void
 }
 
@@ -45,6 +50,37 @@ export const useProjectStore = create<ProjectStore>()((set) => ({
       const updatedStatus: EntityStatus = { ...state.project.status }
       updatedStatus[key] = value
       return { project: { ...state.project, status: updatedStatus } }
+    })
+  },
+
+  updateTraits: (traits: string[]): void => {
+    set((state) => {
+      if (!state.project) return {}
+      return { project: { ...state.project, selectedTraits: traits } }
+    })
+  },
+
+  updateGeometry: (geo: { fileName: string; content: string } | null): void => {
+    set((state) => {
+      if (!state.project) return {}
+      // Explicitly omit geometry then re-add if non-null to satisfy exactOptionalPropertyTypes
+      const { geometry: _g, ...rest } = state.project
+      if (geo === null) {
+        return { project: rest }
+      }
+      return { project: { ...rest, geometry: geo } }
+    })
+  },
+
+  updateTexture: (tex: { fileName: string; dataUrl: string } | null): void => {
+    set((state) => {
+      if (!state.project) return {}
+      // Explicitly omit texture then re-add if non-null to satisfy exactOptionalPropertyTypes
+      const { texture: _t, ...rest } = state.project
+      if (tex === null) {
+        return { project: rest }
+      }
+      return { project: { ...rest, texture: tex } }
     })
   },
 
