@@ -2,6 +2,10 @@ import type { JSX } from 'react'
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUiStore } from '@/stores/uiStore'
+import { useProjectStore, DEFAULT_STATUS } from '@/stores/projectStore'
+import type { ProjectData } from '@/stores/projectStore'
+import { downloadMcaddon } from '@/lib/mcaddonGenerator'
+import { saveProjectFile } from '@/lib/projectFile'
 import { TraitCard } from '@/components/editor/TraitCard'
 import type { TraitCardData } from '@/components/editor/TraitCard'
 import { JsonPreviewPanel } from '@/components/editor/JsonPreviewPanel'
@@ -27,11 +31,13 @@ interface TabDef {
 export const EditorPage = (): JSX.Element => {
   const { t } = useTranslation()
   const { mode } = useUiStore()
-  /** Placeholder entity name shown in the sidebar — localised via i18n */
-  const entityName = t('editor.files.placeholderEntityName')
+  const { project } = useProjectStore()
+  /** Entity name shown in the sidebar — from loaded project, falls back to i18n placeholder */
+  const entityName =
+    project?.entityDisplayName ?? t('editor.files.placeholderEntityName')
   const [activeTab, setActiveTab] = useState<EditorTab>('traits')
   const [selectedTraits, setSelectedTraits] = useState<Set<string>>(
-    new Set(['hostile']),
+    new Set(project?.selectedTraits ?? []),
   )
 
   /**
@@ -135,12 +141,29 @@ export const EditorPage = (): JSX.Element => {
   }
 
   const handleSave = (): void => {
-    // Phase 3: persist via projectStore — no alert here since nothing is saved yet
+    const exportData: ProjectData = {
+      entityId: project?.entityId ?? 'custom_entity',
+      entityDisplayName: project?.entityDisplayName ?? 'Custom Entity',
+      contentType: project?.contentType ?? 'mob',
+      baseType: project?.baseType ?? 'scratch',
+      selectedVanillaId: project?.selectedVanillaId ?? null,
+      selectedTraits: [...selectedTraits],
+      status: project?.status ?? DEFAULT_STATUS,
+    }
+    saveProjectFile(exportData)
   }
 
   const handleExport = (): void => {
-    // Phase 2 export: JSZip generation
-    alert(t('export.generating'))
+    const exportData: ProjectData = {
+      entityId: project?.entityId ?? 'custom_entity',
+      entityDisplayName: project?.entityDisplayName ?? 'Custom Entity',
+      contentType: project?.contentType ?? 'mob',
+      baseType: project?.baseType ?? 'scratch',
+      selectedVanillaId: project?.selectedVanillaId ?? null,
+      selectedTraits: [...selectedTraits],
+      status: project?.status ?? DEFAULT_STATUS,
+    }
+    void downloadMcaddon(exportData)
   }
 
   return (
@@ -226,7 +249,11 @@ export const EditorPage = (): JSX.Element => {
             </>
           )}
 
-          {activeTab === 'status' && <StatusPanel />}
+          {activeTab === 'status' && (
+            project !== null
+              ? <StatusPanel initialValues={project.status} />
+              : <StatusPanel />
+          )}
 
           {activeTab === 'components' && <ComponentPanel />}
 

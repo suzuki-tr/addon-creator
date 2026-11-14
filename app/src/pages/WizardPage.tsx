@@ -6,6 +6,9 @@ import { WizardProgress } from '@/components/wizard/WizardProgress'
 import { WizardStep1 } from '@/components/wizard/WizardStep1'
 import { WizardStep2, isValidId } from '@/components/wizard/WizardStep2'
 import { WizardStep3 } from '@/components/wizard/WizardStep3'
+import { useProjectStore } from '@/stores/projectStore'
+import type { ProjectData } from '@/stores/projectStore'
+import { VANILLA_MOBS } from '@/data/vanilla-entities'
 
 export type ContentType = 'mob' | 'block' | 'item'
 export type BaseType = 'scratch' | 'vanilla'
@@ -23,6 +26,7 @@ type WizardStep = 1 | 2 | 3
 export const WizardPage = (): JSX.Element => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { setProject } = useProjectStore()
 
   const [step, setStep] = useState<WizardStep>(1)
   const [contentType, setContentType] = useState<ContentType | null>(null)
@@ -38,7 +42,6 @@ export const WizardPage = (): JSX.Element => {
   const [idError, setIdError] = useState<string | null>(null)
   const [displayNameError, setDisplayNameError] = useState<string | null>(null)
   const [vanillaEntityError, setVanillaEntityError] = useState<string | null>(null)
-  const [downloadDone, setDownloadDone] = useState(false)
 
   const handleFormChange = (patch: Partial<WizardFormData>): void => {
     setFormData((prev) => ({ ...prev, ...patch }))
@@ -92,18 +95,36 @@ export const WizardPage = (): JSX.Element => {
     void navigate('/')
   }
 
-  const handleDownload = (): void => {
-    // Phase 2 placeholder: show success state
-    // In full implementation, this triggers JSZip generation + file-saver download
-    setDownloadDone(true)
-    alert(t('export.success', { name: formData.id }))
-    void navigate('/')
+  const handleProceedToEditor = (): void => {
+    // Look up the vanilla entity's default health if one was selected
+    const vanillaHealth =
+      formData.selectedVanillaId !== null
+        ? (VANILLA_MOBS.find((v) => v.id === formData.selectedVanillaId)
+            ?.defaultHealth ?? 20)
+        : 20
+
+    const projectData: ProjectData = {
+      entityId: formData.id,
+      entityDisplayName: formData.displayName,
+      // contentType is non-null here: step 3 is only reachable when contentType !== null
+      contentType: contentType!,
+      baseType: formData.baseType,
+      selectedVanillaId: formData.selectedVanillaId,
+      selectedTraits: [],
+      status: {
+        health: vanillaHealth,
+        attackDamage: 3,
+        movementSpeed: 0.25,
+        scale: 1.0,
+      },
+    }
+
+    setProject(projectData)
+    void navigate('/editor')
   }
 
   // Can proceed from step 1 only if a type is selected
   const canProceedStep1 = contentType !== null
-  // Can proceed from step 3 (download)
-  const canDownload = !downloadDone
 
   return (
     <div className="max-w-[900px] mx-auto py-8 px-6">
@@ -170,11 +191,10 @@ export const WizardPage = (): JSX.Element => {
         ) : (
           <button
             type="button"
-            onClick={handleDownload}
-            disabled={!canDownload}
-            className="bg-[#5D9C3B] rounded-lg px-8 py-3 text-base font-bold text-white border-none cursor-pointer hover:bg-[#4f8832] disabled:bg-gray-300 disabled:cursor-not-allowed"
+            onClick={handleProceedToEditor}
+            className="bg-[#5D9C3B] rounded-lg px-8 py-3 text-base font-bold text-white border-none cursor-pointer hover:bg-[#4f8832]"
           >
-            ⬇️ {t('wizard.confirm.download')}
+            ✏️ {t('wizard.confirm.proceed')}
           </button>
         )}
       </div>

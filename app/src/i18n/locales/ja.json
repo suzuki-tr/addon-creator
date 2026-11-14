@@ -110,6 +110,7 @@
       "outputFileLabel": "出力ファイル",
       "validationOk": "すべての項目が正しく入力されています。ダウンロードできます。",
       "download": "アドオンをダウンロード",
+      "proceed": "編集を始める",
       "previewPlaceholder": "3Dプレビュー（後で実装）"
     }
   },

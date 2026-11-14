@@ -1,6 +1,7 @@
 import type { JSX } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useProjectStore } from '@/stores/projectStore'
 
 interface StatusRow {
   key: 'health' | 'attackDamage' | 'movementSpeed' | 'scale'
@@ -65,14 +66,24 @@ const DEFAULT_VALUES: StatusValues = {
   scale: 1.0,
 }
 
-export const StatusPanel = (): JSX.Element => {
+interface StatusPanelProps {
+  /** Override initial slider values (e.g. from a loaded project). */
+  initialValues?: Partial<StatusValues> | undefined
+}
+
+export const StatusPanel = ({ initialValues }: StatusPanelProps = {}): JSX.Element => {
   const { t } = useTranslation()
-  const [values, setValues] = useState<StatusValues>({ ...DEFAULT_VALUES })
+  const { updateStatus } = useProjectStore()
+  const [values, setValues] = useState<StatusValues>({
+    ...DEFAULT_VALUES,
+    ...(initialValues ?? {}),
+  })
 
   const handleChange = (row: StatusRow, raw: number): void => {
     if (isNaN(raw)) return
     const clamped = Math.min(Math.max(raw, row.min), row.max)
     setValues((prev) => ({ ...prev, [row.key]: clamped }))
+    updateStatus(row.key, clamped)
   }
 
   const handleReset = (key: StatusKey): void => {

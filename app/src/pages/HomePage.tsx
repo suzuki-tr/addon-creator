@@ -1,7 +1,10 @@
-import type { JSX } from 'react'
+import type { JSX, ChangeEvent } from 'react'
+import { useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useUiStore } from '@/stores/uiStore'
+import { useProjectStore } from '@/stores/projectStore'
+import { loadProjectFile } from '@/lib/projectFile'
 
 /** Badge variant for content type coloring */
 type ContentBadge = 'mob' | 'block' | 'item'
@@ -356,34 +359,66 @@ const StandardHomeLayout = ({
 export const HomePage = (): JSX.Element => {
   const navigate = useNavigate()
   const { locale } = useUiStore()
+  const { setProject } = useProjectStore()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleNewAddon = (): void => {
     void navigate('/wizard')
   }
 
   const handleOpenProject = (): void => {
-    // Phase 3: open file picker / project browser
+    fileInputRef.current?.click()
+  }
+
+  const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    void loadProjectFile(file)
+      .then((data) => {
+        setProject(data)
+        void navigate('/editor')
+      })
+      .catch(() => {
+        // silently ignore malformed files for now
+      })
+    e.target.value = ''
   }
 
   const handleEditProject = (): void => {
     void navigate('/editor')
   }
 
+  const hiddenInput = (
+    <input
+      ref={fileInputRef}
+      type="file"
+      accept=".json"
+      style={{ display: 'none' }}
+      onChange={handleFileInputChange}
+    />
+  )
+
   if (locale === 'ja-kids') {
     return (
-      <KidsHomeLayout
-        onNewAddon={handleNewAddon}
-        onOpenProject={handleOpenProject}
-        onEditProject={handleEditProject}
-      />
+      <>
+        <KidsHomeLayout
+          onNewAddon={handleNewAddon}
+          onOpenProject={handleOpenProject}
+          onEditProject={handleEditProject}
+        />
+        {hiddenInput}
+      </>
     )
   }
 
   return (
-    <StandardHomeLayout
-      onNewAddon={handleNewAddon}
-      onOpenProject={handleOpenProject}
-      onEditProject={handleEditProject}
-    />
+    <>
+      <StandardHomeLayout
+        onNewAddon={handleNewAddon}
+        onOpenProject={handleOpenProject}
+        onEditProject={handleEditProject}
+      />
+      {hiddenInput}
+    </>
   )
 }

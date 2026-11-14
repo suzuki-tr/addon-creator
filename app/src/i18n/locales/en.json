@@ -110,6 +110,7 @@
       "outputFileLabel": "Output File",
       "validationOk": "All settings are valid. Ready to download.",
       "download": "Download Addon",
+      "proceed": "Start Editing",
       "previewPlaceholder": "3D Preview (coming later)"
     }
   },
