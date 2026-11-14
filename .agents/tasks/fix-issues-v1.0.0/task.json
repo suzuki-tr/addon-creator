@@ -1,0 +1,7 @@
+{
+  "task_id": "task-fix-issues-v1.0.0",
+  "task_description": "Fix 7 issues from issues_v1.0.0.md: browser tab title, language switcher bug, vanilla entity search, Next-button blocking, header logo link, open-project handler, and three E2E test scenarios (hostile mob download, rideable mob save, open+edit+download).",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004", "FEAT-005"],
+  "blocked_reason": null
+}

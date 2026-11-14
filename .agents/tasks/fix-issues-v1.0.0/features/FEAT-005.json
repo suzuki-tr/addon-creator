@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-005",
+  "type": "test",
+  "description": "Issue 7: Three E2E scenarios — (a) new mob from vanilla cow + hostile trait → download mcaddon, (b) new mob from vanilla chicken + rideable trait → save project file, (c) open chicken project JSON → set health to max → download mcaddon. Create the fixture file and the Playwright spec.",
+  "status": "completed",
+  "steps": [
+    "Create app/e2e/fixtures/chicken-project.json with this exact content: { 'entityId': 'chicken', 'entityDisplayName': 'ニワトリ', 'contentType': 'mob', 'baseType': 'vanilla', 'selectedVanillaId': 'minecraft:chicken', 'selectedTraits': ['rideable'], 'status': { 'health': 4, 'attackDamage': 0, 'movementSpeed': 0.25, 'scale': 1.0 } }",
+
+    "Create app/e2e/mob-creation.spec.ts with three test cases inside a describe block 'モブ作成 E2E'. Use the same setupLocale() pattern as existing specs (seed localStorage with i18nextLng='ja' and ui-store with locale='ja' and mode='simple'). Import { test, expect, Download } from '@playwright/test'. Define a reusable helper goThroughWizard(page, searchQuery, entityTestId, displayName, addonId) that: navigates to '/', clicks 'モブ（生き物）' type button, clicks 'バニラからカスタマイズ', fills search input (placeholder '名前で検索...'), clicks the entity with data-testid=entityTestId, fills display name and addon ID in step 2, clicks 次へ to reach step 3, then clicks the 'Start Editing' button (text matches /編集を始める/). After this helper the user is on /editor.",
+
+    "Test case (a): '牛からカスタマイズして敵対的なモブをmcaddonダウンロード'. Call goThroughWizard(page, '牛', 'vanilla-entity-minecraft:cow', 'ウシカスタム', 'ushi_custom'). Then: on EditorPage traits tab, find the trait card for '敵対的' (getByRole('checkbox', { name: /敵対的/ })) and ensure it is checked (click it if not already checked). Set up downloadPromise = page.waitForEvent('download'). Click 'エクスポート' button (getByRole('button', { name: /エクスポート/ })). Await the download. Assert download.suggestedFilename() matches /\\.mcaddon$/.",
+
+    "Test case (b): 'ニワトリからカスタマイズして騎乗可能なモブをプロジェクト保存'. Call goThroughWizard(page, 'ニワトリ', 'vanilla-entity-minecraft:chicken', 'ニワトリカスタム', 'niwatori_custom'). Then: find '騎乗可能' trait card (getByRole('checkbox', { name: /騎乗可能/ })) and ensure it is checked. Set up downloadPromise. Click '保存' button (getByRole('button', { name: /保存/ })). Await download. Assert filename matches /\\.json$/.",
+
+    "Test case (c): '既存ニワトリプロジェクトを開いて体力最大にしてmcaddonダウンロード'. Navigate to '/'. Wait for 'filechooser' event: const fileChooserPromise = page.waitForEvent('filechooser'). Click '既存のプロジェクトを開く' button. const fileChooser = await fileChooserPromise. await fileChooser.setFiles(path.join(__dirname, 'fixtures/chicken-project.json')). Wait for navigation to /editor: await page.waitForURL('**/editor'). Click 'ステータス' tab (getByRole('tab', { name: /ステータス/ })). Find health number input: const healthInput = page.getByRole('spinbutton', { name: /体力/ }).first(). Check that initial value is '4' (from the fixture). Set value to max: await healthInput.fill('2048'). Press Tab to trigger change event. Set up downloadPromise. Click 'エクスポート'. Await download. Assert filename matches /\\.mcaddon$/. Import path from 'node:path'.",
+
+    "Add import { path } from 'node:path' OR import path from 'node:path' at top of mob-creation.spec.ts (use whichever works with the ESM setup: import path from 'node:path' since package.json has type:'module')."
+  ],
+  "acceptance_criteria": [
+    "Scenario (a): running npx playwright test e2e/mob-creation.spec.ts --reporter=dot passes test 1 — a .mcaddon file is downloaded",
+    "Scenario (b): running npx playwright test e2e/mob-creation.spec.ts --reporter=dot passes test 2 — a .json file is downloaded",
+    "Scenario (c): running npx playwright test e2e/mob-creation.spec.ts --reporter=dot passes test 3 — health starts at 4, is set to 2048, .mcaddon is downloaded",
+    "All three existing E2E spec files (home.spec.ts, wizard.spec.ts, editor.spec.ts) continue to pass",
+    "npm run build still passes"
+  ],
+  "verification": [
+    "cd app && npx playwright test --reporter=dot   # all 3 scenarios + existing specs pass",
+    "cd app && npm run build                        # 0 TS errors",
+    "cd app && npm test -- --silent                # 0 unit test failures"
+  ],
+  "blocked_reason": null,
+  "findings": "E2E run: 17/17 passed (3 new mob-creation scenarios + 14 existing). Unit tests: 212/212 passed. Build: 0 TS errors. __dirname unavailable in ESM — polyfilled via fileURLToPath(import.meta.url). Pre-existing wizard.spec.ts failure fixed: Step3テストがvanillaエンティティ未選択のままnextを呼んでいたため、ゼロから作るに切り替えて修正。",
+  "cross_feat_verification": "PASSED — full integration verified: `npm run build` 0 TS errors, `npm test` 212/212 unit tests, `npx playwright test --reporter=dot` 17/17 E2E tests. No regressions across all 5 FEATs."
+}

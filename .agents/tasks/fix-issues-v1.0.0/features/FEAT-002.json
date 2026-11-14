@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-002",
+  "type": "fix",
+  "description": "Issue 3: Language switcher ('日本語' / 'かんたん日本語') shows the correct selector value but UI text does NOT change. Root cause: (a) handleLocaleChange in Header.tsx calls i18n.changeLanguage(nextLocale) DIRECTLY after also calling setLocale(nextLocale) — setLocale already calls i18n.changeLanguage internally, creating a double invocation that can cause the languageChanged event to not propagate correctly to react-i18next's subscription. (b) i18n is initialized without react.useSuspense:false, which can interfere with language-change re-renders. Fix: remove the duplicate call and add useSuspense:false.",
+  "status": "completed",
+  "steps": [
+    "Edit app/src/components/layout/Header.tsx: in handleLocaleChange (around line 20-26), remove the line 'void i18n.changeLanguage(nextLocale)' — only 'setLocale(nextLocale)' should remain. The store is the single source of truth for language changes. Also remove the import 'import i18n from \"@/i18n\"' at the top of the file since it is no longer used directly in Header.tsx.",
+    "Edit app/src/i18n/index.ts: inside the .init({...}) options object add a 'react' field: react: { useSuspense: false }. This prevents react-i18next from attempting to suspend during language transitions when translations are already loaded synchronously."
+  ],
+  "acceptance_criteria": [
+    "Selecting '日本語' from the language dropdown updates all visible UI text to Japanese",
+    "Selecting 'かんたん日本語' from the language dropdown updates all visible UI text to ja-kids locale",
+    "The select element shows the correct language value after switching",
+    "No unused import lint errors in Header.tsx",
+    "npm run build passes with 0 TypeScript errors",
+    "npm test -- --silent passes with 0 failures"
+  ],
+  "verification": [
+    "cd app && npm test -- --silent   # all unit tests pass (Header.spec.ts still passes since i18n is mocked)",
+    "cd app && npm run build          # 0 TS errors — Header.tsx must not reference unused i18n import",
+    "cd app && npm run lint           # 0 warnings"
+  ],
+  "blocked_reason": null,
+  "findings": "Removed duplicate void i18n.changeLanguage(nextLocale) call from Header.tsx handleLocaleChange (setLocale in uiStore already calls changeLanguage). Removed unused import i18n from '@/i18n'. Added react: { useSuspense: false } to i18n init options. Verification: 212/212 unit tests pass, build succeeds with 0 TS errors. npm run lint fails with missing eslint.config.js (pre-existing issue unrelated to this change).",
+  "cross_feat_verification": "PASSED — build 0 TS errors, 212/212 unit tests, 17/17 Playwright E2E (dot reporter). All FEATs integrated cleanly."
+}

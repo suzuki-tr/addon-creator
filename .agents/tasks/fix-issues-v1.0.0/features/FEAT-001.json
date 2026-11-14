@@ -1,0 +1,24 @@
+{
+  "id": "FEAT-001",
+  "type": "fix",
+  "description": "Issues 1 + 6: change browser tab title from 'app' to 'mc-addon-editor'; wrap the Header logo/title in a <Link to='/'> from react-router-dom so it is always a navigation link back to the home page.",
+  "status": "completed",
+  "steps": [
+    "Edit app/index.html line 7: change <title>app</title> to <title>mc-addon-editor</title>.",
+    "Edit app/src/components/layout/Header.tsx: add 'import { Link } from \"react-router-dom\"' to the imports section. Replace the logo <div className='flex items-center gap-2 flex-shrink-0'> wrapper with <Link to='/' className='flex items-center gap-2 flex-shrink-0 no-underline'>. Keep the two inner <span> elements (emoji + app name) unchanged. The Link must be the outermost element of the logo section — do NOT wrap the entire header max-width container. NOTE: the duplicate i18n.changeLanguage call and the '@/i18n' import in Header.tsx are addressed in FEAT-002, not here — leave them in place."
+  ],
+  "acceptance_criteria": [
+    "Browser tab title shows 'mc-addon-editor' (verified by playwright or build output of index.html)",
+    "Clicking the 🎮 logo area in the app navigates to '/' — verified by the existing home.spec.ts E2E tests passing",
+    "npm run build passes with 0 TypeScript errors",
+    "npm test -- --silent passes with 0 failures (all existing unit tests still pass)"
+  ],
+  "verification": [
+    "cd app && npm test -- --silent   # all unit tests pass",
+    "cd app && npm run build          # 0 TS errors",
+    "cd app && npm run lint           # 0 warnings"
+  ],
+  "blocked_reason": null,
+  "findings": "1. index.html title changed from 'app' to 'mc-addon-editor'. 2. Header.tsx logo div replaced with <Link to='/'> from react-router-dom; import added. 3. Header.spec.ts and AppShell.spec.ts updated to wrap renders in MemoryRouter (required because Link needs Router context). 4. npm run lint fails with 'eslint.config not found' — pre-existing issue unrelated to this FEAT; npm run build (0 TS errors) and npx vitest run (212/212 passed) both succeed.",
+  "cross_feat_verification": "PASSED — 2025: build 0 TS errors, 212/212 unit tests, 17/17 Playwright E2E (dot reporter). All FEATs integrated cleanly."
+}
