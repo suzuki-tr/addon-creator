@@ -5,6 +5,7 @@ import type { ProjectData } from '@/stores/projectStore'
 
 interface JsonPreviewPanelProps {
   entityName: string
+  jsonOverride?: string
 }
 
 /** Minimal syntax-highlighted JSON token types */
@@ -115,10 +116,13 @@ const TOKEN_COLORS: Record<TokenKind, string> = {
 
 export const JsonPreviewPanel = ({
   entityName,
+  jsonOverride,
 }: JsonPreviewPanelProps): JSX.Element => {
   const { t } = useTranslation()
   const { project } = useProjectStore()
-  const tokens = buildTokens(project, entityName)
+  const tokens = jsonOverride != null
+    ? tokenizeJson(jsonOverride)
+    : buildTokens(project, entityName)
 
   const handleCopy = (): void => {
     const raw = tokens.map((tk) => tk.text).join('')
@@ -126,7 +130,7 @@ export const JsonPreviewPanel = ({
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col flex-1 overflow-hidden">
       {/* JSON Preview Section */}
       <div className="flex flex-col flex-1 overflow-hidden p-3 gap-3">
         <div className="flex items-center justify-between">

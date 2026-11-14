@@ -1,17 +1,33 @@
 import type { JSX } from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUiStore } from '@/stores/uiStore'
 import { JsonPreviewPanel } from '@/components/editor/JsonPreviewPanel'
 import { ResizeHandle } from '@/components/editor/ResizeHandle'
 
-type BlockTab = 'basic' | 'components' | 'json'
+type BlockTab = 'basic' | 'components'
 
 // ---------------------------------------------------------------------------
-// Basic tab
+// Basic tab (controlled)
 // ---------------------------------------------------------------------------
 
-const BlockBasicTab = (): JSX.Element => {
+interface BlockBasicTabProps {
+  name: string
+  blockId: string
+  material: string
+  onNameChange: (v: string) => void
+  onBlockIdChange: (v: string) => void
+  onMaterialChange: (v: string) => void
+}
+
+const BlockBasicTab = ({
+  name,
+  blockId,
+  material,
+  onNameChange,
+  onBlockIdChange,
+  onMaterialChange,
+}: BlockBasicTabProps): JSX.Element => {
   const { t } = useTranslation()
 
   return (
@@ -22,6 +38,8 @@ const BlockBasicTab = (): JSX.Element => {
         </label>
         <input
           type="text"
+          value={name}
+          onChange={(e) => onNameChange(e.target.value)}
           className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
           placeholder="My Block"
         />
@@ -33,6 +51,8 @@ const BlockBasicTab = (): JSX.Element => {
         </label>
         <input
           type="text"
+          value={blockId}
+          onChange={(e) => onBlockIdChange(e.target.value)}
           className="border border-gray-200 rounded px-2 py-1.5 text-sm font-mono text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
           placeholder="myaddon:my_block"
         />
@@ -42,7 +62,11 @@ const BlockBasicTab = (): JSX.Element => {
         <label className="text-xs font-medium text-gray-600">
           {t('editor.block.basic.material')}
         </label>
-        <select className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-48">
+        <select
+          value={material}
+          onChange={(e) => onMaterialChange(e.target.value)}
+          className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-48"
+        >
           <option value="stone">stone</option>
           <option value="wood">wood</option>
           <option value="metal">metal</option>
@@ -55,10 +79,42 @@ const BlockBasicTab = (): JSX.Element => {
 }
 
 // ---------------------------------------------------------------------------
-// Components tab
+// Components tab (controlled)
 // ---------------------------------------------------------------------------
 
-const BlockComponentsTab = (): JSX.Element => {
+interface BlockComponentsTabProps {
+  hardness: number
+  burnOdds: number
+  flameOdds: number
+  friction: number
+  lightLevel: number
+  destructible: boolean
+  secondsToDestroy: number
+  onHardnessChange: (v: number) => void
+  onBurnOddsChange: (v: number) => void
+  onFlameOddsChange: (v: number) => void
+  onFrictionChange: (v: number) => void
+  onLightLevelChange: (v: number) => void
+  onDestructibleChange: (v: boolean) => void
+  onSecondsToDestroyChange: (v: number) => void
+}
+
+const BlockComponentsTab = ({
+  hardness,
+  burnOdds,
+  flameOdds,
+  friction,
+  lightLevel,
+  destructible,
+  secondsToDestroy,
+  onHardnessChange,
+  onBurnOddsChange,
+  onFlameOddsChange,
+  onFrictionChange,
+  onLightLevelChange,
+  onDestructibleChange,
+  onSecondsToDestroyChange,
+}: BlockComponentsTabProps): JSX.Element => {
   const { t } = useTranslation()
 
   return (
@@ -76,7 +132,8 @@ const BlockComponentsTab = (): JSX.Element => {
               type="number"
               min={0}
               step={0.1}
-              defaultValue={1.5}
+              value={hardness}
+              onChange={(e) => onHardnessChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -95,7 +152,8 @@ const BlockComponentsTab = (): JSX.Element => {
             <input
               type="number"
               min={0}
-              defaultValue={5}
+              value={burnOdds}
+              onChange={(e) => onBurnOddsChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -104,7 +162,8 @@ const BlockComponentsTab = (): JSX.Element => {
             <input
               type="number"
               min={0}
-              defaultValue={5}
+              value={flameOdds}
+              onChange={(e) => onFlameOddsChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -125,7 +184,8 @@ const BlockComponentsTab = (): JSX.Element => {
               min={0}
               max={1}
               step={0.01}
-              defaultValue={0.4}
+              value={friction}
+              onChange={(e) => onFrictionChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -145,7 +205,8 @@ const BlockComponentsTab = (): JSX.Element => {
               type="number"
               min={0}
               max={15}
-              defaultValue={0}
+              value={lightLevel}
+              onChange={(e) => onLightLevelChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -160,7 +221,12 @@ const BlockComponentsTab = (): JSX.Element => {
         </summary>
         <div className="px-4 py-3 flex flex-col gap-3 bg-gray-50 border-t border-gray-200">
           <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input type="checkbox" defaultChecked className="cursor-pointer" />
+            <input
+              type="checkbox"
+              checked={destructible}
+              onChange={(e) => onDestructibleChange(e.target.checked)}
+              className="cursor-pointer"
+            />
             Enabled
           </label>
           <div className="flex flex-col gap-1">
@@ -169,7 +235,8 @@ const BlockComponentsTab = (): JSX.Element => {
               type="number"
               min={0}
               step={0.5}
-              defaultValue={3.0}
+              value={secondsToDestroy}
+              onChange={(e) => onSecondsToDestroyChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -192,6 +259,20 @@ export const BlockEditor = (): JSX.Element => {
     return s !== null ? (parseInt(s, 10) || 360) : 360
   })
 
+  // Controlled state for Basic tab
+  const [name, setName] = useState('My Block')
+  const [blockId, setBlockId] = useState('my_block')
+  const [material, setMaterial] = useState('stone')
+
+  // Controlled state for Components tab
+  const [hardness, setHardness] = useState(1.5)
+  const [burnOdds, setBurnOdds] = useState(5)
+  const [flameOdds, setFlameOdds] = useState(5)
+  const [friction, setFriction] = useState(0.4)
+  const [lightLevel, setLightLevel] = useState(0)
+  const [destructible, setDestructible] = useState(true)
+  const [secondsToDestroy, setSecondsToDestroy] = useState(3.0)
+
   useEffect(() => {
     localStorage.setItem('json-panel-width', String(jsonPanelWidth))
   }, [jsonPanelWidth])
@@ -199,8 +280,25 @@ export const BlockEditor = (): JSX.Element => {
   const TABS: { id: BlockTab; label: string }[] = [
     { id: 'basic', label: t('editor.block.tabs.basic') },
     { id: 'components', label: t('editor.block.tabs.components') },
-    { id: 'json', label: t('editor.block.tabs.json') },
   ]
+
+  /** JSON reflecting live form state */
+  const blockJson = useMemo((): string => {
+    const components: Record<string, unknown> = {}
+    if (destructible) {
+      components['minecraft:destructible_by_mining'] = {
+        seconds_to_destroy: secondsToDestroy,
+      }
+    }
+    const obj = {
+      format_version: '1.20.0',
+      'minecraft:block': {
+        description: { identifier: `myaddon:${blockId}` },
+        components,
+      },
+    }
+    return JSON.stringify(obj, null, 2)
+  }, [blockId, destructible, secondsToDestroy])
 
   const handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
     e.preventDefault()
@@ -257,12 +355,33 @@ export const BlockEditor = (): JSX.Element => {
           id={'block-tabpanel-' + activeTab}
           aria-labelledby={'block-tab-' + activeTab}
         >
-          {activeTab === 'basic' && <BlockBasicTab />}
-          {activeTab === 'components' && <BlockComponentsTab />}
-          {activeTab === 'json' && (
-            <div className="h-full -m-6 overflow-hidden">
-              <JsonPreviewPanel entityName={t('editor.files.placeholderEntityName')} />
-            </div>
+          {activeTab === 'basic' && (
+            <BlockBasicTab
+              name={name}
+              blockId={blockId}
+              material={material}
+              onNameChange={setName}
+              onBlockIdChange={setBlockId}
+              onMaterialChange={setMaterial}
+            />
+          )}
+          {activeTab === 'components' && (
+            <BlockComponentsTab
+              hardness={hardness}
+              burnOdds={burnOdds}
+              flameOdds={flameOdds}
+              friction={friction}
+              lightLevel={lightLevel}
+              destructible={destructible}
+              secondsToDestroy={secondsToDestroy}
+              onHardnessChange={setHardness}
+              onBurnOddsChange={setBurnOdds}
+              onFlameOddsChange={setFlameOdds}
+              onFrictionChange={setFriction}
+              onLightLevelChange={setLightLevel}
+              onDestructibleChange={setDestructible}
+              onSecondsToDestroyChange={setSecondsToDestroy}
+            />
           )}
         </div>
       </main>
@@ -274,8 +393,11 @@ export const BlockEditor = (): JSX.Element => {
           style={{ width: jsonPanelWidth }}
         >
           <ResizeHandle onMouseDown={handleResizeMouseDown} />
-          <div className="flex-1 min-w-0 overflow-hidden">
-            <JsonPreviewPanel entityName={t('editor.files.placeholderEntityName')} />
+          <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+            <JsonPreviewPanel
+              entityName={t('editor.files.placeholderEntityName')}
+              jsonOverride={blockJson}
+            />
           </div>
         </aside>
       )}

@@ -348,7 +348,7 @@ export const EditorPage = (): JSX.Element => {
           style={{ width: jsonPanelWidth }}
         >
           <ResizeHandle onMouseDown={handleResizeMouseDown} />
-          <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
             <JsonPreviewPanel entityName={entityName} />
           </div>
         </aside>

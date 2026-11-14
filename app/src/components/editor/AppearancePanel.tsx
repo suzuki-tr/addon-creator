@@ -146,6 +146,7 @@ const PreviewPane = (): JSX.Element => {
     ? VANILLA_MOBS.find((m) => m.id === project.selectedVanillaId)
     : null
   const vanillaShape = vanillaEntity?.shapeCategory
+  const vanillaColor = vanillaEntity?.previewColor
   return (
     <div className="w-1/2 min-w-[260px] max-w-[480px] border-r border-[#E5E7EB] flex flex-col flex-shrink-0">
       <div className="flex-1 bg-[#C9CDD4] overflow-hidden relative">
@@ -153,6 +154,7 @@ const PreviewPane = (): JSX.Element => {
           geometryJson={project?.geometry?.content}
           textureUrl={project?.texture?.dataUrl}
           {...(vanillaShape !== undefined && { vanillaShape })}
+          {...(vanillaColor !== undefined && { vanillaColor })}
         />
         {/* Known limitation: UV atlas offsets and bone pivot/rotation transforms are not applied */}
         <div className="absolute bottom-1 inset-x-0 flex justify-center pointer-events-none">
@@ -161,10 +163,15 @@ const PreviewPane = (): JSX.Element => {
           </span>
         </div>
         {vanillaShape !== undefined && project?.geometry === undefined && (
-          <div className="absolute top-1 inset-x-0 flex justify-center pointer-events-none">
+          <div className="absolute top-1 inset-x-0 flex flex-col items-center gap-0.5 pointer-events-none">
             <span className="text-[10px] text-gray-500 bg-white/80 px-2 py-0.5 rounded select-none">
               {t('editor.preview3d.vanillaShapeNote')}
             </span>
+            {project?.texture === undefined && (
+              <span className="text-[10px] text-gray-500 bg-white/80 px-2 py-0.5 rounded select-none">
+                {t('editor.preview3d.vanillaTextureNote')}
+              </span>
+            )}
           </div>
         )}
       </div>

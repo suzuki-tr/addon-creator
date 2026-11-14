@@ -1,17 +1,37 @@
 import type { JSX } from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUiStore } from '@/stores/uiStore'
 import { JsonPreviewPanel } from '@/components/editor/JsonPreviewPanel'
 import { ResizeHandle } from '@/components/editor/ResizeHandle'
 
-type ItemTab = 'basic' | 'components' | 'json'
+type ItemTab = 'basic' | 'components'
 
 // ---------------------------------------------------------------------------
-// Basic tab
+// Basic tab (controlled)
 // ---------------------------------------------------------------------------
 
-const ItemBasicTab = (): JSX.Element => {
+interface ItemBasicTabProps {
+  name: string
+  itemId: string
+  stackSize: number
+  rarity: string
+  onNameChange: (v: string) => void
+  onItemIdChange: (v: string) => void
+  onStackSizeChange: (v: number) => void
+  onRarityChange: (v: string) => void
+}
+
+const ItemBasicTab = ({
+  name,
+  itemId,
+  stackSize,
+  rarity,
+  onNameChange,
+  onItemIdChange,
+  onStackSizeChange,
+  onRarityChange,
+}: ItemBasicTabProps): JSX.Element => {
   const { t } = useTranslation()
 
   return (
@@ -22,6 +42,8 @@ const ItemBasicTab = (): JSX.Element => {
         </label>
         <input
           type="text"
+          value={name}
+          onChange={(e) => onNameChange(e.target.value)}
           className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
           placeholder="My Item"
         />
@@ -33,6 +55,8 @@ const ItemBasicTab = (): JSX.Element => {
         </label>
         <input
           type="text"
+          value={itemId}
+          onChange={(e) => onItemIdChange(e.target.value)}
           className="border border-gray-200 rounded px-2 py-1.5 text-sm font-mono text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
           placeholder="myaddon:my_item"
         />
@@ -46,7 +70,8 @@ const ItemBasicTab = (): JSX.Element => {
           type="number"
           min={1}
           max={64}
-          defaultValue={64}
+          value={stackSize}
+          onChange={(e) => onStackSizeChange(Number(e.target.value))}
           className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
         />
       </div>
@@ -55,7 +80,11 @@ const ItemBasicTab = (): JSX.Element => {
         <label className="text-xs font-medium text-gray-600">
           {t('editor.item.basic.rarity')}
         </label>
-        <select className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-48">
+        <select
+          value={rarity}
+          onChange={(e) => onRarityChange(e.target.value)}
+          className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-48"
+        >
           <option value="common">common</option>
           <option value="uncommon">uncommon</option>
           <option value="rare">rare</option>
@@ -67,10 +96,38 @@ const ItemBasicTab = (): JSX.Element => {
 }
 
 // ---------------------------------------------------------------------------
-// Components tab
+// Components tab (controlled)
 // ---------------------------------------------------------------------------
 
-const ItemComponentsTab = (): JSX.Element => {
+interface ItemComponentsTabProps {
+  foodEnabled: boolean
+  nutrition: number
+  saturation: number
+  durability: number
+  maxStackSize: number
+  attackDamage: number
+  onFoodEnabledChange: (v: boolean) => void
+  onNutritionChange: (v: number) => void
+  onSaturationChange: (v: number) => void
+  onDurabilityChange: (v: number) => void
+  onMaxStackSizeChange: (v: number) => void
+  onAttackDamageChange: (v: number) => void
+}
+
+const ItemComponentsTab = ({
+  foodEnabled,
+  nutrition,
+  saturation,
+  durability,
+  maxStackSize,
+  attackDamage,
+  onFoodEnabledChange,
+  onNutritionChange,
+  onSaturationChange,
+  onDurabilityChange,
+  onMaxStackSizeChange,
+  onAttackDamageChange,
+}: ItemComponentsTabProps): JSX.Element => {
   const { t } = useTranslation()
 
   return (
@@ -83,7 +140,12 @@ const ItemComponentsTab = (): JSX.Element => {
         </summary>
         <div className="px-4 py-3 flex flex-col gap-3 bg-gray-50 border-t border-gray-200">
           <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input type="checkbox" className="cursor-pointer" />
+            <input
+              type="checkbox"
+              checked={foodEnabled}
+              onChange={(e) => onFoodEnabledChange(e.target.checked)}
+              className="cursor-pointer"
+            />
             {t('editor.item.comp.food')}
           </label>
           <div className="flex flex-col gap-1">
@@ -91,7 +153,8 @@ const ItemComponentsTab = (): JSX.Element => {
             <input
               type="number"
               min={0}
-              defaultValue={4}
+              value={nutrition}
+              onChange={(e) => onNutritionChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -101,7 +164,8 @@ const ItemComponentsTab = (): JSX.Element => {
               type="number"
               min={0}
               step={0.1}
-              defaultValue={0.6}
+              value={saturation}
+              onChange={(e) => onSaturationChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -120,7 +184,8 @@ const ItemComponentsTab = (): JSX.Element => {
             <input
               type="number"
               min={1}
-              defaultValue={64}
+              value={durability}
+              onChange={(e) => onDurabilityChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -140,7 +205,8 @@ const ItemComponentsTab = (): JSX.Element => {
               type="number"
               min={1}
               max={64}
-              defaultValue={64}
+              value={maxStackSize}
+              onChange={(e) => onMaxStackSizeChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -159,7 +225,8 @@ const ItemComponentsTab = (): JSX.Element => {
             <input
               type="number"
               min={0}
-              defaultValue={1}
+              value={attackDamage}
+              onChange={(e) => onAttackDamageChange(Number(e.target.value))}
               className="border border-gray-200 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B] w-28"
             />
           </div>
@@ -182,6 +249,20 @@ export const ItemEditor = (): JSX.Element => {
     return s !== null ? (parseInt(s, 10) || 360) : 360
   })
 
+  // Controlled state for Basic tab
+  const [name, setName] = useState('My Item')
+  const [itemId, setItemId] = useState('my_item')
+  const [stackSize, setStackSize] = useState(64)
+  const [rarity, setRarity] = useState('common')
+
+  // Controlled state for Components tab
+  const [foodEnabled, setFoodEnabled] = useState(false)
+  const [nutrition, setNutrition] = useState(4)
+  const [saturation, setSaturation] = useState(0.6)
+  const [durability, setDurability] = useState(64)
+  const [maxStackSize, setMaxStackSize] = useState(64)
+  const [attackDamage, setAttackDamage] = useState(1)
+
   useEffect(() => {
     localStorage.setItem('json-panel-width', String(jsonPanelWidth))
   }, [jsonPanelWidth])
@@ -189,8 +270,28 @@ export const ItemEditor = (): JSX.Element => {
   const TABS: { id: ItemTab; label: string }[] = [
     { id: 'basic', label: t('editor.item.tabs.basic') },
     { id: 'components', label: t('editor.item.tabs.components') },
-    { id: 'json', label: t('editor.item.tabs.json') },
   ]
+
+  /** JSON reflecting live form state */
+  const itemJson = useMemo((): string => {
+    const components: Record<string, unknown> = {
+      'minecraft:max_stack_size': stackSize,
+    }
+    if (foodEnabled) {
+      components['minecraft:food'] = {
+        nutrition,
+        saturation_modifier: saturation,
+      }
+    }
+    const obj = {
+      format_version: '1.20.0',
+      'minecraft:item': {
+        description: { identifier: `myaddon:${itemId}` },
+        components,
+      },
+    }
+    return JSON.stringify(obj, null, 2)
+  }, [itemId, stackSize, foodEnabled, nutrition, saturation])
 
   const handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
     e.preventDefault()
@@ -247,12 +348,33 @@ export const ItemEditor = (): JSX.Element => {
           id={'item-tabpanel-' + activeTab}
           aria-labelledby={'item-tab-' + activeTab}
         >
-          {activeTab === 'basic' && <ItemBasicTab />}
-          {activeTab === 'components' && <ItemComponentsTab />}
-          {activeTab === 'json' && (
-            <div className="h-full -m-6 overflow-hidden">
-              <JsonPreviewPanel entityName={t('editor.files.placeholderEntityName')} />
-            </div>
+          {activeTab === 'basic' && (
+            <ItemBasicTab
+              name={name}
+              itemId={itemId}
+              stackSize={stackSize}
+              rarity={rarity}
+              onNameChange={setName}
+              onItemIdChange={setItemId}
+              onStackSizeChange={setStackSize}
+              onRarityChange={setRarity}
+            />
+          )}
+          {activeTab === 'components' && (
+            <ItemComponentsTab
+              foodEnabled={foodEnabled}
+              nutrition={nutrition}
+              saturation={saturation}
+              durability={durability}
+              maxStackSize={maxStackSize}
+              attackDamage={attackDamage}
+              onFoodEnabledChange={setFoodEnabled}
+              onNutritionChange={setNutrition}
+              onSaturationChange={setSaturation}
+              onDurabilityChange={setDurability}
+              onMaxStackSizeChange={setMaxStackSize}
+              onAttackDamageChange={setAttackDamage}
+            />
           )}
         </div>
       </main>
@@ -264,8 +386,11 @@ export const ItemEditor = (): JSX.Element => {
           style={{ width: jsonPanelWidth }}
         >
           <ResizeHandle onMouseDown={handleResizeMouseDown} />
-          <div className="flex-1 min-w-0 overflow-hidden">
-            <JsonPreviewPanel entityName={t('editor.files.placeholderEntityName')} />
+          <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+            <JsonPreviewPanel
+              entityName={t('editor.files.placeholderEntityName')}
+              jsonOverride={itemJson}
+            />
           </div>
         </aside>
       )}

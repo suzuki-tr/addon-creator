@@ -2,6 +2,7 @@ import type { JSX } from 'react'
 import { useEffect, useRef } from 'react'
 import {
   ArcRotateCamera,
+  Color3,
   Color4,
   DirectionalLight,
   Engine,
@@ -34,6 +35,7 @@ interface BabylonPreviewProps {
   geometryJson?: string | undefined
   textureUrl?: string | undefined
   vanillaShape?: 'quadruped' | 'bird' | 'humanoid' | 'fish' | 'aquatic'
+  vanillaColor?: string | undefined
 }
 
 /** Build procedural box meshes representing common vanilla entity shapes */
@@ -115,6 +117,7 @@ export const BabylonPreview = ({
   geometryJson,
   textureUrl,
   vanillaShape,
+  vanillaColor,
 }: BabylonPreviewProps): JSX.Element => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const engineRef = useRef<Engine | null>(null)
@@ -127,6 +130,9 @@ export const BabylonPreview = ({
   // Keep vanillaShape accessible inside the geometry effect without adding it to the dep array
   const vanillaShapeRef = useRef<typeof vanillaShape>(vanillaShape)
   vanillaShapeRef.current = vanillaShape
+  // Keep vanillaColor accessible inside the geometry effect
+  const vanillaColorRef = useRef<string | undefined>(vanillaColor)
+  vanillaColorRef.current = vanillaColor
   // Track the texture URL that was last applied so the texture-only effect can skip a redundant
   // apply immediately after the geometry effect already handled it
   const lastAppliedTextureRef = useRef<string | undefined>(undefined)
@@ -203,6 +209,8 @@ export const BabylonPreview = ({
       const currentUrl = textureUrlRef.current
       if (currentUrl) {
         mat.diffuseTexture = new Texture(currentUrl, scene)
+      } else if (vanillaColorRef.current) {
+        mat.diffuseColor = Color3.FromHexString(vanillaColorRef.current)
       }
       for (const mesh of scene.meshes) mesh.material = mat
       // Record what was applied so the texture-only effect can skip a duplicate apply
@@ -245,7 +253,19 @@ export const BabylonPreview = ({
     if (!mat || !scene) return
 
     mat.diffuseTexture?.dispose()
-    mat.diffuseTexture = textureUrl != null ? new Texture(textureUrl, scene) : null
+    if (textureUrl != null) {
+      mat.diffuseTexture = new Texture(textureUrl, scene)
+      // Reset diffuse color to white so the texture is not tinted
+      mat.diffuseColor = new Color3(1, 1, 1)
+    } else {
+      mat.diffuseTexture = null
+      // Restore vanilla color when texture is removed
+      if (vanillaColorRef.current) {
+        mat.diffuseColor = Color3.FromHexString(vanillaColorRef.current)
+      } else {
+        mat.diffuseColor = new Color3(1, 1, 1)
+      }
+    }
     lastAppliedTextureRef.current = textureUrl
   }, [textureUrl])
 

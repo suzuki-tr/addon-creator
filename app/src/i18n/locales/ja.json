@@ -157,7 +157,8 @@
       "side": "側面",
       "top": "上面",
       "limitationNote": "簡易プレビュー — UVマッピングとボーントランスフォームは未適用",
-      "vanillaShapeNote": "バニラ形状（概略）— 実際のテクスチャはゲームファイルから適用されます"
+      "vanillaShapeNote": "バニラ形状（概略）— 実際のテクスチャはゲームファイルから適用されます",
+      "vanillaTextureNote": "🎨 バニラテクスチャはゲームから適用"
     },
     "stateGraph": {
       "stateListTitle": "状態一覧",

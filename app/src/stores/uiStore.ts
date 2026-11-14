@@ -30,6 +30,11 @@ export const useUiStore = create<UIStoreState>()(
     }),
     {
       name: 'ui-store',
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          void i18n.changeLanguage(state.locale)
+        }
+      },
     },
   ),
 )

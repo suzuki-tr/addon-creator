@@ -157,7 +157,8 @@
       "side": "Side",
       "top": "Top",
       "limitationNote": "Simplified preview — UV mapping and bone transforms not applied",
-      "vanillaShapeNote": "Vanilla shape approximation — actual textures from game files"
+      "vanillaShapeNote": "Vanilla shape approximation — actual textures from game files",
+      "vanillaTextureNote": "🎨 Vanilla textures applied from game files"
     },
     "stateGraph": {
       "stateListTitle": "States",
