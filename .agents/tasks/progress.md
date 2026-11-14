@@ -81,6 +81,21 @@ Phase 4 — 高度エディタ（待機中）
 - NB-v1.0.3-1: `atob()` で PNG 変換時に破損テクスチャ URL へのガードがない（部分的なディレクトリ出力になる可能性）
 - NB-v1.0.3-2: `ResizeHandle` の `role="separator"` にキーボードハンドラがない（パネルリサイズがキーボード操作不可）
 
+## v1.0.4 リリース (fix/issues-v1.0.3 → master)
+
+- issues_v1.0.3.md に記載の4件をすべて修正・検証済み
+- E2E テスト: **18/18 パス**
+- タグ: `v1.0.4`
+
+### 未解決の非ブロッキング指摘（v1.0.4）
+
+- NB-v1.0.4-1: ItemEditor/BlockEditor の JSON プレビューがエンティティ JSON でなく異なる可能性
+- NB-v1.0.4-2: ItemEditor/BlockEditor の JSON タブで `h-full` によるスクロール封入問題の可能性
+- NB-v1.0.4-3: `vanillaShapeRef` コメントが誤記
+- NB-v1.0.4-4: `fish` シェイプカテゴリが未使用
+- NB-v1.0.4-5: `localStorage` キーがエディタ間で共有されている
+- NB-v1.0.4-6: ItemEditor/BlockEditor パスの E2E カバレッジなし
+
 ## v1.0.2 リリース (fix/issues-v1.0.1 → master)
 
 - issues_v1.0.1.md に記載の7件をすべて修正・検証済み
