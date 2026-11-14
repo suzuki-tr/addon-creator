@@ -152,7 +152,7 @@ const PreviewPane = (): JSX.Element => {
         <BabylonPreview
           geometryJson={project?.geometry?.content}
           textureUrl={project?.texture?.dataUrl}
-          vanillaShape={vanillaShape}
+          {...(vanillaShape !== undefined && { vanillaShape })}
         />
         {/* Known limitation: UV atlas offsets and bone pivot/rotation transforms are not applied */}
         <div className="absolute bottom-1 inset-x-0 flex justify-center pointer-events-none">

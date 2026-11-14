@@ -27,38 +27,35 @@ test.describe('ホームページ', () => {
     await expect(page.locator('h1').first()).toBeVisible()
   })
 
-  test('言語セレクタで「かんたん日本語」を選択すると ja-kids レイアウトに切り替わる', async ({
+  test('言語セレクタで「かんたん日本語」を選択しても標準レイアウトが維持される', async ({
     page,
   }) => {
     await page.goto('/')
     await page.selectOption('[aria-label="言語を選ぶ / Select language"]', 'ja-kids')
 
-    // AppShell sets bg-[#FFFBEB] when locale === 'ja-kids'
-    // rgb(255, 251, 235) === #FFFBEB
+    // AppShell always uses bg-[#F9FAFB] regardless of locale (Issue 4: decouple ja-kids from layout)
+    // rgb(249, 250, 251) === #F9FAFB
     const appShell = page.locator('.min-h-screen').first()
-    await expect(appShell).toHaveCSS('background-color', 'rgb(255, 251, 235)')
+    await expect(appShell).toHaveCSS('background-color', 'rgb(249, 250, 251)')
 
-    // KidsHomeLayout renders buttons with min-h-[64px] — verify height >= 60px
+    // Standard layout's new addon button is still visible (no separate KidsHomeLayout)
     const newAddonBtn = page
-      .getByRole('button', { name: /新しいアドオンを作る/ })
+      .getByRole('button', { name: /新しいアドオンを作る|あたらしくつくる/ })
       .first()
     await expect(newAddonBtn).toBeVisible()
-    const box = await newAddonBtn.boundingBox()
-    expect(box).not.toBeNull()
-    expect(box!.height).toBeGreaterThanOrEqual(60)
   })
 
-  test('シンプル/詳細モードトグルが ja-kids 選択時に非表示になる', async ({ page }) => {
+  test('シンプル/詳細モードトグルが ja-kids 選択時にも表示される', async ({ page }) => {
     await page.goto('/')
 
     // Mode toggle (role="group") should be visible in default ja locale
     await expect(page.getByRole('group')).toBeVisible()
 
-    // Switch to ja-kids
+    // Switch to ja-kids — mode toggle must still be visible (Issue 4: decouple ja-kids from layout)
     await page.selectOption('[aria-label="言語を選ぶ / Select language"]', 'ja-kids')
 
-    // Mode toggle is conditionally rendered — it is removed from DOM in ja-kids
-    await expect(page.getByRole('group')).not.toBeVisible()
+    // Mode toggle is now rendered for all locales
+    await expect(page.getByRole('group')).toBeVisible()
   })
 
   test('「新しいアドオンを作る」ボタンクリックで /wizard に遷移する', async ({ page }) => {
