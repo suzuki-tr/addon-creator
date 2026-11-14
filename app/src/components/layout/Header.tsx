@@ -1,5 +1,6 @@
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { useUiStore } from '@/stores/uiStore'
 import type { UIMode, SupportedLocale } from '@/stores/uiStore'
 import i18n from '@/i18n'
@@ -30,12 +31,12 @@ export const Header = (): JSX.Element => {
     <header className="bg-white border-b border-[#E5E7EB] px-6 py-2.5">
       <div className="max-w-[1200px] mx-auto flex items-center gap-4">
         {/* Logo / App name */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <Link to="/" className="flex items-center gap-2 flex-shrink-0 no-underline">
           <span className="text-lg font-bold text-[#5D9C3B]">🎮</span>
           <span className="text-sm font-semibold text-gray-800">
             {t('app.name')}
           </span>
-        </div>
+        </Link>
 
         <div className="flex-1" />
 
