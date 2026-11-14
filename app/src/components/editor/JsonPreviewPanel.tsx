@@ -144,7 +144,7 @@ export const JsonPreviewPanel = ({
 
         {/* Code block */}
         <div
-          className="flex-1 overflow-y-auto rounded-md p-3 text-xs font-mono leading-relaxed overflow-x-auto"
+          className="flex-1 overflow-y-auto min-h-0 rounded-md p-3 text-xs font-mono leading-relaxed overflow-x-auto"
           style={{ backgroundColor: '#1E1E1E', borderRadius: '6px' }}
         >
           <pre className="whitespace-pre m-0">
