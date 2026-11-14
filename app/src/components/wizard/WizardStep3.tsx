@@ -1,7 +1,7 @@
 import type { JSX } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { ContentType, WizardFormData } from '@/pages/WizardPage'
-import { VANILLA_MOBS } from '@/data/vanilla-entities'
+import { VANILLA_MOBS, VANILLA_ITEMS, VANILLA_BLOCKS } from '@/data/vanilla-entities'
 
 const TYPE_ICON: Record<ContentType, string> = {
   mob: '🐾',
@@ -21,8 +21,12 @@ export const WizardStep3 = ({
   const { t } = useTranslation()
 
   const outputFileName = `${data.id}.mcaddon`
+  const vanillaList =
+    contentType === 'item' ? VANILLA_ITEMS :
+    contentType === 'block' ? VANILLA_BLOCKS :
+    VANILLA_MOBS
   const vanillaEntity = data.selectedVanillaId
-    ? VANILLA_MOBS.find((e) => e.id === data.selectedVanillaId)
+    ? vanillaList.find((e) => e.id === data.selectedVanillaId)
     : null
   const baseLabel =
     data.baseType === 'vanilla'

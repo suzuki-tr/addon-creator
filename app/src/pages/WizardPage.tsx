@@ -8,7 +8,7 @@ import { WizardStep2, isValidId } from '@/components/wizard/WizardStep2'
 import { WizardStep3 } from '@/components/wizard/WizardStep3'
 import { useProjectStore } from '@/stores/projectStore'
 import type { ProjectData } from '@/stores/projectStore'
-import { VANILLA_MOBS } from '@/data/vanilla-entities'
+import { VANILLA_MOBS, VANILLA_ITEMS, VANILLA_BLOCKS } from '@/data/vanilla-entities'
 
 export type ContentType = 'mob' | 'block' | 'item'
 export type BaseType = 'scratch' | 'vanilla'
@@ -96,12 +96,14 @@ export const WizardPage = (): JSX.Element => {
   }
 
   const handleProceedToEditor = (): void => {
-    // Look up the vanilla entity's default health if one was selected
-    const vanillaHealth =
-      formData.selectedVanillaId !== null
-        ? (VANILLA_MOBS.find((v) => v.id === formData.selectedVanillaId)
-            ?.defaultHealth ?? 20)
-        : 20
+    // Look up the vanilla entity's default components for the selected content type
+    const vanillaList =
+      contentType === 'item' ? VANILLA_ITEMS :
+      contentType === 'block' ? VANILLA_BLOCKS :
+      VANILLA_MOBS
+    const vanillaEntity = formData.selectedVanillaId
+      ? vanillaList.find((v) => v.id === formData.selectedVanillaId)
+      : null
 
     const projectData: ProjectData = {
       entityId: formData.id,
@@ -112,9 +114,9 @@ export const WizardPage = (): JSX.Element => {
       selectedVanillaId: formData.selectedVanillaId,
       selectedTraits: [],
       status: {
-        health: vanillaHealth,
-        attackDamage: 3,
-        movementSpeed: 0.25,
+        health: vanillaEntity?.defaultComponents?.health ?? vanillaEntity?.defaultHealth ?? 20,
+        attackDamage: vanillaEntity?.defaultComponents?.attackDamage ?? 3,
+        movementSpeed: vanillaEntity?.defaultComponents?.movementSpeed ?? 0.25,
         scale: 1.0,
       },
     }
@@ -140,6 +142,7 @@ export const WizardPage = (): JSX.Element => {
       {step === 2 && (
         <WizardStep2
           data={formData}
+          contentType={contentType ?? 'mob'}
           idError={idError}
           displayNameError={displayNameError}
           vanillaEntityError={vanillaEntityError}

@@ -1,8 +1,8 @@
 import type { JSX } from 'react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { BaseType, WizardFormData } from '@/pages/WizardPage'
-import { VANILLA_MOBS, matchesSearch } from '@/data/vanilla-entities'
+import type { ContentType, BaseType, WizardFormData } from '@/pages/WizardPage'
+import { VANILLA_MOBS, VANILLA_ITEMS, VANILLA_BLOCKS, matchesSearch } from '@/data/vanilla-entities'
 
 /** Convert display name to a valid ID: lowercase, spaces → underscores, strip invalid chars */
 export function toId(displayName: string): string {
@@ -19,6 +19,7 @@ export function isValidId(id: string): boolean {
 
 interface WizardStep2Props {
   data: Pick<WizardFormData, 'id' | 'displayName' | 'baseType' | 'vanillaSearch' | 'selectedVanillaId'>
+  contentType: ContentType
   idError: string | null
   displayNameError: string | null
   vanillaEntityError: string | null
@@ -27,6 +28,7 @@ interface WizardStep2Props {
 
 export const WizardStep2 = ({
   data,
+  contentType,
   idError,
   displayNameError,
   vanillaEntityError,
@@ -34,13 +36,15 @@ export const WizardStep2 = ({
 }: WizardStep2Props): JSX.Element => {
   const { t } = useTranslation()
 
-  const filteredEntities = useMemo(
-    () =>
-      data.vanillaSearch.trim()
-        ? VANILLA_MOBS.filter((e) => matchesSearch(e, data.vanillaSearch.trim()))
-        : VANILLA_MOBS,
-    [data.vanillaSearch],
-  )
+  const filteredEntities = useMemo(() => {
+    const vanillaList =
+      contentType === 'item' ? VANILLA_ITEMS :
+      contentType === 'block' ? VANILLA_BLOCKS :
+      VANILLA_MOBS
+    return data.vanillaSearch.trim()
+      ? vanillaList.filter((e) => matchesSearch(e, data.vanillaSearch.trim()))
+      : vanillaList
+  }, [data.vanillaSearch, contentType])
 
   const handleDisplayNameChange = (
     e: React.ChangeEvent<HTMLInputElement>,

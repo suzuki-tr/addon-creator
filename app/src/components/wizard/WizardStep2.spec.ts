@@ -17,6 +17,7 @@ describe('WizardStep2 (component)', () => {
     render(
       createElement(WizardStep2, {
         data: SAMPLE_DATA,
+        contentType: 'mob',
         idError: null,
         displayNameError: null,
         vanillaEntityError: null,
@@ -30,6 +31,7 @@ describe('WizardStep2 (component)', () => {
     render(
       createElement(WizardStep2, {
         data: SAMPLE_DATA,
+        contentType: 'mob',
         idError: null,
         displayNameError: null,
         vanillaEntityError: null,
@@ -43,6 +45,7 @@ describe('WizardStep2 (component)', () => {
     render(
       createElement(WizardStep2, {
         data: SAMPLE_DATA,
+        contentType: 'mob',
         idError: null,
         displayNameError: null,
         vanillaEntityError: null,
@@ -56,6 +59,7 @@ describe('WizardStep2 (component)', () => {
     render(
       createElement(WizardStep2, {
         data: { ...SAMPLE_DATA, id: 'bad id' },
+        contentType: 'mob',
         idError: 'wizard.error.invalidId',
         displayNameError: null,
         vanillaEntityError: null,
@@ -69,6 +73,7 @@ describe('WizardStep2 (component)', () => {
     render(
       createElement(WizardStep2, {
         data: SAMPLE_DATA,
+        contentType: 'mob',
         idError: null,
         displayNameError: null,
         vanillaEntityError: null,
