@@ -99,8 +99,8 @@
       "export": "アドオンをダウンロード"
     },
     "confirm": {
-      "title": "確認してダウンロードしよう",
-      "subtitle": "入力した内容を確認してください。問題がなければダウンロードボタンを押してください。",
+      "title": "確認して編集を始めよう",
+      "subtitle": "入力した内容を確認してください。問題がなければ「編集を始める」ボタンを押してエディタへ進みましょう。",
       "summaryTitle": "設定の確認",
       "previewTitle": "プレビュー",
       "typeLabel": "種類",
@@ -108,7 +108,7 @@
       "displayNameLabel": "表示名",
       "baseLabel": "ベース",
       "outputFileLabel": "出力ファイル",
-      "validationOk": "すべての項目が正しく入力されています。ダウンロードできます。",
+      "validationOk": "すべての項目が正しく入力されています。エディタに進めます。",
       "download": "アドオンをダウンロード",
       "proceed": "編集を始める",
       "previewPlaceholder": "3Dプレビュー（後で実装）"

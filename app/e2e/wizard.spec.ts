@@ -82,7 +82,7 @@ test.describe('ウィザードページ', () => {
 
     // Confirm title should appear — use heading role to avoid matching the
     // WizardProgress stepper span that also carries this text
-    await expect(page.getByRole('heading', { name: '確認してダウンロードしよう' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '確認して編集を始めよう' })).toBeVisible()
 
     // Summary row should show the display name we entered
     await expect(page.getByText('テストモブ')).toBeVisible()

@@ -99,8 +99,8 @@
       "export": "Download Addon"
     },
     "confirm": {
-      "title": "Review and Download",
-      "subtitle": "Check your settings below. When everything looks good, click Download.",
+      "title": "Review and Start Editing",
+      "subtitle": "Check your settings below. When everything looks good, click Start Editing to open the editor.",
       "summaryTitle": "Settings Summary",
       "previewTitle": "Preview",
       "typeLabel": "Type",
@@ -108,7 +108,7 @@
       "displayNameLabel": "Display Name",
       "baseLabel": "Base",
       "outputFileLabel": "Output File",
-      "validationOk": "All settings are valid. Ready to download.",
+      "validationOk": "All settings are valid. Ready to start editing.",
       "download": "Download Addon",
       "proceed": "Start Editing",
       "previewPlaceholder": "3D Preview (coming later)"

@@ -96,8 +96,8 @@
       "export": "アドオンをダウンロード"
     },
     "confirm": {
-      "title": "たしかめてダウンロードしよう",
-      "subtitle": "いれたないようをたしかめてください。よければダウンロードボタンをおしてください。",
+      "title": "たしかめて へんしゅうをはじめよう",
+      "subtitle": "いれたないようをたしかめてください。よければ「編集を始めましょう」ボタンをおしてね。",
       "summaryTitle": "せっていのたしかめ",
       "previewTitle": "みてみる",
       "typeLabel": "しゅるい",
@@ -105,9 +105,9 @@
       "displayNameLabel": "みせる なまえ",
       "baseLabel": "ベース",
       "outputFileLabel": "つくられるファイル",
-      "validationOk": "すべてただしくいれられています。ダウンロードできます。",
+      "validationOk": "すべてただしくいれられています。へんしゅうできます。",
       "download": "アドオンをダウンロード",
-      "proceed": "へんしゅうをはじめる",
+      "proceed": "編集を始めましょう",
       "previewPlaceholder": "3D（あとでつくります）"
     }
   },
