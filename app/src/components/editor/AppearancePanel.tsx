@@ -536,6 +536,43 @@ const TextureSlotPanel = (): JSX.Element => {
         aria-label={t('editor.appearance.texture.change')}
       />
 
+      {/* Vanilla appearance info (shown when a vanilla entity is selected) */}
+      {(() => {
+        const vanillaEntity = project?.selectedVanillaId
+          ? VANILLA_MOBS.find((m) => m.id === project.selectedVanillaId)
+          : null
+        if (!vanillaEntity?.defaultAppearance) return null
+        const { geometryId, texturePath } = vanillaEntity.defaultAppearance
+        return (
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-3 flex flex-col gap-1.5">
+            <div className="text-xs font-bold text-blue-700">
+              {t('editor.appearance.geometry.vanillaTitle')}
+            </div>
+            <div className="text-xs text-blue-600">
+              {t('editor.appearance.geometry.vanillaUseLabel')}
+            </div>
+            <div className="flex gap-3 mt-0.5 flex-wrap">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-gray-500">
+                  {t('editor.appearance.geometry.vanillaGeometryId')}
+                </span>
+                <span className="text-xs font-mono bg-white border border-blue-100 rounded px-2 py-0.5 text-gray-700">
+                  {geometryId}
+                </span>
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-xs text-gray-500">
+                  {t('editor.appearance.geometry.vanillaTexturePath')}
+                </span>
+                <span className="text-xs font-mono bg-white border border-blue-100 rounded px-2 py-0.5 text-gray-700">
+                  {texturePath}
+                </span>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Texture slots */}
       <div>
         <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">

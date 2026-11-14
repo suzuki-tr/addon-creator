@@ -7,6 +7,31 @@ declare global {
   }
 }
 
+/** Minimal Bedrock geometry format for reading the description.identifier field */
+interface GeoIdentifierEntry {
+  description?: { identifier?: string }
+}
+interface GeoIdentifierFile {
+  'minecraft:geometry'?: GeoIdentifierEntry[]
+  geometry?: GeoIdentifierEntry[]
+}
+
+/**
+ * Reads the first geometry identifier from a Bedrock .geo.json string.
+ * Falls back to `geometry.<entityId>` when the file cannot be parsed.
+ */
+function readGeometryIdentifier(content: string, fallback: string): string {
+  try {
+    const geoFile = JSON.parse(content) as GeoIdentifierFile
+    const geoArray = geoFile['minecraft:geometry'] ?? geoFile['geometry'] ?? []
+    const identifier = geoArray[0]?.description?.identifier
+    if (typeof identifier === 'string' && identifier.startsWith('geometry.')) {
+      return identifier
+    }
+  } catch { /* fall through */ }
+  return fallback
+}
+
 /**
  * Serialises the project to a JSON file and triggers a browser download.
  */
@@ -94,6 +119,11 @@ export async function saveProjectToDirectory(project: ProjectData): Promise<void
     'minecraft:scale': { value: status.scale },
   }
   if (selectedTraits.includes('hostile')) {
+    // AI-goal components are required for the mob to actually target and pursue players
+    components['minecraft:behavior.nearest_attackable_target'] = {
+      entity_types: [{ filters: { test: 'is_family', subject: 'other', value: 'player' }, max_dist: 16 }],
+    }
+    components['minecraft:behavior.hurt_by_target'] = {}
     components['minecraft:attack'] = { damage: status.attackDamage }
   }
   if (selectedTraits.includes('rideable')) {
@@ -147,7 +177,13 @@ export async function saveProjectToDirectory(project: ProjectData): Promise<void
   }
   await writeText(rpDir, 'manifest.json', JSON.stringify(rpManifest, null, 2))
 
-  // Client entity definition — wires geometry and texture to the entity identifier
+  // Client entity definition — wires geometry and texture to the entity identifier.
+  // Read the actual geometry identifier from the uploaded .geo.json so Minecraft can resolve it;
+  // fall back to geometry.<entityId> when no custom geometry is loaded.
+  const geometryRef = project.geometry?.content
+    ? readGeometryIdentifier(project.geometry.content, `geometry.${entityId}`)
+    : `geometry.${entityId}`
+
   const entityClient = {
     format_version: '1.10.0',
     'minecraft:client_entity': {
@@ -155,7 +191,7 @@ export async function saveProjectToDirectory(project: ProjectData): Promise<void
         identifier: entityIdentifier,
         materials: { default: 'entity_alphatest' },
         textures: { default: `textures/entity/${entityId}` },
-        geometry: { default: `geometry.${entityId}` },
+        geometry: { default: geometryRef },
         render_controllers: ['controller.render.default'],
       },
     },

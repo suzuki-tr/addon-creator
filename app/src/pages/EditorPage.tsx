@@ -32,7 +32,7 @@ interface TabDef {
 export const EditorPage = (): JSX.Element => {
   const { t } = useTranslation()
   const { mode } = useUiStore()
-  const { project, updateTraits } = useProjectStore()
+  const { project, updateTraits, setProject } = useProjectStore()
   /** Entity name shown in the sidebar — from loaded project, falls back to i18n placeholder */
   const entityName =
     project?.entityDisplayName ?? t('editor.files.placeholderEntityName')
@@ -167,6 +167,12 @@ export const EditorPage = (): JSX.Element => {
   }
 
   const handleSave = (): void => {
+    // Generate UUIDs if absent (pre-existing projects) so each save uses a stable pack identity
+    const manifestUuid = project?.manifestUuid ?? crypto.randomUUID()
+    const moduleUuid = project?.moduleUuid ?? crypto.randomUUID()
+    const rpManifestUuid = project?.rpManifestUuid ?? crypto.randomUUID()
+    const rpModuleUuid = project?.rpModuleUuid ?? crypto.randomUUID()
+
     const exportData: ProjectData = {
       entityId: project?.entityId ?? 'custom_entity',
       entityDisplayName: project?.entityDisplayName ?? 'Custom Entity',
@@ -177,11 +183,15 @@ export const EditorPage = (): JSX.Element => {
       status: project?.status ?? DEFAULT_STATUS,
       ...(project?.geometry !== undefined && { geometry: project.geometry }),
       ...(project?.texture !== undefined && { texture: project.texture }),
-      // Pass through persisted UUIDs so repeated saves keep the same pack identity
-      ...(project?.manifestUuid !== undefined && { manifestUuid: project.manifestUuid }),
-      ...(project?.moduleUuid !== undefined && { moduleUuid: project.moduleUuid }),
-      ...(project?.rpManifestUuid !== undefined && { rpManifestUuid: project.rpManifestUuid }),
-      ...(project?.rpModuleUuid !== undefined && { rpModuleUuid: project.rpModuleUuid }),
+      // Always include UUIDs so project.json round-trips them correctly on every save
+      manifestUuid,
+      moduleUuid,
+      rpManifestUuid,
+      rpModuleUuid,
+    }
+    // Persist newly-generated UUIDs back to the store so the next save reuses them
+    if (!project?.manifestUuid) {
+      setProject(exportData)
     }
     saveProjectToDirectory(exportData).catch((err: unknown) => {
       const message = err instanceof Error ? err.message : String(err)
