@@ -1,0 +1,14 @@
+{
+  "entityId": "chicken",
+  "entityDisplayName": "ニワトリ",
+  "contentType": "mob",
+  "baseType": "vanilla",
+  "selectedVanillaId": "minecraft:chicken",
+  "selectedTraits": ["rideable"],
+  "status": {
+    "health": 4,
+    "attackDamage": 0,
+    "movementSpeed": 0.25,
+    "scale": 1.0
+  }
+}

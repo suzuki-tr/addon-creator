@@ -73,6 +73,10 @@ test.describe('ウィザードページ', () => {
     // ID field may need to be set manually since display name is Japanese
     await page.getByPlaceholder('例: my_cool_mob').fill('test_mob')
 
+    // Switch to "ゼロから作る" (scratch) so no vanilla entity selection is required.
+    // The default base type is 'vanilla', which blocks step 2 → 3 without an entity.
+    await page.locator('[role="radio"]').filter({ hasText: 'ゼロから作る' }).click()
+
     // Advance to Step 3
     await page.getByRole('button', { name: /次へ/ }).click()
 
