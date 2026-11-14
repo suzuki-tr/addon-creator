@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useUiStore } from '@/stores/uiStore'
 import type { UIMode, SupportedLocale } from '@/stores/uiStore'
-import i18n from '@/i18n'
 
 const LOCALE_LABELS: Record<SupportedLocale, string> = {
   ja: '日本語',
@@ -20,7 +19,6 @@ export const Header = (): JSX.Element => {
   ): void => {
     const nextLocale = event.target.value as SupportedLocale
     setLocale(nextLocale)
-    void i18n.changeLanguage(nextLocale)
   }
 
   const handleModeClick = (nextMode: UIMode): void => {
