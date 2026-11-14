@@ -113,6 +113,22 @@ export async function generateMcaddon(project: ProjectData): Promise<Blob> {
   )
   zip.file(`${rpFolder}/texts/en_US.lang`, langContent)
 
+  // Include user-uploaded geometry and texture if present
+  if (project.geometry?.content) {
+    zip.file(
+      `${rpFolder}/models/entity/${entityId}.geo.json`,
+      project.geometry.content,
+    )
+  }
+  if (project.texture?.dataUrl) {
+    const base64Data = project.texture.dataUrl.includes(',')
+      ? project.texture.dataUrl.split(',')[1]
+      : project.texture.dataUrl
+    zip.file(`${rpFolder}/textures/entity/${entityId}.png`, base64Data, {
+      base64: true,
+    })
+  }
+
   return zip.generateAsync({ type: 'blob' })
 }
 

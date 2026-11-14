@@ -1,7 +1,8 @@
 import type { JSX } from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUiStore } from '@/stores/uiStore'
+import { useProjectStore } from '@/stores/projectStore'
 
 type AppearanceSubTab = 'geometry' | 'texture' | 'material'
 
@@ -188,6 +189,7 @@ interface UvPaneProps {
 
 const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset }: UvPaneProps): JSX.Element => {
   const { t } = useTranslation()
+  const { project } = useProjectStore()
   const svgSize = Math.round(288 * uvZoom)
 
   return (
@@ -229,6 +231,19 @@ const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset }: UvPaneProps): JSX.Elem
 
           {/* Background */}
           <rect width="288" height="288" fill="url(#uv-checker)" />
+
+          {/* Uploaded texture as background image (below grid and bones) */}
+          {project?.texture?.dataUrl && (
+            <image
+              x={0}
+              y={0}
+              width={288}
+              height={288}
+              href={project.texture.dataUrl}
+              preserveAspectRatio="none"
+              style={{ opacity: 0.6 }}
+            />
+          )}
 
           {/* Grid lines */}
           {[0, 72, 144, 216, 288].map((v) => (
@@ -326,10 +341,46 @@ const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset }: UvPaneProps): JSX.Elem
 // ---------------------------------------------------------------------------
 const GeometryPanel = (): JSX.Element => {
   const { t } = useTranslation()
+  const { project, updateGeometry } = useProjectStore()
   const flatBones = flattenBones(BONE_TREE)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [geoFileName, setGeoFileName] = useState(
+    project?.geometry?.fileName ?? 'models/entity/my_mob.geo.json',
+  )
+
+  const handleBrowseClick = (): void => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (evt) => {
+      const content = evt.target?.result
+      if (typeof content === 'string') {
+        updateGeometry({ fileName: file.name, content })
+        setGeoFileName(file.name)
+      }
+    }
+    reader.readAsText(file)
+    // Reset input so the same file can be re-selected
+    e.target.value = ''
+  }
 
   return (
     <div className="p-4 flex flex-col gap-4 overflow-y-auto h-full">
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json,.geo.json"
+        className="hidden"
+        data-testid="geometry-file-input"
+        onChange={handleFileChange}
+        aria-label={t('editor.appearance.geometry.fileLabel')}
+      />
+
       {/* File path */}
       <div className="flex flex-col gap-1">
         <label className="text-xs font-medium text-gray-600">
@@ -338,11 +389,13 @@ const GeometryPanel = (): JSX.Element => {
         <div className="flex gap-2">
           <input
             type="text"
-            defaultValue="models/entity/my_mob.geo.json"
+            value={geoFileName}
+            readOnly
             className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs font-mono text-gray-700 bg-white focus:outline-none focus:border-[#5D9C3B]"
           />
           <button
             type="button"
+            onClick={handleBrowseClick}
             className="border border-gray-300 rounded px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 cursor-pointer bg-white flex-shrink-0"
           >
             {t('editor.appearance.geometry.browseButton')}
@@ -409,9 +462,41 @@ const GeometryPanel = (): JSX.Element => {
 const TextureSlotPanel = (): JSX.Element => {
   const { t } = useTranslation()
   const { mode } = useUiStore()
+  const { project, updateTexture } = useProjectStore()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleTextureChangeClick = (): void => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (evt) => {
+      const dataUrl = evt.target?.result
+      if (typeof dataUrl === 'string') {
+        updateTexture({ fileName: file.name, dataUrl })
+      }
+    }
+    reader.readAsDataURL(file)
+    // Reset input so the same file can be re-selected
+    e.target.value = ''
+  }
 
   return (
     <div className="p-4 flex flex-col gap-4 overflow-y-auto h-full">
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,.png"
+        className="hidden"
+        data-testid="texture-file-input"
+        onChange={handleFileChange}
+        aria-label={t('editor.appearance.texture.change')}
+      />
+
       {/* Texture slots */}
       <div>
         <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
@@ -423,24 +508,46 @@ const TextureSlotPanel = (): JSX.Element => {
               key={slot.id}
               className="flex items-center gap-3 border border-gray-200 rounded-md p-2"
             >
-              {/* Checkerboard thumbnail */}
-              <div
-                className="w-14 h-14 rounded flex-shrink-0"
-                style={CHECKERBOARD_STYLE}
-              />
+              {/* Thumbnail: uploaded texture or checkerboard */}
+              {slot.id === 'default' && project?.texture?.dataUrl ? (
+                <img
+                  src={project.texture.dataUrl}
+                  alt={slot.name}
+                  className="w-14 h-14 rounded flex-shrink-0 object-cover"
+                />
+              ) : (
+                <div
+                  className="w-14 h-14 rounded flex-shrink-0"
+                  style={CHECKERBOARD_STYLE}
+                />
+              )}
               <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                 <span className="text-xs font-mono font-semibold text-gray-700">
                   {slot.name}
                 </span>
-                <span className="text-xs text-gray-400 truncate">{slot.path}</span>
+                <span className="text-xs text-gray-400 truncate">
+                  {slot.id === 'default' && project?.texture?.fileName
+                    ? project.texture.fileName
+                    : slot.path}
+                </span>
               </div>
               <div className="flex items-center gap-1 flex-shrink-0">
-                <button
-                  type="button"
-                  className="text-xs border border-gray-300 rounded px-2 py-1 hover:bg-gray-50 cursor-pointer bg-white text-gray-600"
-                >
-                  {t('editor.appearance.texture.change')}
-                </button>
+                {slot.id === 'default' ? (
+                  <button
+                    type="button"
+                    onClick={handleTextureChangeClick}
+                    className="text-xs border border-gray-300 rounded px-2 py-1 hover:bg-gray-50 cursor-pointer bg-white text-gray-600"
+                  >
+                    {t('editor.appearance.texture.change')}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="text-xs border border-gray-300 rounded px-2 py-1 hover:bg-gray-50 cursor-pointer bg-white text-gray-600"
+                  >
+                    {t('editor.appearance.texture.change')}
+                  </button>
+                )}
                 {/* Delete button — detail mode only, wireframe #10 */}
                 {mode === 'advanced' && (
                   <button
