@@ -143,7 +143,8 @@
       "front": "まえ",
       "side": "よこ",
       "top": "うえ",
-      "limitationNote": "かんたんプレビュー — テクスチャのみかたはゲームとちがうことがあります"
+      "limitationNote": "かんたんプレビュー — テクスチャのみかたはゲームとちがうことがあります",
+      "vanillaShapeNote": "ゲームのキャラクターのかたち（イメージ）"
     },
     "stateGraph": {
       "stateListTitle": "じょうたいのリスト",
@@ -205,6 +206,44 @@
     "status": {
       "heading": "ステータスをきめてください",
       "resetDefault": "もとにもどす"
+    },
+    "item": {
+      "tabs": {
+        "basic": "きほん",
+        "components": "せってい",
+        "json": "JSON"
+      },
+      "basic": {
+        "name": "アイテムのなまえ",
+        "id": "アイテム ID",
+        "stackSize": "かさねられるかず",
+        "rarity": "レアさ"
+      },
+      "comp": {
+        "food": "たべもの (minecraft:food)",
+        "durability": "たいきゅうち (minecraft:durability)",
+        "maxStack": "かさねられる上限 (minecraft:max_stack_size)",
+        "weapon": "ぶき (minecraft:weapon)"
+      }
+    },
+    "block": {
+      "tabs": {
+        "basic": "きほん",
+        "components": "せってい",
+        "json": "JSON"
+      },
+      "basic": {
+        "name": "ブロックのなまえ",
+        "id": "ブロック ID",
+        "material": "ざいりょう"
+      },
+      "comp": {
+        "hardness": "かたさ (minecraft:hardness)",
+        "flammable": "もえやすさ (minecraft:flammable)",
+        "friction": "まさつ (minecraft:friction)",
+        "lightEmission": "ひかり (minecraft:light_emission)",
+        "destructible": "こわせるか (minecraft:destructible_by_mining)"
+      }
     }
   },
   "entity": {

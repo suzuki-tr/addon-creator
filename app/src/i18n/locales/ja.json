@@ -156,7 +156,8 @@
       "front": "前面",
       "side": "側面",
       "top": "上面",
-      "limitationNote": "簡易プレビュー — UVマッピングとボーントランスフォームは未適用"
+      "limitationNote": "簡易プレビュー — UVマッピングとボーントランスフォームは未適用",
+      "vanillaShapeNote": "バニラ形状（概略）— 実際のテクスチャはゲームファイルから適用されます"
     },
     "stateGraph": {
       "stateListTitle": "状態一覧",
@@ -241,6 +242,44 @@
     "status": {
       "heading": "ステータスを設定してください",
       "resetDefault": "デフォルト"
+    },
+    "item": {
+      "tabs": {
+        "basic": "基本",
+        "components": "コンポーネント",
+        "json": "JSON プレビュー"
+      },
+      "basic": {
+        "name": "アイテム名",
+        "id": "アイテム ID",
+        "stackSize": "スタック数",
+        "rarity": "レア度"
+      },
+      "comp": {
+        "food": "食べ物 (minecraft:food)",
+        "durability": "耐久値 (minecraft:durability)",
+        "maxStack": "スタック上限 (minecraft:max_stack_size)",
+        "weapon": "武器 (minecraft:weapon)"
+      }
+    },
+    "block": {
+      "tabs": {
+        "basic": "基本",
+        "components": "コンポーネント",
+        "json": "JSON プレビュー"
+      },
+      "basic": {
+        "name": "ブロック名",
+        "id": "ブロック ID",
+        "material": "マテリアル"
+      },
+      "comp": {
+        "hardness": "硬さ (minecraft:hardness)",
+        "flammable": "引火性 (minecraft:flammable)",
+        "friction": "摩擦 (minecraft:friction)",
+        "lightEmission": "光量 (minecraft:light_emission)",
+        "destructible": "採掘可能 (minecraft:destructible_by_mining)"
+      }
     }
   },
   "entity": {

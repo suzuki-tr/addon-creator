@@ -14,6 +14,8 @@ import { StateGraph } from '@/components/editor/StateGraph'
 import { AppearancePanel } from '@/components/editor/AppearancePanel'
 import { StatusPanel } from '@/components/editor/StatusPanel'
 import { ResizeHandle } from '@/components/editor/ResizeHandle'
+import { ItemEditor } from '@/components/editor/ItemEditor'
+import { BlockEditor } from '@/components/editor/BlockEditor'
 
 type EditorTab = 'traits' | 'status' | 'appearance' | 'components' | 'stateGraph'
 
@@ -214,9 +216,11 @@ export const EditorPage = (): JSX.Element => {
     void downloadMcaddon(exportData)
   }
 
+  if (project?.contentType === 'item') return <ItemEditor />
+  if (project?.contentType === 'block') return <BlockEditor />
+
   return (
     <div className="flex flex-1 overflow-hidden min-h-0">
-      {/* Left sidebar */}
       <aside className="w-60 min-w-[200px] max-w-xs bg-white border-r border-[#E5E7EB] flex flex-col overflow-y-auto flex-shrink-0">
         {/* Project section */}
         <div className="p-4 border-b border-[#E5E7EB]">

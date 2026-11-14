@@ -156,7 +156,8 @@
       "front": "Front",
       "side": "Side",
       "top": "Top",
-      "limitationNote": "Simplified preview — UV mapping and bone transforms not applied"
+      "limitationNote": "Simplified preview — UV mapping and bone transforms not applied",
+      "vanillaShapeNote": "Vanilla shape approximation — actual textures from game files"
     },
     "stateGraph": {
       "stateListTitle": "States",
@@ -241,6 +242,44 @@
     "status": {
       "heading": "Set Status Values",
       "resetDefault": "Default"
+    },
+    "item": {
+      "tabs": {
+        "basic": "Basic",
+        "components": "Components",
+        "json": "JSON Preview"
+      },
+      "basic": {
+        "name": "Item Name",
+        "id": "Item ID",
+        "stackSize": "Stack Size",
+        "rarity": "Rarity"
+      },
+      "comp": {
+        "food": "Food (minecraft:food)",
+        "durability": "Durability (minecraft:durability)",
+        "maxStack": "Max Stack (minecraft:max_stack_size)",
+        "weapon": "Weapon (minecraft:weapon)"
+      }
+    },
+    "block": {
+      "tabs": {
+        "basic": "Basic",
+        "components": "Components",
+        "json": "JSON Preview"
+      },
+      "basic": {
+        "name": "Block Name",
+        "id": "Block ID",
+        "material": "Material"
+      },
+      "comp": {
+        "hardness": "Hardness (minecraft:hardness)",
+        "flammable": "Flammable (minecraft:flammable)",
+        "friction": "Friction (minecraft:friction)",
+        "lightEmission": "Light Emission (minecraft:light_emission)",
+        "destructible": "Destructible by Mining (minecraft:destructible_by_mining)"
+      }
     }
   },
   "entity": {
