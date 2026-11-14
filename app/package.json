@@ -15,8 +15,7 @@
     "test:ui": "vitest --ui"
   },
   "dependencies": {
-    "@babylonjs/core": "^9.36.0",
-    "@babylonjs/loaders": "^9.36.0",
+    "@babylonjs/core": "9.36.0",
     "@radix-ui/react-switch": "^1.1.0",
     "@tailwindcss/vite": "^4.3.0",
     "i18next": "^25.0.0",
