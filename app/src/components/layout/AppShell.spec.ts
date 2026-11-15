@@ -27,4 +27,27 @@ describe('AppShell', () => {
     renderWithRouter({ noPadding: true, children: 'padded content' })
     expect(screen.getByText('padded content')).toBeTruthy()
   })
+
+  it('root element uses h-screen and overflow-hidden to bound layout to viewport', () => {
+    // h-screen caps the height; overflow-hidden prevents the page-level scroll that
+    // used to occur with min-h-screen when JSON content grew.
+    const { container } = renderWithRouter({ children: 'content' })
+    const root = container.firstChild as HTMLElement
+    expect(root.className).toContain('h-screen')
+    expect(root.className).toContain('overflow-hidden')
+  })
+
+  it('noPadding main uses overflow-hidden for editor flex chain', () => {
+    const { container } = renderWithRouter({ noPadding: true, children: 'content' })
+    const root = container.firstChild as HTMLElement
+    const main = root.querySelector('main')
+    expect(main?.className).toContain('overflow-hidden')
+  })
+
+  it('regular main uses overflow-y-auto so non-editor pages scroll independently', () => {
+    const { container } = renderWithRouter({ children: 'content' })
+    const root = container.firstChild as HTMLElement
+    const main = root.querySelector('main')
+    expect(main?.className).toContain('overflow-y-auto')
+  })
 })

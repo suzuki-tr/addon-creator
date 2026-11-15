@@ -17,7 +17,7 @@
     }
   },
   "app": {
-    "name": "マインクラフト アドオン クリエイター",
+    "name": "マイクラ アドオン クリエイター",
     "mode": {
       "simple": "かんたん",
       "advanced": "くわしい",
@@ -135,6 +135,15 @@
     },
     "breadcrumb": {
       "myProject": "マイプロジェクト"
+    },
+    "jsonPreview": {
+      "title": "JSON をみる",
+      "copyButton": "コピーする"
+    },
+    "validation": {
+      "title": "チェックけっか",
+      "ok": "✓ だいじょうぶ！",
+      "okMessage": "エラーはありません。ダウンロードできます。"
     },
     "preview3d": {
       "title": "3D プレビュー",

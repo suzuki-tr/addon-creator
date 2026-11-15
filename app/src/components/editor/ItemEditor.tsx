@@ -272,17 +272,21 @@ export const ItemEditor = (): JSX.Element => {
     { id: 'components', label: t('editor.item.tabs.components') },
   ]
 
-  /** JSON reflecting live form state */
+  /** JSON reflecting live form state — all component fields included */
   const itemJson = useMemo((): string => {
     const components: Record<string, unknown> = {
       'minecraft:max_stack_size': stackSize,
+      'minecraft:durability': { max_durability: durability },
+      'minecraft:weapon': { damage: attackDamage },
     }
+
     if (foodEnabled) {
       components['minecraft:food'] = {
         nutrition,
         saturation_modifier: saturation,
       }
     }
+
     const obj = {
       format_version: '1.20.0',
       'minecraft:item': {
@@ -291,7 +295,7 @@ export const ItemEditor = (): JSX.Element => {
       },
     }
     return JSON.stringify(obj, null, 2)
-  }, [itemId, stackSize, foodEnabled, nutrition, saturation])
+  }, [itemId, stackSize, foodEnabled, nutrition, saturation, durability, attackDamage])
 
   const handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
     e.preventDefault()

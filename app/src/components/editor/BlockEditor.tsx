@@ -282,14 +282,32 @@ export const BlockEditor = (): JSX.Element => {
     { id: 'components', label: t('editor.block.tabs.components') },
   ]
 
-  /** JSON reflecting live form state */
+  /** JSON reflecting live form state — all components included so every field change is visible */
   const blockJson = useMemo((): string => {
-    const components: Record<string, unknown> = {}
+    const components: Record<string, unknown> = {
+      // Always include hardness; explosion_resistance mirrors hardness as a sensible default
+      'minecraft:hardness': {
+        hardness,
+        explosion_resistance: hardness,
+      },
+      'minecraft:friction': { value: friction },
+      'minecraft:light_emission': { emission: lightLevel },
+    }
+
+    // Only add flammable when at least one odds value is non-zero
+    if (burnOdds > 0 || flameOdds > 0) {
+      components['minecraft:flammable'] = {
+        burn_odds: burnOdds,
+        flame_odds: flameOdds,
+      }
+    }
+
     if (destructible) {
       components['minecraft:destructible_by_mining'] = {
         seconds_to_destroy: secondsToDestroy,
       }
     }
+
     const obj = {
       format_version: '1.20.0',
       'minecraft:block': {
@@ -298,7 +316,7 @@ export const BlockEditor = (): JSX.Element => {
       },
     }
     return JSON.stringify(obj, null, 2)
-  }, [blockId, destructible, secondsToDestroy])
+  }, [blockId, hardness, burnOdds, flameOdds, friction, lightLevel, destructible, secondsToDestroy])
 
   const handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
     e.preventDefault()

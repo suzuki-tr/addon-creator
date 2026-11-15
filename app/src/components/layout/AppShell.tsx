@@ -15,14 +15,18 @@ export const AppShell = ({
   noPadding = false,
 }: AppShellProps): JSX.Element => {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
+    // h-screen + overflow-hidden bound the layout to the viewport height so that
+    // flex-1 / overflow-y-auto children can create true contained scroll regions.
+    // min-h-screen would let the container grow past the viewport, breaking the chain.
+    <div className="h-screen flex flex-col overflow-hidden bg-[#F9FAFB]">
       <Header />
       {noPadding ? (
         <main className="flex-1 flex flex-col overflow-hidden min-h-0">
           {children}
         </main>
       ) : (
-        <main className="flex-1 max-w-[1200px] w-full mx-auto px-6 py-8">
+        // overflow-y-auto lets regular (non-editor) pages scroll their own content
+        <main className="flex-1 overflow-y-auto max-w-[1200px] w-full mx-auto px-6 py-8">
           {children}
         </main>
       )}
