@@ -213,6 +213,11 @@ const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset }: UvPaneProps): JSX.Elem
   const { project } = useProjectStore()
   const svgSize = Math.round(288 * uvZoom)
 
+  const vanillaEntity = project?.selectedVanillaId
+    ? VANILLA_MOBS.find((m) => m.id === project.selectedVanillaId)
+    : null
+  const vanillaColor = vanillaEntity?.previewColor
+
   return (
     <div className="w-1/2 min-w-[260px] max-w-[480px] border-r border-[#E5E7EB] flex flex-col flex-shrink-0">
       {/* Header */}
@@ -297,32 +302,54 @@ const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset }: UvPaneProps): JSX.Elem
             V →
           </text>
 
-          {/* UV bone regions */}
-          {UV_BONES.map((bone) => (
-            <g key={bone.label}>
-              <rect
-                x={bone.x}
-                y={bone.y}
-                width={bone.w}
-                height={bone.h}
-                fill={bone.color}
-                stroke={bone.textColor}
-                strokeWidth={1.5}
-              />
-              <text
-                x={bone.x + bone.w / 2}
-                y={bone.y + bone.h / 2}
-                textAnchor="middle"
-                dominantBaseline="central"
-                fontSize={10}
-                fontWeight={600}
-                fontFamily="ui-monospace, monospace"
-                fill={bone.textColor}
-              >
-                {bone.label}
-              </text>
-            </g>
-          ))}
+          {/* UV bone regions — tinted with vanilla previewColor when applicable */}
+          {UV_BONES.map((bone) => {
+            const fillColor = vanillaColor
+              ? `${vanillaColor}66`
+              : bone.color
+            const strokeColor = vanillaColor ?? bone.textColor
+            const labelColor = vanillaColor ?? bone.textColor
+            return (
+              <g key={bone.label}>
+                <rect
+                  x={bone.x}
+                  y={bone.y}
+                  width={bone.w}
+                  height={bone.h}
+                  fill={fillColor}
+                  stroke={strokeColor}
+                  strokeWidth={1.5}
+                />
+                <text
+                  x={bone.x + bone.w / 2}
+                  y={bone.y + bone.h / 2}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fontSize={10}
+                  fontWeight={600}
+                  fontFamily="ui-monospace, monospace"
+                  fill={labelColor}
+                >
+                  {bone.label}
+                </text>
+              </g>
+            )
+          })}
+
+          {/* Vanilla color label overlay */}
+          {vanillaColor && (
+            <text
+              x={144}
+              y={14}
+              textAnchor="middle"
+              fontSize={9}
+              fill={vanillaColor}
+              fontFamily="ui-monospace, monospace"
+              fontWeight={600}
+            >
+              {t('editor.appearance.texture.vanillaColor')}: {vanillaColor}
+            </text>
+          )}
         </svg>
       </div>
 
@@ -598,64 +625,84 @@ const TextureSlotPanel = (): JSX.Element => {
           {t('editor.appearance.texture.slotsTitle')}
         </div>
         <div className="flex flex-col gap-2">
-          {TEXTURE_SLOTS.map((slot) => (
-            <div
-              key={slot.id}
-              className="flex items-center gap-3 border border-gray-200 rounded-md p-2"
-            >
-              {/* Thumbnail: uploaded texture or checkerboard */}
-              {slot.id === 'default' && project?.texture?.dataUrl ? (
-                <img
-                  src={project.texture.dataUrl}
-                  alt={slot.name}
-                  className="w-14 h-14 rounded flex-shrink-0 object-cover"
-                />
-              ) : (
-                <div
-                  className="w-14 h-14 rounded flex-shrink-0"
-                  style={CHECKERBOARD_STYLE}
-                />
-              )}
-              <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                <span className="text-xs font-mono font-semibold text-gray-700">
-                  {slot.name}
-                </span>
-                <span className="text-xs text-gray-400 truncate">
-                  {slot.id === 'default' && project?.texture?.fileName
-                    ? project.texture.fileName
-                    : slot.path}
-                </span>
-              </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                {slot.id === 'default' ? (
-                  <button
-                    type="button"
-                    onClick={handleTextureChangeClick}
-                    className="text-xs border border-gray-300 rounded px-2 py-1 hover:bg-gray-50 cursor-pointer bg-white text-gray-600"
-                  >
-                    {t('editor.appearance.texture.change')}
-                  </button>
+          {TEXTURE_SLOTS.map((slot) => {
+            const vanillaEntity = project?.selectedVanillaId
+              ? VANILLA_MOBS.find((m) => m.id === project.selectedVanillaId)
+              : null
+            const showVanillaColor =
+              slot.id === 'default' && vanillaEntity?.previewColor && !project?.texture?.dataUrl
+            return (
+              <div
+                key={slot.id}
+                className="flex items-center gap-3 border border-gray-200 rounded-md p-2"
+              >
+                {/* Thumbnail: uploaded texture, vanilla color patch, or checkerboard */}
+                {slot.id === 'default' && project?.texture?.dataUrl ? (
+                  <img
+                    src={project.texture.dataUrl}
+                    alt={slot.name}
+                    className="w-14 h-14 rounded flex-shrink-0 object-cover"
+                  />
+                ) : showVanillaColor ? (
+                  <div
+                    className="w-14 h-14 rounded flex-shrink-0 flex flex-col items-center justify-center"
+                    style={{ backgroundColor: vanillaEntity.previewColor }}
+                    title={`${t('editor.appearance.texture.vanillaColor')}: ${vanillaEntity.previewColor}`}
+                  />
                 ) : (
-                  <button
-                    type="button"
-                    className="text-xs border border-gray-300 rounded px-2 py-1 hover:bg-gray-50 cursor-pointer bg-white text-gray-600"
-                  >
-                    {t('editor.appearance.texture.change')}
-                  </button>
+                  <div
+                    className="w-14 h-14 rounded flex-shrink-0"
+                    style={CHECKERBOARD_STYLE}
+                  />
                 )}
-                {/* Delete button — detail mode only, wireframe #10 */}
-                {mode === 'advanced' && (
-                  <button
-                    type="button"
-                    aria-label={t('editor.appearance.texture.deleteSlot')}
-                    className="w-6 h-6 flex items-center justify-center text-xs text-gray-300 hover:text-red-400 cursor-pointer border-none bg-transparent rounded"
-                  >
-                    ✕
-                  </button>
-                )}
+                <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                  <span className="text-xs font-mono font-semibold text-gray-700">
+                    {slot.name}
+                  </span>
+                  <span className="text-xs text-gray-400 truncate">
+                    {slot.id === 'default' && project?.texture?.fileName
+                      ? project.texture.fileName
+                      : showVanillaColor
+                        ? (vanillaEntity?.defaultAppearance?.texturePath ?? slot.path)
+                        : slot.path}
+                  </span>
+                  {showVanillaColor && (
+                    <span className="text-xs text-blue-500">
+                      {t('editor.appearance.texture.vanillaColor')}: {vanillaEntity?.previewColor}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {slot.id === 'default' ? (
+                    <button
+                      type="button"
+                      onClick={handleTextureChangeClick}
+                      className="text-xs border border-gray-300 rounded px-2 py-1 hover:bg-gray-50 cursor-pointer bg-white text-gray-600"
+                    >
+                      {t('editor.appearance.texture.change')}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="text-xs border border-gray-300 rounded px-2 py-1 hover:bg-gray-50 cursor-pointer bg-white text-gray-600"
+                    >
+                      {t('editor.appearance.texture.change')}
+                    </button>
+                  )}
+                  {/* Delete button — detail mode only, wireframe #10 */}
+                  {mode === 'advanced' && (
+                    <button
+                      type="button"
+                      aria-label={t('editor.appearance.texture.deleteSlot')}
+                      className="w-6 h-6 flex items-center justify-center text-xs text-gray-300 hover:text-red-400 cursor-pointer border-none bg-transparent rounded"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* Add slot button — detail mode only, wireframe #10 */}

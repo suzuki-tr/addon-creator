@@ -191,7 +191,8 @@
         "variantsTitle": "テクスチャのバリアント",
         "variantAdvancedOnly": "テクスチャのバリアントはくわしいモードでみられます。右上の「くわしい」ボタンをおしてください。",
         "mappingTypeUV": "UV",
-        "mappingTypeTriplanar": "Triplanar"
+        "mappingTypeTriplanar": "Triplanar",
+        "vanillaColor": "バニラのいろ"
       },
       "material": {
         "simpleNotice": "マテリアルのせっていはくわしいモードでみられます。",

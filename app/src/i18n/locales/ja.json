@@ -213,7 +213,8 @@
         "variantSlot": "使用スロット",
         "uvReset": "↺ リセット",
         "mappingTypeUV": "UV",
-        "mappingTypeTriplanar": "Triplanar"
+        "mappingTypeTriplanar": "Triplanar",
+        "vanillaColor": "バニラカラー"
       },
       "material": {
         "simpleNotice": "マテリアル設定は詳細モードで確認できます。",

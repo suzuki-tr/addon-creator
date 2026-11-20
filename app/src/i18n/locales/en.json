@@ -213,7 +213,8 @@
         "variantSlot": "Slot",
         "uvReset": "↺ Reset",
         "mappingTypeUV": "UV",
-        "mappingTypeTriplanar": "Triplanar"
+        "mappingTypeTriplanar": "Triplanar",
+        "vanillaColor": "Vanilla color"
       },
       "material": {
         "simpleNotice": "Material settings are available in Advanced Mode.",
