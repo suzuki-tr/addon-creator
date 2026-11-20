@@ -25,6 +25,12 @@ void i18n
       default: ['ja', 'en'],
     },
     defaultNS: 'translation',
+    // lowerCaseLng: true is required to prevent i18next v25 from canonicalizing
+    // 'ja-kids' via Intl.getCanonicalLocales() to 'ja-Kids' (capital K).
+    // Without this, toResolveHierarchy('ja-kids') returns ['ja-Kids', 'ja', 'en'],
+    // 'ja-Kids' does not match the registered resource key 'ja-kids', so
+    // resolvedLanguage falls back to 'ja' and all t() calls return ja.json values.
+    lowerCaseLng: true,
     interpolation: {
       escapeValue: false, // React handles XSS escaping
     },
