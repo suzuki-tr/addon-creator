@@ -2,6 +2,9 @@ import type { JSX } from 'react'
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUiStore } from '@/stores/uiStore'
+import { useProjectStore, DEFAULT_STATUS } from '@/stores/projectStore'
+import { downloadMcaddon } from '@/lib/mcaddonGenerator'
+import { saveProjectToDirectory } from '@/lib/projectFile'
 import { JsonPreviewPanel } from '@/components/editor/JsonPreviewPanel'
 import { ResizeHandle } from '@/components/editor/ResizeHandle'
 
@@ -253,6 +256,7 @@ const BlockComponentsTab = ({
 export const BlockEditor = (): JSX.Element => {
   const { t } = useTranslation()
   const { mode } = useUiStore()
+  const { project, setProject } = useProjectStore()
   const [activeTab, setActiveTab] = useState<BlockTab>('basic')
   const [jsonPanelWidth, setJsonPanelWidth] = useState<number>(() => {
     const s = localStorage.getItem('json-panel-width')
@@ -276,6 +280,44 @@ export const BlockEditor = (): JSX.Element => {
   useEffect(() => {
     localStorage.setItem('json-panel-width', String(jsonPanelWidth))
   }, [jsonPanelWidth])
+
+  const handleSave = (): void => {
+    const manifestUuid = project?.manifestUuid ?? crypto.randomUUID()
+    const moduleUuid = project?.moduleUuid ?? crypto.randomUUID()
+    const rpManifestUuid = project?.rpManifestUuid ?? crypto.randomUUID()
+    const rpModuleUuid = project?.rpModuleUuid ?? crypto.randomUUID()
+    const exportData = {
+      entityId: project?.entityId ?? 'custom_block',
+      entityDisplayName: project?.entityDisplayName ?? 'Custom Block',
+      contentType: 'block' as const,
+      baseType: project?.baseType ?? 'scratch',
+      selectedVanillaId: project?.selectedVanillaId ?? null,
+      selectedTraits: project?.selectedTraits ?? [],
+      status: project?.status ?? DEFAULT_STATUS,
+      manifestUuid,
+      moduleUuid,
+      rpManifestUuid,
+      rpModuleUuid,
+    }
+    if (!project?.manifestUuid) setProject(exportData)
+    saveProjectToDirectory(exportData).catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : String(err)
+      window.alert(`${t('error.storage.saveFailed')}: ${message}`)
+    })
+  }
+
+  const handleExport = (): void => {
+    const exportData = {
+      entityId: project?.entityId ?? 'custom_block',
+      entityDisplayName: project?.entityDisplayName ?? 'Custom Block',
+      contentType: 'block' as const,
+      baseType: project?.baseType ?? 'scratch',
+      selectedVanillaId: project?.selectedVanillaId ?? null,
+      selectedTraits: project?.selectedTraits ?? [],
+      status: project?.status ?? DEFAULT_STATUS,
+    }
+    void downloadMcaddon(exportData)
+  }
 
   const TABS: { id: BlockTab; label: string }[] = [
     { id: 'basic', label: t('editor.block.tabs.basic') },
@@ -401,6 +443,24 @@ export const BlockEditor = (): JSX.Element => {
               onSecondsToDestroyChange={setSecondsToDestroy}
             />
           )}
+        </div>
+
+        {/* Action bar */}
+        <div className="bg-white border-t border-[#E5E7EB] px-6 py-3 flex justify-end items-center gap-3 flex-shrink-0">
+          <button
+            type="button"
+            onClick={handleSave}
+            className="border border-[#D1D5DB] rounded-md px-5 py-2 text-sm text-gray-700 bg-white cursor-pointer hover:bg-gray-50"
+          >
+            💾 {t('common.button.save')}
+          </button>
+          <button
+            type="button"
+            onClick={handleExport}
+            className="bg-[#5D9C3B] rounded-md px-5 py-2 text-sm font-semibold text-white border-none cursor-pointer hover:bg-[#4f8832]"
+          >
+            ⬇️ {t('common.button.export')}
+          </button>
         </div>
       </main>
 
