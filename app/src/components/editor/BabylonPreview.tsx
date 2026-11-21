@@ -118,6 +118,10 @@ function pixelRegionToFaceUv(
  *
  * Babylon.js CreateBox face order: back(north)=0, front(south)=1,
  *   right(east)=2, left(west)=3, top=4, bottom=5.
+ *
+ * Babylon.js renders north (face[0]) and west (face[3]) with their U axis
+ * reversed relative to how they appear in the Bedrock unroll, so those two
+ * faces require a U-mirror (swap bottomLeftU ↔ topRightU).
  */
 function computeBoxFaceUv(
   uv: [number, number],
@@ -128,14 +132,19 @@ function computeBoxFaceUv(
   const [sx, sy, sz] = size
   const r = (px: number, py: number, pw: number, ph: number): Vector4 =>
     pixelRegionToFaceUv(px, py, pw, ph, tw, th)
+  // Mirror U for faces that Babylon.js renders with a reversed U direction.
+  const rMirrorU = (px: number, py: number, pw: number, ph: number): Vector4 => {
+    const v4 = r(px, py, pw, ph)
+    return new Vector4(v4.z, v4.y, v4.x, v4.w)  // swap bottomLeftU ↔ topRightU
+  }
 
   return [
-    r(u + sz + sx + sz,   v + sz, sx, sy), // [0] back   = north
-    r(u + sz,             v + sz, sx, sy), // [1] front  = south
-    r(u,                  v + sz, sz, sy), // [2] right  = east
-    r(u + sz + sx,        v + sz, sz, sy), // [3] left   = west
-    r(u + sz,             v,      sx, sz), // [4] top
-    r(u + sz + sx,        v,      sx, sz), // [5] bottom
+    rMirrorU(u + sz + sx + sz, v + sz, sx, sy), // [0] back   = north (mirror U)
+    r(u + sz,                  v + sz, sx, sy), // [1] front  = south
+    r(u,                       v + sz, sz, sy), // [2] right  = east
+    rMirrorU(u + sz + sx,      v + sz, sz, sy), // [3] left   = west  (mirror U)
+    r(u + sz,                  v,      sx, sz), // [4] top
+    r(u + sz + sx,             v,      sx, sz), // [5] bottom
   ]
 }
 
@@ -143,6 +152,9 @@ function computeBoxFaceUv(
  * Compute the 6-element faceUV array for a Bedrock per-face UV cube.
  * Babylon face order: back(north)=0, front(south)=1, right(east)=2,
  *   left(west)=3, top=4, bottom=5.
+ *
+ * North (face[0]) and west (face[3]) need a U-mirror for the same reason as
+ * the box-UV case: Babylon.js renders those faces with a reversed U direction.
  */
 function computePerFaceFaceUv(
   perFace: BedrockPerFaceUv,
@@ -151,14 +163,18 @@ function computePerFaceFaceUv(
   const ZERO: BedrockFaceUvEntry = { uv: [0, 0], uv_size: [0, 0] }
   const toV4 = (f: BedrockFaceUvEntry): Vector4 =>
     pixelRegionToFaceUv(f.uv[0], f.uv[1], f.uv_size[0], f.uv_size[1], tw, th)
+  const toV4MirrorU = (f: BedrockFaceUvEntry): Vector4 => {
+    const v4 = toV4(f)
+    return new Vector4(v4.z, v4.y, v4.x, v4.w)  // swap bottomLeftU ↔ topRightU
+  }
 
   return [
-    toV4(perFace.north ?? ZERO), // [0] back   = north
-    toV4(perFace.south ?? ZERO), // [1] front  = south
-    toV4(perFace.east  ?? ZERO), // [2] right  = east
-    toV4(perFace.west  ?? ZERO), // [3] left   = west
-    toV4(perFace.up    ?? ZERO), // [4] top
-    toV4(perFace.down  ?? ZERO), // [5] bottom
+    toV4MirrorU(perFace.north ?? ZERO), // [0] back   = north (mirror U)
+    toV4(perFace.south ?? ZERO),         // [1] front  = south
+    toV4(perFace.east  ?? ZERO),         // [2] right  = east
+    toV4MirrorU(perFace.west  ?? ZERO), // [3] left   = west  (mirror U)
+    toV4(perFace.up    ?? ZERO),         // [4] top
+    toV4(perFace.down  ?? ZERO),         // [5] bottom
   ]
 }
 
