@@ -137,6 +137,11 @@ Phase 4 — 高度エディタ（待機中）
 - テクスチャアップロード時にサムネイルが表示されない問題を修正。`project===null` 時の no-op をローカル state で回避。234 テストパス。
 - タグ: `v1.0.9`
 
+## v1.0.10 リリース (fix/uv-mapping → master)
+
+- Bedrock Box UV 正規パース修正。3Dプレビューの各面 UV、UVマッピングのグリッドサイズが実際の texture_width/height から正しく取得されるようになった。234テストパス。
+- タグ: `v1.0.10`
+
 ## v1.0.2 リリース (fix/issues-v1.0.1 → master)
 
 - issues_v1.0.1.md に記載の7件をすべて修正・検証済み
