@@ -109,14 +109,14 @@ function pixelRegionToFaceUv(
  * Compute the 6-element faceUV array for a Bedrock Box UV cube.
  *
  * Bedrock Box UV unroll pattern (sx=size[0], sy=size[1], sz=size[2]):
- *   south:  (u+sz,         v+sz),  size (sx, sy)
- *   north:  (u+sz+sx,      v+sz),  size (sx, sy)
  *   east:   (u,            v+sz),  size (sz, sy)
- *   west:   (u+sz+sx+sz,   v+sz),  size (sz, sy)
+ *   south:  (u+sz,         v+sz),  size (sx, sy)
+ *   west:   (u+sz+sx,      v+sz),  size (sz, sy)
+ *   north:  (u+sz+sx+sz,   v+sz),  size (sx, sy)
  *   top:    (u+sz,         v),     size (sx, sz)
  *   bottom: (u+sz+sx,      v),     size (sx, sz)
  *
- * Babylon.js CreateBox face order: front(south)=0, back(north)=1,
+ * Babylon.js CreateBox face order: back(north)=0, front(south)=1,
  *   right(east)=2, left(west)=3, top=4, bottom=5.
  */
 function computeBoxFaceUv(
@@ -130,10 +130,10 @@ function computeBoxFaceUv(
     pixelRegionToFaceUv(px, py, pw, ph, tw, th)
 
   return [
-    r(u + sz,             v + sz, sx, sy), // [0] front  = south
-    r(u + sz + sx,        v + sz, sx, sy), // [1] back   = north
+    r(u + sz + sx + sz,   v + sz, sx, sy), // [0] back   = north
+    r(u + sz,             v + sz, sx, sy), // [1] front  = south
     r(u,                  v + sz, sz, sy), // [2] right  = east
-    r(u + sz + sx + sz,   v + sz, sz, sy), // [3] left   = west
+    r(u + sz + sx,        v + sz, sz, sy), // [3] left   = west
     r(u + sz,             v,      sx, sz), // [4] top
     r(u + sz + sx,        v,      sx, sz), // [5] bottom
   ]
@@ -141,7 +141,7 @@ function computeBoxFaceUv(
 
 /**
  * Compute the 6-element faceUV array for a Bedrock per-face UV cube.
- * Babylon face order: front(south)=0, back(north)=1, right(east)=2,
+ * Babylon face order: back(north)=0, front(south)=1, right(east)=2,
  *   left(west)=3, top=4, bottom=5.
  */
 function computePerFaceFaceUv(
@@ -153,8 +153,8 @@ function computePerFaceFaceUv(
     pixelRegionToFaceUv(f.uv[0], f.uv[1], f.uv_size[0], f.uv_size[1], tw, th)
 
   return [
-    toV4(perFace.south ?? ZERO), // [0] front  = south
-    toV4(perFace.north ?? ZERO), // [1] back   = north
+    toV4(perFace.north ?? ZERO), // [0] back   = north
+    toV4(perFace.south ?? ZERO), // [1] front  = south
     toV4(perFace.east  ?? ZERO), // [2] right  = east
     toV4(perFace.west  ?? ZERO), // [3] left   = west
     toV4(perFace.up    ?? ZERO), // [4] top
