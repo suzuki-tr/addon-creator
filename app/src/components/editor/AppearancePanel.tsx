@@ -139,7 +139,12 @@ const UV_BONES: UvBone[] = [
 // Left pane — Babylon.js 3D preview with camera controls (wireframe #09)
 // Shown for geometry and material sub-tabs.
 // ---------------------------------------------------------------------------
-const PreviewPane = (): JSX.Element => {
+interface PreviewPaneProps {
+  /** Effective texture data URL (parent-managed). Used as textureUrl for BabylonPreview. */
+  textureDataUrl?: string | undefined
+}
+
+const PreviewPane = ({ textureDataUrl }: PreviewPaneProps): JSX.Element => {
   const { t } = useTranslation()
   const { project } = useProjectStore()
   const vanillaEntity = project?.selectedVanillaId
@@ -152,7 +157,7 @@ const PreviewPane = (): JSX.Element => {
       <div className="flex-1 bg-[#C9CDD4] overflow-hidden relative">
         <BabylonPreview
           geometryJson={project?.geometry?.content}
-          textureUrl={project?.texture?.dataUrl}
+          textureUrl={textureDataUrl}
           {...(vanillaShape !== undefined && { vanillaShape })}
           {...(vanillaColor !== undefined && { vanillaColor })}
         />
@@ -206,9 +211,11 @@ interface UvPaneProps {
   onZoomIn: () => void
   onZoomOut: () => void
   onReset: () => void
+  /** Effective texture data URL (parent-managed). Shown as UV map background image. */
+  textureDataUrl?: string | undefined
 }
 
-const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset }: UvPaneProps): JSX.Element => {
+const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset, textureDataUrl }: UvPaneProps): JSX.Element => {
   const { t } = useTranslation()
   const { project } = useProjectStore()
   const svgSize = Math.round(288 * uvZoom)
@@ -259,13 +266,13 @@ const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset }: UvPaneProps): JSX.Elem
           <rect width="288" height="288" fill="url(#uv-checker)" />
 
           {/* Uploaded texture as background image (below grid and bones) */}
-          {project?.texture?.dataUrl && (
+          {textureDataUrl && (
             <image
               x={0}
               y={0}
               width={288}
               height={288}
-              href={project.texture.dataUrl}
+              href={textureDataUrl}
               preserveAspectRatio="none"
               style={{ opacity: 0.6 }}
             />
@@ -544,7 +551,14 @@ const GeometryPanel = (): JSX.Element => {
 // Texture slot + variant panel (right pane content when texture tab is active)
 // UV map is now in UvPane (left pane).
 // ---------------------------------------------------------------------------
-const TextureSlotPanel = (): JSX.Element => {
+interface TextureSlotPanelProps {
+  /** Effective texture data URL (parent-managed). Shown as slot thumbnail. */
+  textureDataUrl?: string | undefined
+  /** Called after FileReader successfully loads a new texture file. */
+  onTextureLoaded?: (dataUrl: string, fileName: string) => void
+}
+
+const TextureSlotPanel = ({ textureDataUrl, onTextureLoaded }: TextureSlotPanelProps): JSX.Element => {
   const { t } = useTranslation()
   const { mode } = useUiStore()
   const { project, updateTexture } = useProjectStore()
@@ -562,6 +576,9 @@ const TextureSlotPanel = (): JSX.Element => {
       const dataUrl = evt.target?.result
       if (typeof dataUrl === 'string') {
         updateTexture({ fileName: file.name, dataUrl })
+        // Notify parent so it can update local state: ensures thumbnail / 3D preview
+        // update immediately even when project is null (e.g. after page refresh)
+        onTextureLoaded?.(dataUrl, file.name)
       }
     }
     reader.readAsDataURL(file)
@@ -630,16 +647,16 @@ const TextureSlotPanel = (): JSX.Element => {
               ? VANILLA_MOBS.find((m) => m.id === project.selectedVanillaId)
               : null
             const showVanillaColor =
-              slot.id === 'default' && vanillaEntity?.previewColor && !project?.texture?.dataUrl
+              slot.id === 'default' && vanillaEntity?.previewColor && !textureDataUrl
             return (
               <div
                 key={slot.id}
                 className="flex items-center gap-3 border border-gray-200 rounded-md p-2"
               >
                 {/* Thumbnail: uploaded texture, vanilla color patch, or checkerboard */}
-                {slot.id === 'default' && project?.texture?.dataUrl ? (
+                {slot.id === 'default' && textureDataUrl ? (
                   <img
-                    src={project.texture.dataUrl}
+                    src={textureDataUrl}
                     alt={slot.name}
                     className="w-14 h-14 rounded flex-shrink-0 object-cover"
                   />
@@ -922,8 +939,22 @@ const MaterialPanel = (): JSX.Element => {
 export const AppearancePanel = (): JSX.Element => {
   const { t } = useTranslation()
   const { mode } = useUiStore()
+  const { project } = useProjectStore()
   const [activeSubTab, setActiveSubTab] = useState<AppearanceSubTab>('geometry')
   const [uvZoom, setUvZoom] = useState<number>(1.0)
+  // Local texture state: updated immediately on upload so thumbnail / UV map / 3D preview
+  // all reflect the new image even when project is null (e.g. after page refresh or direct URL).
+  const [localTextureDataUrl, setLocalTextureDataUrl] = useState<string | undefined>(
+    project?.texture?.dataUrl,
+  )
+
+  const handleTextureLoaded = (dataUrl: string): void => {
+    setLocalTextureDataUrl(dataUrl)
+  }
+
+  // Effective texture URL passed to all child panes:
+  // project store takes priority (normal flow); local state is the fallback.
+  const effectiveTextureDataUrl = project?.texture?.dataUrl ?? localTextureDataUrl
 
   // Switch away from material tab if mode drops to simple
   useEffect(() => {
@@ -945,9 +976,10 @@ export const AppearancePanel = (): JSX.Element => {
           onZoomIn={handleZoomIn}
           onZoomOut={handleZoomOut}
           onReset={handleZoomReset}
+          textureDataUrl={effectiveTextureDataUrl}
         />
       ) : (
-        <PreviewPane />
+        <PreviewPane textureDataUrl={effectiveTextureDataUrl} />
       )}
 
       {/* ── Right pane: sub-tab bar + content ── */}
@@ -1008,7 +1040,12 @@ export const AppearancePanel = (): JSX.Element => {
           className="flex-1 overflow-hidden"
         >
           {activeSubTab === 'geometry' && <GeometryPanel />}
-          {activeSubTab === 'texture' && <TextureSlotPanel />}
+          {activeSubTab === 'texture' && (
+            <TextureSlotPanel
+              textureDataUrl={effectiveTextureDataUrl}
+              onTextureLoaded={handleTextureLoaded}
+            />
+          )}
           {activeSubTab === 'material' && <MaterialPanel />}
         </div>
       </div>
