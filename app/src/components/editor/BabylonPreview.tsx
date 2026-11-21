@@ -87,7 +87,7 @@ interface BedrockGeoFile {
  *
  * Texture V-axis: V_babylon = 1 − py / th  (Babylon.js invertY=true default).
  * Triangle winding per face (base = faceIndex * 4):
- *   [base+0, base+1, base+2,  base+1, base+3, base+2]  (TL,TR,BL | TR,BR,BL)
+ *   [base+0, base+1, base+3,  base+0, base+3, base+2]  (TL,TR,BR | TL,BR,BL)
  */
 function buildBoxMesh(
   name: string,
@@ -220,8 +220,8 @@ function buildBoxMesh(
     positions.push(...tl, ...tr, ...bl, ...br)
     normals.push(...normal, ...normal, ...normal, ...normal)
     uvs.push(...uvCorners.tl, ...uvCorners.tr, ...uvCorners.bl, ...uvCorners.br)
-    // Two triangles: [TL,TR,BL] and [TR,BR,BL]
-    indices.push(base, base + 1, base + 2, base + 1, base + 3, base + 2)
+    // Two triangles: [TL,TR,BR] and [TL,BR,BL] — CCW winding (front-face outward)
+    indices.push(base, base + 1, base + 3, base, base + 3, base + 2)
   }
 
   // SOUTH (+Z): normal=(0,0,+1)
