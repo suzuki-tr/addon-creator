@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useUiStore } from '@/stores/uiStore'
 import { useProjectStore } from '@/stores/projectStore'
@@ -85,55 +85,126 @@ const TEXTURE_VARIANTS: TextureVariant[] = [
   { id: 'variant_2', description: 'ダメージを受けた見た目', slot: 'damage' },
 ]
 
-/** UV bone region definition */
-interface UvBone {
+
+// ---------------------------------------------------------------------------
+// Bedrock geometry UV parser (used to drive the UV map display)
+// ---------------------------------------------------------------------------
+
+interface _BedrockFaceEntry {
+  uv: [number, number]
+  uv_size: [number, number]
+}
+
+interface _BedrockPerFaceUv {
+  north?: _BedrockFaceEntry
+  south?: _BedrockFaceEntry
+  east?: _BedrockFaceEntry
+  west?: _BedrockFaceEntry
+  up?: _BedrockFaceEntry
+  down?: _BedrockFaceEntry
+}
+
+interface _BedrockCube {
+  size: [number, number, number]
+  uv?: [number, number] | _BedrockPerFaceUv
+}
+
+interface _BedrockGeoFile {
+  'minecraft:geometry'?: Array<{
+    description?: { texture_width?: number; texture_height?: number }
+    bones?: Array<{ name: string; cubes?: _BedrockCube[] }>
+  }>
+  geometry?: Array<{
+    description?: { texture_width?: number; texture_height?: number }
+    bones?: Array<{ name: string; cubes?: _BedrockCube[] }>
+  }>
+}
+
+interface ParsedUvBone {
   label: string
-  x: number
-  y: number
-  w: number
-  h: number
+  x: number      // left edge in texture-pixel space
+  y: number      // top edge in texture-pixel space
+  w: number      // width in texture pixels
+  h: number      // height in texture pixels
   color: string
   textColor: string
 }
 
-const UV_BONES: UvBone[] = [
-  {
-    label: 'body',
-    x: 16,
-    y: 16,
-    w: 64,
-    h: 48,
-    color: '#4CAF5040',
-    textColor: '#2E7D32',
-  },
-  {
-    label: 'head',
-    x: 0,
-    y: 0,
-    w: 64,
-    h: 32,
-    color: '#2196F340',
-    textColor: '#1565C0',
-  },
-  {
-    label: 'arm_left',
-    x: 32,
-    y: 112,
-    w: 32,
-    h: 48,
-    color: '#FF980040',
-    textColor: '#E65100',
-  },
-  {
-    label: 'arm_right',
-    x: 40,
-    y: 160,
-    w: 32,
-    h: 48,
-    color: '#FFEB3B40',
-    textColor: '#F57F17',
-  },
+interface ParsedGeoUvData {
+  textureWidth: number
+  textureHeight: number
+  boneRects: ParsedUvBone[]
+}
+
+const BONE_PALETTE: Array<{ color: string; textColor: string }> = [
+  { color: '#2196F340', textColor: '#1565C0' },
+  { color: '#4CAF5040', textColor: '#2E7D32' },
+  { color: '#FF980040', textColor: '#E65100' },
+  { color: '#FFEB3B40', textColor: '#F57F17' },
+  { color: '#E91E6340', textColor: '#880E4F' },
+  { color: '#9C27B040', textColor: '#4A148C' },
+  { color: '#00BCD440', textColor: '#006064' },
+  { color: '#8BC34A40', textColor: '#33691E' },
 ]
+
+function parseGeoUvData(geoJson: string): ParsedGeoUvData {
+  const DEFAULT: ParsedGeoUvData = { textureWidth: 64, textureHeight: 64, boneRects: [] }
+  try {
+    const geoFile = JSON.parse(geoJson) as _BedrockGeoFile
+    const geo = (geoFile['minecraft:geometry'] ?? geoFile['geometry'] ?? [])[0]
+    if (!geo) return DEFAULT
+
+    const textureWidth = geo.description?.texture_width ?? 64
+    const textureHeight = geo.description?.texture_height ?? 64
+    const boneRects: ParsedUvBone[] = []
+    let colorIdx = 0
+
+    for (const bone of geo.bones ?? []) {
+      if (!Array.isArray(bone.cubes)) continue
+      for (const cube of bone.cubes) {
+        if (!cube.uv) continue
+        const [sx, sy, sz] = cube.size
+        let x: number, y: number, w: number, h: number
+
+        if (Array.isArray(cube.uv)) {
+          // Box UV: full unrolled bounding box
+          // Extent: X = [u, u + 2*sz + 2*sx], Y = [v, v + sz + sy]
+          const [u, v] = cube.uv as [number, number]
+          x = u
+          y = v
+          w = 2 * sz + 2 * sx
+          h = sz + sy
+        } else {
+          // Per-face UV: union of all face corner bounds
+          const perFace = cube.uv as _BedrockPerFaceUv
+          const faces = [
+            perFace.north, perFace.south, perFace.east,
+            perFace.west, perFace.up, perFace.down,
+          ].filter((f): f is _BedrockFaceEntry => f !== undefined)
+          if (faces.length === 0) continue
+          let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+          for (const face of faces) {
+            const [pu, pv] = face.uv
+            const [pw, ph] = face.uv_size
+            minX = Math.min(minX, pu, pu + pw)
+            minY = Math.min(minY, pv, pv + ph)
+            maxX = Math.max(maxX, pu, pu + pw)
+            maxY = Math.max(maxY, pv, pv + ph)
+          }
+          x = minX; y = minY; w = maxX - minX; h = maxY - minY
+        }
+
+        const palette = BONE_PALETTE[colorIdx % BONE_PALETTE.length]
+        colorIdx++
+        boneRects.push({ label: bone.name, x, y, w, h, color: palette.color, textColor: palette.textColor })
+      }
+    }
+
+    return { textureWidth, textureHeight, boneRects }
+  } catch {
+    return DEFAULT
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Left pane — Babylon.js 3D preview with camera controls (wireframe #09)
@@ -225,95 +296,114 @@ const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset, textureDataUrl }: UvPane
     : null
   const vanillaColor = vanillaEntity?.previewColor
 
+  // Parse geometry to get actual texture dimensions and bone UV rectangles
+  const geoUvData = useMemo<ParsedGeoUvData>(() => {
+    if (!project?.geometry?.content) return { textureWidth: 64, textureHeight: 64, boneRects: [] }
+    return parseGeoUvData(project.geometry.content)
+  }, [project?.geometry?.content])
+
+  const { textureWidth, textureHeight, boneRects } = geoUvData
+
+  // Font sizes in viewBox (texture-pixel) coordinate space
+  const axisFontSize = textureWidth / 32    // ~2 for 64px → ~9 display px at 288 SVG size
+  const boneFontSize = textureWidth / 16    // ~4 for 64px → ~18 display px
+
+  // Grid line positions at 25% intervals
+  const gridX = [0, textureWidth / 4, textureWidth / 2, (textureWidth * 3) / 4, textureWidth]
+  const gridY = [0, textureHeight / 4, textureHeight / 2, (textureHeight * 3) / 4, textureHeight]
+
+  // Checker pattern cell size: 1/16 of texture width/height
+  const checkerW = textureWidth / 8
+  const checkerH = textureHeight / 8
+
   return (
     <div className="w-1/2 min-w-[260px] max-w-[480px] border-r border-[#E5E7EB] flex flex-col flex-shrink-0">
-      {/* Header */}
+      {/* Header — shows actual texture dimensions from geometry */}
       <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border-b border-[#E5E7EB] flex-shrink-0">
         <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
           {t('editor.appearance.texture.uvTitle')}
         </span>
         <span className="text-xs text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
-          128 × 128
+          {textureWidth} × {textureHeight}
         </span>
       </div>
 
-      {/* UV grid canvas */}
+      {/* UV grid canvas — viewBox uses texture-pixel coordinate space */}
       <div className="flex-1 overflow-auto bg-[#C9CDD4] flex items-start justify-center p-5">
         <svg
           width={svgSize}
           height={svgSize}
-          viewBox="0 0 288 288"
+          viewBox={`0 0 ${textureWidth} ${textureHeight}`}
           style={{ display: 'block' }}
-          aria-label="UV マッピンググリッド（128×128 UV 空間）"
+          aria-label={`UV マッピンググリッド（${textureWidth}×${textureHeight} UV 空間）`}
         >
           <defs>
+            {/* Checker pattern sized to 1/8 of the texture dimensions */}
             <pattern
               id="uv-checker"
               x="0"
               y="0"
-              width="16"
-              height="16"
+              width={checkerW}
+              height={checkerH}
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="8" height="8" fill="#e0e0e0" />
-              <rect x="8" y="8" width="8" height="8" fill="#e0e0e0" />
-              <rect x="8" y="0" width="8" height="8" fill="#f8f8f8" />
-              <rect x="0" y="8" width="8" height="8" fill="#f8f8f8" />
+              <rect x="0" y="0" width={checkerW / 2} height={checkerH / 2} fill="#e0e0e0" />
+              <rect x={checkerW / 2} y={checkerH / 2} width={checkerW / 2} height={checkerH / 2} fill="#e0e0e0" />
+              <rect x={checkerW / 2} y="0" width={checkerW / 2} height={checkerH / 2} fill="#f8f8f8" />
+              <rect x="0" y={checkerH / 2} width={checkerW / 2} height={checkerH / 2} fill="#f8f8f8" />
             </pattern>
           </defs>
 
           {/* Background */}
-          <rect width="288" height="288" fill="url(#uv-checker)" />
+          <rect width={textureWidth} height={textureHeight} fill="url(#uv-checker)" />
 
           {/* Uploaded texture as background image (below grid and bones) */}
           {textureDataUrl && (
             <image
               x={0}
               y={0}
-              width={288}
-              height={288}
+              width={textureWidth}
+              height={textureHeight}
               href={textureDataUrl}
               preserveAspectRatio="none"
               style={{ opacity: 0.6 }}
             />
           )}
 
-          {/* Grid lines */}
-          {[0, 72, 144, 216, 288].map((v) => (
-            <g key={v}>
-              <line x1={v} y1={0} x2={v} y2={288} stroke="#bbb" strokeWidth={0.5} />
-              <line x1={0} y1={v} x2={288} y2={v} stroke="#bbb" strokeWidth={0.5} />
-            </g>
+          {/* Grid lines at 25% intervals */}
+          {gridX.map((gx) => (
+            <line key={`gx-${gx}`} x1={gx} y1={0} x2={gx} y2={textureHeight} stroke="#bbb" strokeWidth={textureWidth / 288} />
+          ))}
+          {gridY.map((gy) => (
+            <line key={`gy-${gy}`} x1={0} y1={gy} x2={textureWidth} y2={gy} stroke="#bbb" strokeWidth={textureHeight / 288} />
           ))}
 
           {/* Axis labels */}
           <text
-            x={144}
-            y={280}
+            x={textureWidth / 2}
+            y={textureHeight - axisFontSize * 0.5}
             textAnchor="middle"
-            fontSize={9}
+            fontSize={axisFontSize}
             fill="#888"
             fontFamily="ui-monospace, monospace"
           >
             U →
           </text>
           <text
-            x={8}
-            y={144}
+            x={axisFontSize * 1.5}
+            y={textureHeight / 2}
             textAnchor="middle"
-            fontSize={9}
+            fontSize={axisFontSize}
             fill="#888"
             fontFamily="ui-monospace, monospace"
-            transform="rotate(-90, 8, 144)"
+            transform={`rotate(-90, ${axisFontSize * 1.5}, ${textureHeight / 2})`}
           >
             V →
           </text>
 
-          {/* UV bone regions — tinted with vanilla previewColor when applicable */}
-          {UV_BONES.map((bone) => {
-            const fillColor = vanillaColor
-              ? `${vanillaColor}66`
-              : bone.color
+          {/* UV bone regions from geometry data */}
+          {boneRects.map((bone) => {
+            const fillColor = vanillaColor ? `${vanillaColor}66` : bone.color
             const strokeColor = vanillaColor ?? bone.textColor
             const labelColor = vanillaColor ?? bone.textColor
             return (
@@ -325,14 +415,14 @@ const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset, textureDataUrl }: UvPane
                   height={bone.h}
                   fill={fillColor}
                   stroke={strokeColor}
-                  strokeWidth={1.5}
+                  strokeWidth={textureWidth / 288}
                 />
                 <text
                   x={bone.x + bone.w / 2}
                   y={bone.y + bone.h / 2}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  fontSize={10}
+                  fontSize={boneFontSize}
                   fontWeight={600}
                   fontFamily="ui-monospace, monospace"
                   fill={labelColor}
@@ -346,10 +436,10 @@ const UvPane = ({ uvZoom, onZoomIn, onZoomOut, onReset, textureDataUrl }: UvPane
           {/* Vanilla color label overlay */}
           {vanillaColor && (
             <text
-              x={144}
-              y={14}
+              x={textureWidth / 2}
+              y={axisFontSize * 2}
               textAnchor="middle"
-              fontSize={9}
+              fontSize={axisFontSize}
               fill={vanillaColor}
               fontFamily="ui-monospace, monospace"
               fontWeight={600}
