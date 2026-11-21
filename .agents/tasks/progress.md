@@ -132,6 +132,11 @@ Phase 4 — 高度エディタ（待機中）
 - BlockEditor/ItemEditor に保存・Export ボタン追加、バニラ外観のテクスチャスロット・UV マップに previewColor 表示。232 テストパス。
 - タグ: `v1.0.8`
 
+## v1.0.9 リリース (fix/texture-preview → master)
+
+- テクスチャアップロード時にサムネイルが表示されない問題を修正。`project===null` 時の no-op をローカル state で回避。234 テストパス。
+- タグ: `v1.0.9`
+
 ## v1.0.2 リリース (fix/issues-v1.0.1 → master)
 
 - issues_v1.0.1.md に記載の7件をすべて修正・検証済み
