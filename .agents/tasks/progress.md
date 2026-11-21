@@ -170,6 +170,11 @@ Phase 4 — 高度エディタ（待機中）
 - Bedrock Box UV を VertexData で全面再実装。MeshBuilder.CreateBox faceUV および north/west ミラーハックを廃止。234 テストパス。
 - タグ: `v1.0.13`
 
+## v1.0.14 リリース (fix/uv-winding-order → master)
+
+- VertexData の CW→CCW ワインディング順序修正。ジオメトリ崩壊が解消。234テストパス。
+- タグ: `v1.0.14`
+
 ## 次にやること（Phase 4）
 
 ### 優先
