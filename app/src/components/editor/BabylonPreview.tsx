@@ -7,12 +7,13 @@ import {
   DirectionalLight,
   Engine,
   HemisphericLight,
+  Mesh,
   MeshBuilder,
   Scene,
   StandardMaterial,
   Texture,
   Vector3,
-  Vector4,
+  VertexData,
 } from '@babylonjs/core'
 
 // ---------------------------------------------------------------------------
@@ -61,121 +62,196 @@ interface BedrockGeoFile {
 }
 
 // ---------------------------------------------------------------------------
-// UV helpers
+// Box mesh builder — explicit VertexData UV assignment per face
 // ---------------------------------------------------------------------------
 
 /**
- * Convert a pixel-space Bedrock UV region to a Babylon.js faceUV Vector4.
+ * Build a Babylon.js Mesh for a single Bedrock cube using VertexData.
  *
- * Babylon.js Texture loads images with invertY=true by default, which means
- * V=0 corresponds to the bottom of the original PNG and V=1 to the top.
- * Bedrock UV coordinates use a top-left origin (py=0 is the top of the PNG,
- * py=th is the bottom), so the conversion is: V_babylon = 1 − py / th.
+ * Each face is constructed with 4 vertices and 2 triangles, with UV
+ * coordinates assigned directly per vertex from the Minecraft UV layout.
+ * This eliminates the implicit UV-direction assumptions of MeshBuilder.CreateBox
+ * faceUV, so all six faces (north/south/east/west/top/bottom) render correctly
+ * without any mirroring workarounds.
  *
- * faceUV Vector4(bottomLeftU, bottomLeftV, topRightU, topRightV):
- *   bottomLeft = minimum-V corner = Bedrock bottom of region (py + ph)
- *   topRight   = maximum-V corner = Bedrock top of region (py)
+ * Origin and size are in Bedrock pixel units (16 units = 1 Babylon world unit).
+ * Vertex positions are absolute world-space coordinates; mesh.position is not set.
  *
- * Negative pw/ph (per-face mirror): handled by swapping min/max and setting a flip flag.
+ * Minecraft Box UV unroll (u,v = pixel offset, sx/sy/sz = cube size):
+ *   east:   (u,              v+sz) size (sz, sy)
+ *   south:  (u+sz,           v+sz) size (sx, sy)
+ *   west:   (u+sz+sx,        v+sz) size (sz, sy)
+ *   north:  (u+sz+sx+sz,     v+sz) size (sx, sy)
+ *   top:    (u+sz,           v)    size (sx, sz)
+ *   bottom: (u+sz+sx,        v)    size (sx, sz)
+ *
+ * Texture V-axis: V_babylon = 1 − py / th  (Babylon.js invertY=true default).
+ * Triangle winding per face (base = faceIndex * 4):
+ *   [base+0, base+1, base+2,  base+1, base+3, base+2]  (TL,TR,BL | TR,BR,BL)
  */
-function pixelRegionToFaceUv(
-  pxRaw: number, pyRaw: number, pwRaw: number, phRaw: number,
-  tw: number, th: number,
-): Vector4 {
-  const flipU = pwRaw < 0
-  const flipV = phRaw < 0
-
-  const minPx = flipU ? pxRaw + pwRaw : pxRaw
-  const maxPx = flipU ? pxRaw : pxRaw + pwRaw
-  const minPy = flipV ? pyRaw + phRaw : pyRaw
-  const maxPy = flipV ? pyRaw : pyRaw + phRaw
-
-  // Babylon V=0 at bottom of PNG → larger Bedrock py = smaller Babylon V
-  const minU = minPx / tw
-  const maxU = maxPx / tw
-  const minV = 1 - maxPy / th   // bottom of face (Babylon min-V) ← Bedrock bottom of region
-  const maxV = 1 - minPy / th   // top of face (Babylon max-V) ← Bedrock top of region
-
-  // Flip UV if negative size (mirror the face texture)
-  return new Vector4(
-    flipU ? maxU : minU,  // bottomLeftU
-    flipV ? maxV : minV,  // bottomLeftV
-    flipU ? minU : maxU,  // topRightU
-    flipV ? minV : maxV,  // topRightV
-  )
-}
-
-/**
- * Compute the 6-element faceUV array for a Bedrock Box UV cube.
- *
- * Bedrock Box UV unroll pattern (sx=size[0], sy=size[1], sz=size[2]):
- *   east:   (u,            v+sz),  size (sz, sy)
- *   south:  (u+sz,         v+sz),  size (sx, sy)
- *   west:   (u+sz+sx,      v+sz),  size (sz, sy)
- *   north:  (u+sz+sx+sz,   v+sz),  size (sx, sy)
- *   top:    (u+sz,         v),     size (sx, sz)
- *   bottom: (u+sz+sx,      v),     size (sx, sz)
- *
- * Babylon.js CreateBox face order: back(north)=0, front(south)=1,
- *   right(east)=2, left(west)=3, top=4, bottom=5.
- *
- * Babylon.js renders north (face[0]) and west (face[3]) with their U axis
- * reversed relative to how they appear in the Bedrock unroll, so those two
- * faces require a U-mirror (swap bottomLeftU ↔ topRightU).
- */
-function computeBoxFaceUv(
-  uv: [number, number],
+function buildBoxMesh(
+  name: string,
+  origin: [number, number, number],
   size: [number, number, number],
-  tw: number, th: number,
-): [Vector4, Vector4, Vector4, Vector4, Vector4, Vector4] {
-  const [u, v] = uv
+  uv: [number, number] | BedrockPerFaceUv | undefined,
+  tw: number,
+  th: number,
+  scene: Scene,
+): Mesh {
+  const [ox, oy, oz] = origin
   const [sx, sy, sz] = size
-  const r = (px: number, py: number, pw: number, ph: number): Vector4 =>
-    pixelRegionToFaceUv(px, py, pw, ph, tw, th)
-  // Mirror U for faces that Babylon.js renders with a reversed U direction.
-  const rMirrorU = (px: number, py: number, pw: number, ph: number): Vector4 => {
-    const v4 = r(px, py, pw, ph)
-    return new Vector4(v4.z, v4.y, v4.x, v4.w)  // swap bottomLeftU ↔ topRightU
+
+  // Bedrock pixel units → Babylon world units (16 px = 1 unit)
+  const x0 = ox / 16
+  const x1 = (ox + sx) / 16
+  const y0 = oy / 16
+  const y1 = (oy + sy) / 16
+  const z0 = oz / 16
+  const z1 = (oz + sz) / 16
+
+  // Pixel (px, py) → normalized UV.
+  // Babylon.js loads textures with invertY=true: V=0 is bottom of PNG,
+  // so V_babylon = 1 − py / th.
+  const toUV = (px: number, py: number): [number, number] => [px / tw, 1 - py / th]
+
+  type UVCorners = {
+    tl: [number, number]
+    tr: [number, number]
+    bl: [number, number]
+    br: [number, number]
   }
 
-  return [
-    rMirrorU(u + sz + sx + sz, v + sz, sx, sy), // [0] back   = north (mirror U)
-    r(u + sz,                  v + sz, sx, sy), // [1] front  = south
-    r(u,                       v + sz, sz, sy), // [2] right  = east
-    rMirrorU(u + sz + sx,      v + sz, sz, sy), // [3] left   = west  (mirror U)
-    r(u + sz,                  v,      sx, sz), // [4] top
-    r(u + sz + sx,             v,      sx, sz), // [5] bottom
-  ]
-}
-
-/**
- * Compute the 6-element faceUV array for a Bedrock per-face UV cube.
- * Babylon face order: back(north)=0, front(south)=1, right(east)=2,
- *   left(west)=3, top=4, bottom=5.
- *
- * North (face[0]) and west (face[3]) need a U-mirror for the same reason as
- * the box-UV case: Babylon.js renders those faces with a reversed U direction.
- */
-function computePerFaceFaceUv(
-  perFace: BedrockPerFaceUv,
-  tw: number, th: number,
-): [Vector4, Vector4, Vector4, Vector4, Vector4, Vector4] {
-  const ZERO: BedrockFaceUvEntry = { uv: [0, 0], uv_size: [0, 0] }
-  const toV4 = (f: BedrockFaceUvEntry): Vector4 =>
-    pixelRegionToFaceUv(f.uv[0], f.uv[1], f.uv_size[0], f.uv_size[1], tw, th)
-  const toV4MirrorU = (f: BedrockFaceUvEntry): Vector4 => {
-    const v4 = toV4(f)
-    return new Vector4(v4.z, v4.y, v4.x, v4.w)  // swap bottomLeftU ↔ topRightU
+  const buildUVFaces = (): {
+    south: UVCorners; north: UVCorners; east: UVCorners
+    west: UVCorners; top: UVCorners; bottom: UVCorners
+  } => {
+    if (uv === undefined) {
+      const zero: UVCorners = { tl: [0, 0], tr: [0, 0], bl: [0, 0], br: [0, 0] }
+      return { south: zero, north: zero, east: zero, west: zero, top: zero, bottom: zero }
+    }
+    if (Array.isArray(uv)) {
+      // Box UV: Minecraft unroll pattern
+      const [u, v] = uv
+      return {
+        // south (+Z front)
+        south: {
+          tl: toUV(u + sz,                v + sz),
+          tr: toUV(u + sz + sx,           v + sz),
+          bl: toUV(u + sz,                v + sz + sy),
+          br: toUV(u + sz + sx,           v + sz + sy),
+        },
+        // north (-Z back)
+        north: {
+          tl: toUV(u + sz + sx + sz,      v + sz),
+          tr: toUV(u + sz + sx + sz + sx, v + sz),
+          bl: toUV(u + sz + sx + sz,      v + sz + sy),
+          br: toUV(u + sz + sx + sz + sx, v + sz + sy),
+        },
+        // east (+X right)
+        east: {
+          tl: toUV(u,                     v + sz),
+          tr: toUV(u + sz,                v + sz),
+          bl: toUV(u,                     v + sz + sy),
+          br: toUV(u + sz,                v + sz + sy),
+        },
+        // west (-X left)
+        west: {
+          tl: toUV(u + sz + sx,           v + sz),
+          tr: toUV(u + sz + sx + sz,      v + sz),
+          bl: toUV(u + sz + sx,           v + sz + sy),
+          br: toUV(u + sz + sx + sz,      v + sz + sy),
+        },
+        // top (+Y up)
+        top: {
+          tl: toUV(u + sz,                v),
+          tr: toUV(u + sz + sx,           v),
+          bl: toUV(u + sz,                v + sz),
+          br: toUV(u + sz + sx,           v + sz),
+        },
+        // bottom (-Y down)
+        bottom: {
+          tl: toUV(u + sz + sx,           v),
+          tr: toUV(u + sz,                v),
+          bl: toUV(u + sz + sx,           v + sz),
+          br: toUV(u + sz,                v + sz),
+        },
+      }
+    }
+    // Per-face UV: each face specifies its own uv origin + uv_size.
+    // Negative uv_size means mirror: (fu+fw) < fu naturally flips the UV direction.
+    const pf = uv
+    const faceToCorners = (f: BedrockFaceUvEntry | undefined): UVCorners => {
+      if (!f) return { tl: [0, 0], tr: [0, 0], bl: [0, 0], br: [0, 0] }
+      const [fu, fv] = f.uv
+      const [fw, fh] = f.uv_size
+      return {
+        tl: toUV(fu,      fv),
+        tr: toUV(fu + fw, fv),
+        bl: toUV(fu,      fv + fh),
+        br: toUV(fu + fw, fv + fh),
+      }
+    }
+    return {
+      south:  faceToCorners(pf.south),
+      north:  faceToCorners(pf.north),
+      east:   faceToCorners(pf.east),
+      west:   faceToCorners(pf.west),
+      top:    faceToCorners(pf.up),
+      bottom: faceToCorners(pf.down),
+    }
   }
 
-  return [
-    toV4MirrorU(perFace.north ?? ZERO), // [0] back   = north (mirror U)
-    toV4(perFace.south ?? ZERO),         // [1] front  = south
-    toV4(perFace.east  ?? ZERO),         // [2] right  = east
-    toV4MirrorU(perFace.west  ?? ZERO), // [3] left   = west  (mirror U)
-    toV4(perFace.up    ?? ZERO),         // [4] top
-    toV4(perFace.down  ?? ZERO),         // [5] bottom
-  ]
+  const faces = buildUVFaces()
+
+  const positions: number[] = []
+  const normals: number[] = []
+  const uvs: number[] = []
+  const indices: number[] = []
+
+  const addFace = (
+    tl: [number, number, number],
+    tr: [number, number, number],
+    bl: [number, number, number],
+    br: [number, number, number],
+    uvCorners: UVCorners,
+    normal: [number, number, number],
+  ): void => {
+    const base = positions.length / 3
+    positions.push(...tl, ...tr, ...bl, ...br)
+    normals.push(...normal, ...normal, ...normal, ...normal)
+    uvs.push(...uvCorners.tl, ...uvCorners.tr, ...uvCorners.bl, ...uvCorners.br)
+    // Two triangles: [TL,TR,BL] and [TR,BR,BL]
+    indices.push(base, base + 1, base + 2, base + 1, base + 3, base + 2)
+  }
+
+  // SOUTH (+Z): normal=(0,0,+1)
+  // TL=(x0,y1,z1) TR=(x1,y1,z1) BL=(x0,y0,z1) BR=(x1,y0,z1)
+  addFace([x0, y1, z1], [x1, y1, z1], [x0, y0, z1], [x1, y0, z1], faces.south, [0, 0, 1])
+  // NORTH (-Z): normal=(0,0,-1)
+  // TL=(x1,y1,z0) TR=(x0,y1,z0) BL=(x1,y0,z0) BR=(x0,y0,z0)
+  addFace([x1, y1, z0], [x0, y1, z0], [x1, y0, z0], [x0, y0, z0], faces.north, [0, 0, -1])
+  // EAST (+X): normal=(+1,0,0)
+  // TL=(x1,y1,z0) TR=(x1,y1,z1) BL=(x1,y0,z0) BR=(x1,y0,z1)
+  addFace([x1, y1, z0], [x1, y1, z1], [x1, y0, z0], [x1, y0, z1], faces.east, [1, 0, 0])
+  // WEST (-X): normal=(-1,0,0)
+  // TL=(x0,y1,z1) TR=(x0,y1,z0) BL=(x0,y0,z1) BR=(x0,y0,z0)
+  addFace([x0, y1, z1], [x0, y1, z0], [x0, y0, z1], [x0, y0, z0], faces.west, [-1, 0, 0])
+  // TOP (+Y): normal=(0,+1,0)
+  // TL=(x0,y1,z0) TR=(x1,y1,z0) BL=(x0,y1,z1) BR=(x1,y1,z1)
+  addFace([x0, y1, z0], [x1, y1, z0], [x0, y1, z1], [x1, y1, z1], faces.top, [0, 1, 0])
+  // BOTTOM (-Y): normal=(0,-1,0)
+  // TL=(x1,y0,z0) TR=(x0,y0,z0) BL=(x1,y0,z1) BR=(x0,y0,z1)
+  addFace([x1, y0, z0], [x0, y0, z0], [x1, y0, z1], [x0, y0, z1], faces.bottom, [0, -1, 0])
+
+  const mesh = new Mesh(name, scene)
+  const vertexData = new VertexData()
+  vertexData.positions = positions
+  vertexData.normals = normals
+  vertexData.uvs = uvs
+  vertexData.indices = indices
+  vertexData.applyToMesh(mesh)
+
+  return mesh
 }
 
 // ---------------------------------------------------------------------------
@@ -318,42 +394,14 @@ export const BabylonPreview = ({
             for (const bone of geo.bones) {
               if (!Array.isArray(bone.cubes)) continue
               bone.cubes.forEach((cube, i) => {
-                const [ox, oy, oz] = cube.origin
-                const [sw, sh, sd] = cube.size
-
-                // Compute per-face UV from geometry UV data
-                let faceUV: [Vector4, Vector4, Vector4, Vector4, Vector4, Vector4] | undefined
-                if (cube.uv !== undefined) {
-                  if (Array.isArray(cube.uv)) {
-                    // Box UV format: [u, v] pixel offset
-                    faceUV = computeBoxFaceUv(
-                      cube.uv as [number, number],
-                      [sw, sh, sd],
-                      tw, th,
-                    )
-                  } else {
-                    // Per-face UV format: { north, south, east, west, up, down }
-                    faceUV = computePerFaceFaceUv(
-                      cube.uv as BedrockPerFaceUv,
-                      tw, th,
-                    )
-                  }
-                }
-
-                const mesh = MeshBuilder.CreateBox(
+                buildBoxMesh(
                   `${bone.name}_${i}`,
-                  {
-                    width: sw / 16,
-                    height: sh / 16,
-                    depth: sd / 16,
-                    ...(faceUV !== undefined && { faceUV }),
-                  },
+                  cube.origin,
+                  cube.size,
+                  cube.uv,
+                  tw,
+                  th,
                   scene,
-                )
-                mesh.position = new Vector3(
-                  (ox + sw / 2) / 16,
-                  (oy + sh / 2) / 16,
-                  (oz + sd / 2) / 16,
                 )
                 meshCreated = true
               })
