@@ -165,6 +165,11 @@ Phase 4 — 高度エディタ（待機中）
 - Babylon.js の north/west 面の UV 左右反転修正。左右面・背面のテクスチャ方向が BlockBench と一致するようになった。234テストパス。
 - タグ: `v1.0.12`
 
+## v1.0.13 リリース (fix/uv-vertex-data → master)
+
+- Bedrock Box UV を VertexData で全面再実装。MeshBuilder.CreateBox faceUV および north/west ミラーハックを廃止。234 テストパス。
+- タグ: `v1.0.13`
+
 ## 次にやること（Phase 4）
 
 ### 優先
